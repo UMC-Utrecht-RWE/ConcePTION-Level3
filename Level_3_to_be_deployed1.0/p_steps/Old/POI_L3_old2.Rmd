@@ -1,0 +1,321 @@
+---
+title: "CONCEPTION - Level 3 checks: Populations of interest counts"
+output: 
+  html_document:
+    theme: spacelab
+    toc: true
+    toc_float: true
+    toc_depth: 3
+    output_dir: output_dir
+---
+
+```{css,  echo = F}
+/*-- Specify div's for 'boxes', change color of TOC and center align titles: --*/
+div.box1 {background-color: #f5f5f0; border-radius: 5px; padding: 30px; margin-right: 0px}
+div.box2 {border-style: solid; border-color: #f5f5f0; border-width: medium; border-radius: 30px; padding: 5px; margin-right: 0px}
+div.box3 {border-style: solid; border-color: #f5f5f0; border-width: medium; border-radius: 30px; padding: 5px; margin-right: 0px}
+div.box4 {border-style: solid; border-color: #f5f5f0; border-width: medium; border-radius: 30px; padding: 5px; margin-right: 0px}
+div.box5 {border-style: solid; border-color: #f5f5f0; border-width: medium; border-radius: 30px; padding: 5px; margin-right: 0px}
+div.box6 {border-style: solid; border-color: #f5f5f0; border-width: medium; border-radius: 30px; padding: 5px; margin-right: 0px}
+div.box7 {border-style: solid; border-color: #f5f5f0; border-width: medium; border-radius: 30px; padding: 5px; margin-right: 0px}
+div.box8 {border-style: solid; border-color: #f5f5f0; border-width: medium; border-radius: 30px; padding: 5px; margin-right: 0px}
+
+.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {background-color: #76b82a; border-color: #76b82a}
+h1 {text-align: center; color: #3c7b8a}
+h2 {text-align: center; color: #76b82a}
+
+/*-- Add logo (based on https://rstudio4edu.github.io/rstudio4edu-book/rmd-fancy.html): --*/
+#TOC::before {content: ""; display: block; height: 60px; margin: 30px 10px 30px; background-image: url("conception_logo.png"); background-size: contain; background-position: center center; background-repeat: no-repeat}
+```
+
+```{r set_locale, include=FALSE}
+Sys.setlocale("LC_ALL", "C")
+`%!in%` = Negate(`%in%`)
+```
+
+<div class = 'box1'>
+
+**Level 3:** Counts in the populations of interest   
+Populations of interest:    
+
+***Pregnancies in:***    
+Women with a diagnosis record    
+
+***Medication exposure in:***    
+Women with a diagnosis record    
+Pregnant women    
+Pregnant women with a diagnosis record    
+
+***Vaccine exposure in:***    
+Women with a condition    
+Pregnant women    
+Pregnant women with a diagnosis record    
+
+
+<br> 
+
+The analysis is performed as follows:
+![analysis steps](poi_counts.png)
+
+<br>
+
+If subpopulations are available in your data the analysis will be performed separately for each subpopulation.
+In case there is an overlapping subpopulation only subjects in the overlap period will be taken into account.
+***Example:***
+
+<br>
+
+![subpopulations analysis](subpopulations.png)
+
+</div>
+
+<br>
+
+<div class = 'box2'>
+
+
+## 1. Pregnancy in women with a diagnosis record
+
+<br> 
+
+The algorithm steps:
+![diagnoses_pregnancy steps](diagnoses_pregnancy.png)
+<br>
+
+```{r echo=F, warning=FALSE}
+if (subpopulations_present=="No"){
+  if(length(list.files(paste0(ev_preg_dir, "Masked/")))>0){
+res_1<-fread(paste0(ev_preg_dir,"Masked/", "diagnoses_pregnancy_counts_masked.csv"))
+datatable(res_1, options = list(scrollX=T,DT.warn.size=FALSE))
+  } else {
+ print("This table cannot be produced based on the available data")  
+}
+} else {
+  if(length(list.files(paste0(ev_preg_dir,subpopulations_names[a],"/Masked/")))>0){
+res_1<-fread(paste0(ev_preg_dir,subpopulations_names[a], "/Masked/", subpopulations_names[a],"_diagnoses_pregnancy_counts_masked.csv"))
+datatable(res_1, options = list(scrollX=T,DT.warn.size=FALSE))
+  } else {
+  print("This table cannot be produced based on the available data")
+}
+}
+```
+
+
+</div>
+
+<br>
+
+<div class = 'box3'>
+
+## 2. Medication exposure in pregnancy
+
+<br> 
+
+The algorithm steps:
+![medicines_pregnancy steps](medicines_pregnancy.png)
+
+<br>
+
+```{r echo=F, warning=FALSE}
+if (subpopulations_present=="No"){
+  if(length(list.files(paste0(med_preg_dir, "Masked/")))>0){
+res_2<-fread(paste0(med_preg_dir,"Masked/", "medicines_pregnancy_counts_masked.csv"))
+datatable(res_2, options = list(scrollX=T,DT.warn.size=FALSE))
+  } else {
+ print("This table cannot be produced based on the available data")  
+}
+} else {
+  if(length(list.files(paste0(med_preg_dir,subpopulations_names[a],"/Masked/")))>0){
+res_2<-fread(paste0(med_preg_dir,subpopulations_names[a], "/Masked/", subpopulations_names[a],"_medicines_pregnancy_counts_masked.csv"))
+datatable(res_2, options = list(scrollX=T,DT.warn.size=FALSE))
+  } else {
+  print("This table cannot be produced based on the available data")
+}
+}
+```
+
+</div>
+
+<br>
+
+<div class = 'box4'>
+
+## 3. Vaccines exposure in pregnancy
+
+<br> 
+
+The algorithm steps:
+![vaccines_pregnancy steps](vaccines_pregnancy.png)
+
+<br>
+
+```{r echo=F,warning=FALSE}
+if (subpopulations_present=="No"){
+  if(length(list.files(paste0(vacc_preg_dir, "Masked/")))>0){
+res_3<-fread(paste0(vacc_preg_dir,"Masked/", "vaccines_pregnancy_counts_masked.csv"))
+datatable(res_3, options = list(scrollX=T,DT.warn.size=FALSE))
+  } else {
+ print("This table cannot be produced based on the available data")  
+}
+} else {
+  if(length(list.files(paste0(vacc_preg_dir,subpopulations_names[a],"/Masked/")))>0){
+res_3<-fread(paste0(vacc_preg_dir,subpopulations_names[a], "/Masked/", subpopulations_names[a],"_vaccines_pregnancy_counts_masked.csv"))
+datatable(res_3, options = list(scrollX=T,DT.warn.size=FALSE))
+  } else {
+  print("This table cannot be produced based on the available data")
+}
+}
+```
+
+<br>
+
+</div>
+
+<br>
+
+<div class = 'box5'>
+
+## 4. Medication exposure in women with a diagnosis record
+
+<br> 
+
+The algorithm steps:
+![diagnoses_medicines steps](diagnoses_medicines.png)
+
+<br>
+
+```{r echo=F,warning=FALSE}
+if (subpopulations_present=="No"){
+  if(length(list.files(paste0(ev_med_dir, "Masked/")))>0){
+res_4<-fread(paste0(ev_med_dir,"Masked/", "events_medicines_counts_masked.csv"))
+datatable(res_4, options = list(scrollX=T,DT.warn.size=FALSE))
+  } else {
+ print("This table cannot be produced based on the available data")  
+}
+} else {
+  if(length(list.files(paste0(ev_med_dir,subpopulations_names[a],"/Masked/")))>0){
+res_4<-fread(paste0(ev_med_dir,subpopulations_names[a], "/Masked/", subpopulations_names[a],"_events_medicines_counts_masked.csv"))
+datatable(res_4, options = list(scrollX=T,DT.warn.size=FALSE))
+  } else {
+  print("This table cannot be produced based on the available data")
+}
+}
+```
+  
+<br>
+
+</div>
+
+<br>
+
+<div class = 'box6'>
+
+## 5. Vaccines exposure in women with a diagnosis record
+
+<br> 
+
+The algorithm steps:
+![diagnoses_vaccines steps](diagnoses_vaccines.png)
+<br>
+
+
+```{r echo=F,warning=FALSE}
+if (subpopulations_present=="No"){
+  if(length(list.files(paste0(ev_vacc_dir, "Masked/")))>0){
+res_5<-fread(paste0(ev_vacc_dir,"Masked/", "events_vaccines_counts_masked.csv"))
+datatable(res_5, options = list(scrollX=T,DT.warn.size=FALSE))
+  } else {
+ print("This table cannot be produced based on the available data")  
+}
+} else {
+  if(length(list.files(paste0(ev_vacc_dir,subpopulations_names[a],"/Masked/")))>0){
+res_5<-fread(paste0(ev_vacc_dir,subpopulations_names[a], "/Masked/", subpopulations_names[a],"_events_vaccines_counts_masked.csv"))
+datatable(res_5, options = list(scrollX=T,DT.warn.size=FALSE))
+  } else {
+  print("This table cannot be produced based on the available data")
+}
+}
+```
+
+<br> 
+
+</div>
+
+<br>
+
+<div class = 'box7'>
+
+## 6. Medicine exposure in pregnant women with a diagnosis record
+
+<br> 
+
+The algorithm steps:
+![diagnoses_medicines_pregnancy steps](diagnoses_medicines_pregnancy.png)
+<br> 
+
+```{r echo=F,warning=FALSE}
+if (subpopulations_present=="No"){
+  if(length(list.files(paste0(ev_med_preg_dir, "Masked/")))>0){
+res_6<-fread(paste0(ev_med_preg_dir,"Masked/", "events_medicines_pregnancy_counts_masked.csv"))
+datatable(res_6, options = list(scrollX=T,DT.warn.size=FALSE))
+  } else {
+ print("This table cannot be produced based on the available data")  
+}
+} else {
+  if(length(list.files(paste0(ev_med_preg_dir,subpopulations_names[a],"/Masked/")))>0){
+res_6<-fread(paste0(ev_med_preg_dir,subpopulations_names[a], "/Masked/", subpopulations_names[a],"_events_medicines_pregnancy_counts_masked.csv"))
+datatable(res_6, options = list(scrollX=T,DT.warn.size=FALSE))
+  } else {
+  print("This table cannot be produced based on the available data")
+}
+}
+```
+
+<br> 
+
+</div>
+
+<br>
+
+<div class = 'box7'>
+
+## 7. Vaccines exposure in pregnant women with a diagnosis record
+
+<br> 
+
+The algorithm steps:
+![diagnoses_vaccines_pregnancy steps](diagnoses_vaccines_pregnancy.png)
+<br>
+
+```{r echo=F,warning=FALSE}
+if (subpopulations_present=="No"){
+  if(length(list.files(paste0(ev_vacc_preg_dir, "Masked/")))>0){
+res_7<-fread(paste0(ev_vacc_preg_dir,"Masked/", "events_vaccines_pregnancy_counts_masked.csv"))
+datatable(res_7, options = list(scrollX=T,DT.warn.size=FALSE))
+  } else {
+ print("This table cannot be produced based on the available data")  
+}
+} else {
+  if(length(list.files(paste0(ev_vacc_preg_dir,subpopulations_names[a],"/Masked/")))>0){
+res_7<-fread(paste0(ev_vacc_preg_dir,subpopulations_names[a], "/Masked/", subpopulations_names[a],"_events_vaccines_pregnancy_counts_masked.csv"))
+datatable(res_7, options = list(scrollX=T,DT.warn.size=FALSE))
+  } else {
+  print("This table cannot be produced based on the available data")
+}
+}
+```
+
+<br> 
+
+</div>
+
+<br>
+
+<div class = 'box8'>
+
+Author: Vjola Hoxhaj Drs.   
+email: v.hoxhaj@umcutrecht.nl    
+Organisation: UMC Utrecht, Utrecht, The Netherlands    
+
+</div>
+

@@ -1,0 +1,374 @@
+---
+title: "CONCEPTION - Level 3 checks: Pregnancy"
+output: 
+  html_document:
+    theme: spacelab
+    toc: true
+    toc_float: true
+    toc_depth: 3
+    output_dir: output_dir
+---
+
+```{css,  echo = F}
+/*-- Specify div's for 'boxes', change color of TOC and center align titles: --*/
+div.box1 {background-color: #f5f5f0; border-radius: 5px; padding: 30px; margin-right: 0px}
+div.box2 {border-style: solid; border-color: #f5f5f0; border-width: medium; border-radius: 30px; padding: 5px; margin-right: 0px}
+div.box3 {border-style: solid; border-color: #f5f5f0; border-width: medium; border-radius: 30px; padding: 5px; margin-right: 0px}
+div.box4 {border-style: solid; border-color: #f5f5f0; border-width: medium; border-radius: 30px; padding: 5px; margin-right: 0px}
+div.box5 {border-style: solid; border-color: #f5f5f0; border-width: medium; border-radius: 30px; padding: 5px; margin-right: 0px}
+div.box6 {border-style: solid; border-color: #f5f5f0; border-width: medium; border-radius: 30px; padding: 5px; margin-right: 0px}
+div.box7 {border-style: solid; border-color: #f5f5f0; border-width: medium; border-radius: 30px; padding: 5px; margin-right: 0px}
+div.box8 {border-style: solid; border-color: #f5f5f0; border-width: medium; border-radius: 30px; padding: 5px; margin-right: 0px}
+
+.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {background-color: #76b82a; border-color: #76b82a}
+h1 {text-align: center; color: #3c7b8a}
+h2 {text-align: center; color: #76b82a}
+
+/*-- Add logo (based on https://rstudio4edu.github.io/rstudio4edu-book/rmd-fancy.html): --*/
+#TOC::before {content: ""; display: block; height: 60px; margin: 30px 10px 30px; background-image: url("conception_logo.png"); background-size: contain; background-position: center center; background-repeat: no-repeat}
+```
+
+```{r set_locale, include=FALSE}
+Sys.setlocale("LC_ALL", "C")
+`%!in%` = Negate(`%in%`)
+```
+
+<div class = 'box1'>
+
+**Level 3:** Pregnancy episodes counts and rates by stage of pregnancy  
+
+<br> 
+
+The analysis contains the following steps:
+![pregnancy steps](pregnancy_steps.png)
+
+The codelist alorithm is explained below:
+<br>
+
+![codelist algorithm pregnancy](code_match_pregnancy.png)
+
+<br>
+
+Records with a time difference smaller than the time lag explained below will be removed from analysis of rates and counts.
+
+![time lag](time_lag_pregnancy.png)
+
+
+<br>
+
+If subpopulations are available in your data the analysis will be performed separately for each subpopulation.
+In case there is an overlapping subpopulation only subjects in the overlap period will be taken into account.
+***Example:***
+
+<br>
+
+![subpopulations analysis](subpopulations.png)
+
+`year` is retrieved from `start_date_record` for the **EVENTS** table, `mo_date` for the **MEDICAL_OBSERVATIONS** table and `so_date` for **SURVEY_OBSERVATIONS** table.
+
+</div>
+
+<br>
+
+<div class = 'box2'>
+
+
+## 1. Flowchart
+<br> 
+
+```{r echo=F}
+if (subpopulations_present=="No"){
+flowchart<-fread(paste0(preg_dir,"Masked/", "pregnancy_flowchart_masked.csv"))
+datatable(flowchart, options = list(scrollX=T))
+} else {
+flowchart<-fread(paste0(preg_dir,subpopulations_names[a], "/Masked/", subpopulations_names[a],"_pregnancy_flowchart_masked.csv"))
+datatable(flowchart, options = list(scrollX=T))
+}
+```
+
+
+</div>
+
+<br>
+
+<div class = 'box3'>
+
+## 2. Description of pregnancy_study_population
+
+<br> 
+
+```{r echo=F}
+if (subpopulations_present=="No"){
+description<-fread(paste0(preg_dir,"Masked/", "pregnancy_description_masked.csv"))
+datatable(description, options = list(scrollX=T))
+} else {
+  description<-fread(paste0(preg_dir,subpopulations_names[a], "/Masked/", subpopulations_names[a],"_pregnancy_description_masked.csv"))
+datatable(description, options = list(scrollX=T))
+}
+```
+
+</div>
+
+
+<br>
+
+
+<div class = 'box4'>
+
+## 3. Graphical representation of number of women and presence of pregnancy codes
+
+<br> 
+
+#### Number of women and presence of pregnancy codes by year
+
+```{r echo=F}
+if (subpopulations_present=="No"){
+ if(sum(grepl(list.files(paste0(preg_dir,"Masked/")), pattern="graph_1_masked.csv"))>0){
+graph_1<-fread(paste0(preg_dir,"Masked/", "graph_1_masked.csv"))
+if(graph_1[,.N]>0){
+datatable(graph_1, options = list(scrollX=T))
+} else {
+    print("This table cannot be produced based on the available data.")
+  graph_1<-NULL
+}
+  } else {
+    print("This table cannot be produced based on the available data.")
+    graph_1<-NULL
+}
+} else {
+   if(sum(grepl(list.files(paste0(preg_dir,subpopulations_names[a], "/Masked/")), pattern="graph_1_masked.csv"))>0){
+graph_1<-fread(paste0(preg_dir,subpopulations_names[a], "/Masked/", subpopulations_names[a],"_graph_1_masked.csv"))
+if(graph_1[,.N]>0){
+datatable(graph_1, options = list(scrollX=T))
+ } else {
+      print("This table cannot be produced based on the available data.")
+   graph_1<-NULL
+  }
+    } else {
+    print("This table cannot be produced based on the available data.")
+      graph_1<-NULL
+    }
+}
+```
+
+A count smaller than 5(counts between 1 and 4) will be represented in the graphs with a value of 0.9 for easy comparison. Counts of 0 are not plotted. If a category is missing in the plot, it means that it had a count of zero.
+
+```{r echo=F}
+if(!is.null(graph_1)){
+graph_1<-suppressWarnings(data.table(melt(graph_1,id.vars = c("year"),
+                measure.vars = c("code_1_per_year", "codes_2_per_year", "codes_3_per_year","codes_min_4_per_year"))))
+suppressWarnings(graph_1[, value:=as.numeric(value)]) 
+graph_1[is.na(value),value:=0.9]
+setnames(graph_1,"variable","presence of codes category")
+setnames(graph_1,"value","count")
+graph_1[,count:=as.numeric(count)][,year:=as.factor(year)]
+
+ggplotly(ggplot(graph_1, aes(fill=`presence of codes category`, y=year, x=count)) + 
+    geom_bar(position="stack", stat="identity") +
+      scale_fill_brewer(palette = "Greens") + 
+      theme(panel.background = element_rect(fill = "white"), axis.line = element_line(size = 2, colour = "#76b82a")))
+}
+```
+
+
+<br>
+
+#### Number of women and presence of pregnancy codes by year and stage of pregnancy
+
+```{r echo=F}
+if (subpopulations_present=="No"){
+  if(sum(grepl(list.files(paste0(preg_dir,"Masked/")), pattern="graph_2_masked.csv"))>0){
+graph_2<-fread(paste0(preg_dir,"Masked/", "graph_2_masked.csv"))
+if(graph_2[,.N]>0){
+datatable(graph_2, options = list(scrollX=T))
+} else {
+    print("This table cannot be produced based on the available data.")
+  graph_2<-NULL
+}
+  } else {
+    print("This table cannot be produced based on the available data.")
+    graph_2<-NULL
+}
+} else {
+     if(sum(grepl(list.files(paste0(preg_dir,subpopulations_names[a], "/Masked/")), pattern="graph_2_masked.csv"))>0){
+graph_2<-fread(paste0(preg_dir,subpopulations_names[a], "/Masked/", subpopulations_names[a],"_graph_2_masked.csv"))
+if(graph_2[,.N]>0){
+datatable(graph_2, options = list(scrollX=T))
+ } else {
+      print("This table cannot be produced based on the available data.")
+   graph_2<-NULL
+  }
+    } else {
+    print("This table cannot be produced based on the available data.")
+      graph_2<-NULL
+    }
+}
+```
+
+A count smaller than 5(counts between 1 and 4) will be represented in the graphs with a value of 0.9 for easy comparison. Counts of 0 are not plotted. If a category is missing in the plot, it means that it had a count of zero.
+
+```{r echo=F}
+if(!is.null(graph_2)){
+graph_2<-suppressWarnings(data.table(melt(graph_2,id.vars = c("year", "stage_of_pregnancy"),
+                measure.vars = c("code_1_per_year", "codes_2_per_year", "codes_3_per_year","codes_min_4_per_year"))))
+suppressWarnings(graph_2[, value:=as.numeric(value)]) 
+graph_2[is.na(value),value:=0.9]
+setnames(graph_2,"variable","presence of codes category")
+setnames(graph_2,"value","count")
+graph_2[,count:=as.numeric(count)][,year:=as.factor(year)]
+}
+```
+
+```{r echo=FALSE}
+if(!is.null(graph_2)){
+fig.graph_2<-vector(mode="list", length=length(unique(graph_2[["stage_of_pregnancy"]])))
+for(i in 1:length(fig.graph_2)){
+  fig.graph_2[[i]]<-ggplotly(ggplot(graph_1, aes(fill=`presence of codes category`, y=year, x=count))+ 
+    geom_bar(position="stack", stat="identity") +
+      scale_fill_brewer(palette = "Greens") +
+    ggtitle(unique(graph_2[["stage_of_pregnancy"]])[i]) + 
+            xlab("Number of women") +
+            ylab("Year") + 
+            theme(axis.title.x = element_text(colour = "#76b82a"),
+                  axis.title.y = element_text(colour = "#76b82a"),
+                  plot.title = element_text(colour = "#76b82a"),
+                  panel.background = element_rect(fill = "white"),
+                  axis.line = element_line(size = 2, colour = "#76b82a")))
+
+}
+}
+```
+
+```{r echo=F}
+if(!is.null(graph_2)){
+htmltools::tagList(list(fig.graph_2))
+}
+```
+
+<br>
+
+</div>
+
+<br>
+
+<div class = 'box5'>
+
+## 4. Pregnancy rates in women with at least one pregnancy code
+
+<br> 
+
+```{r echo=F}
+if (subpopulations_present=="No"){
+  if(sum(grepl(list.files(paste0(preg_dir,"Masked/")), pattern="pregnancy_rates_y_masked.csv"))>0){
+tab17<-fread(paste0(preg_dir,"Masked/", "pregnancy_rates_y_masked.csv"))
+if(tab17[,.N]>0){
+datatable(tab17, options = list(scrollX=T))
+} else {
+    print("This table cannot be produced based on the available data.")
+}
+  } else {
+    print("This table cannot be produced based on the available data.")
+}
+} else {
+      if(sum(grepl(list.files(paste0(preg_dir,subpopulations_names[a], "/Masked/")), pattern="pregnancy_rates_y_masked.csv"))>0){
+    tab17<-fread(paste0(preg_dir,subpopulations_names[a], "/Masked/", subpopulations_names[a],"_pregnancy_rates_y_masked.csv"))
+    if(tab17[,.N]>0){
+datatable(tab17, options = list(scrollX=T))
+  } else {
+      print("This table cannot be produced based on the available data.")
+  }
+    } else {
+    print("This table cannot be produced based on the available data.")
+    }
+}
+```
+
+<br>
+
+</div>
+
+<br>
+
+<div class = 'box6'>
+
+## 5. Pregnancy rates in women with at least one pregnancy code by age
+
+<br> 
+
+```{r echo=F}
+if (subpopulations_present=="No"){
+  if(sum(grepl(list.files(paste0(preg_dir,"Masked/")), pattern="pregnancy_rates_y_age_masked.csv"))>0){
+tab18<-fread(paste0(preg_dir,"Masked/", "pregnancy_rates_y_age_masked.csv"))
+if(tab18[,.N]>0){
+datatable(tab18, options = list(scrollX=T))
+} else {
+    print("This table cannot be produced based on the available data.")
+}
+  } else {
+    print("This table cannot be produced based on the available data.")
+}
+} else {
+      if(sum(grepl(list.files(paste0(preg_dir,subpopulations_names[a], "/Masked/")), pattern="pregnancy_rates_y_age_masked.csv"))>0){
+    tab18<-fread(paste0(preg_dir,subpopulations_names[a], "/Masked/", subpopulations_names[a],"_pregnancy_rates_y_age_masked.csv"))
+    if(tab18[,.N]>0){
+datatable(tab18, options = list(scrollX=T))
+  } else {
+      print("This table cannot be produced based on the available data.")
+  }
+    } else {
+    print("This table cannot be produced based on the available data.")
+    }
+}
+```
+
+<br>
+
+</div>
+
+<br>
+
+<div class = 'box7'>
+
+## 6. Pregnancy counts and percentage in women with at least one pregnancy code and 365 days of follow up
+
+<br> 
+
+```{r echo=F}
+if (subpopulations_present=="No"){
+  if(sum(grepl(list.files(paste0(preg_dir,"Masked/")), pattern="pregnancy_follow_up_masked.csv"))>0){
+tab19<-fread(paste0(preg_dir,"Masked/", "pregnancy_follow_up_masked.csv"))
+if (tab19[,.N]>0){
+datatable(tab19, options = list(scrollX=T))
+} else {
+    print("This table cannot be produced based on the available data.")
+}
+  } else {
+    print("This table cannot be produced based on the available data.")
+}
+} else {
+        if(sum(grepl(list.files(paste0(preg_dir,subpopulations_names[a], "/Masked/")), pattern="pregnancy_follow_up_masked.csv"))>0){
+    tab19<-fread(paste0(preg_dir,subpopulations_names[a], "/Masked/", subpopulations_names[a],"_pregnancy_follow_up_masked.csv"))
+    if (tab19[,.N]>0){
+datatable(tab19, options = list(scrollX=T))
+  } else {
+      print("This table cannot be produced based on the available data.")
+  }
+    } else {
+    print("This table cannot be produced based on the available data.")
+    }
+}
+```
+
+<br>
+
+</div>
+
+<br>
+
+<div class = 'box8'>
+
+Author: Vjola Hoxhaj Drs.    
+email: v.hoxhaj@umcutrecht.nl    
+Organisation: UMC Utrecht, Utrecht, The Netherlands 
+
+</div>

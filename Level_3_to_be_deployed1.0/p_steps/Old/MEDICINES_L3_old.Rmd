@@ -1,0 +1,129 @@
+---
+title: "Level 3"
+author: "Vjola Hoxhaj"
+date: "5/24/2021"
+output: html_document
+---
+```{r include=FALSE}
+source(paste0(pre_dir,"MEDICINES_L3.R"))
+```
+
+```{css,  echo = F}
+/*-- Specify div's for 'boxes', change color of TOC and center align titles: --*/
+div.box1 {background-color: #f5f5f0; border-radius: 5px; padding: 30px; margin-right: 0px}
+div.box2 {border-style: solid; border-color: #f5f5f0; border-width: medium; border-radius: 30px; padding: 5px; margin-right: 0px}
+div.box3 {border-style: solid; border-color: #f5f5f0; border-width: medium; border-radius: 30px; padding: 5px; margin-right: 0px}
+div.box4 {border-style: solid; border-color: #f5f5f0; border-width: medium; border-radius: 30px; padding: 5px; margin-right: 0px}
+div.box5 {border-style: solid; border-color: #f5f5f0; border-width: medium; border-radius: 30px; padding: 5px; margin-right: 0px}
+div.box6 {border-style: solid; border-color: #f5f5f0; border-width: medium; border-radius: 30px; padding: 5px; margin-right: 0px}
+div.box7 {border-style: solid; border-color: #f5f5f0; border-width: medium; border-radius: 30px; padding: 5px; margin-right: 0px}
+div.box8 {border-style: solid; border-color: #f5f5f0; border-width: medium; border-radius: 30px; padding: 5px; margin-right: 0px}
+
+.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {background-color: #76b82a; border-color: #76b82a}
+h1 {text-align: center; color: #3c7b8a}
+h2 {text-align: center; color: #76b82a}
+
+/*-- Add logo (based on https://rstudio4edu.github.io/rstudio4edu-book/rmd-fancy.html): --*/
+#TOC::before {content: ""; display: block; height: 60px; margin: 15px 10px 15px; background-image: url("conception_logo.png"); background-size: contain; background-position: center center; background-repeat: no-repeat}
+```
+
+<div class = 'box1'>
+
+Level 3: benchmarking  
+
+<br> 
+
+Add short explantion
+
+</div>
+
+<br>
+
+<div class = 'box2'>
+
+## 1. Flowchart
+
+```{r echo=F}
+datatable(flowchart, options = list(scrollX=T))
+```
+
+</div>
+
+<br>
+
+<div class = 'box3'>
+
+## 2. Description
+
+```{r echo=F}
+datatable(description, options = list(scrollX=T))
+```
+
+</div>
+
+<br>
+
+<div class = 'box4'>
+
+## 3. Number of prescriptions/dispensings by ATC A level in the study population by year of dispensing/prescribing and by meaning_of_drug_record
+
+```{r echo=F}
+tab10<-readRDS(paste0(final,"tab10.rds"))
+datatable(tab10, options = list(scrollX=T))
+```
+
+</div>
+
+<br>
+
+<div class = 'box5'>
+
+## 4. Number of prescriptions/dispensings by ATC A level in the female study population of childbearing age 12-55 years (based on age at Start_study_fup) by year of dispensing/prescribing and by meaning_of_drug_record
+
+```{r echo=F}
+tab11<-readRDS(paste0(final, "tab11.rds"))
+datatable(tab11, options = list(scrollX=T))
+```
+
+</div>
+
+<br>
+
+<div class = 'box6'>
+
+## 5. Number of prescriptions/dispensings by ATC 1 & 3 level in the study population by year of dispensing/prescribing and by meaning_of_drug_record
+
+```{r echo=F}
+tab12<-readRDS(paste0(final, "tab12.rds"))
+datatable(tab12, options = list(scrollX=T))
+```
+
+</div>
+
+<br>
+
+<div class = 'box7'>
+
+## 6. Number of prescriptions/dispensings by ATC 3 & 7 level in the study population by year of dispensing/prescribing and by meaning_of_drug_record for each ATC class
+
+```{r echo=F}
+tab13<-readRDS(paste0(final, "tab13.rds"))
+datatable(tab13, options = list(scrollX=T))
+```
+
+</div>
+
+<br>
+
+<div class = 'box8'>
+
+## 7. Number of prescriptions/dispensings with incomplete data
+
+```{r echo=F}
+tab15<-readRDS(paste0(final, "tab15.rds"))
+datatable(tab15, options = list(scrollX=T))
+```
+
+</div>
+
+

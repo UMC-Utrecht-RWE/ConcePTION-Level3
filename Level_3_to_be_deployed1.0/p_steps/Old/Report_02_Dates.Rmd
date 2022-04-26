@@ -1,0 +1,308 @@
+
+
+---
+title: "CONCEPTION - Level 3 checks: Dates"
+output: 
+  html_document:
+    theme: spacelab
+    toc: true
+    toc_float: true
+    toc_depth: 3
+    output_dir: output_dir
+---
+
+
+```{css,  echo = F}
+/*-- Specify div's for 'boxes', change color of TOC and center align titles: --*/
+div.box1 {background-color: #f5f5f0; border-radius: 5px; padding: 30px; margin-right: 0px}
+div.box2 {border-style: solid; border-color: #f5f5f0; border-width: medium; border-radius: 30px; padding: 5px; margin-right: 0px}
+div.box3 {border-style: solid; border-color: #f5f5f0; border-width: medium; border-radius: 30px; padding: 5px; margin-right: 0px}
+div.box4 {border-style: solid; border-color: #f5f5f0; border-width: medium; border-radius: 30px; padding: 5px; margin-right: 0px}
+div.box5 {border-style: solid; border-color: #f5f5f0; border-width: medium; border-radius: 30px; padding: 5px; margin-right: 0px}
+div.box6 {border-style: solid; border-color: #f5f5f0; border-width: medium; border-radius: 30px; padding: 5px; margin-right: 0px}
+div.box7 {border-style: solid; border-color: #f5f5f0; border-width: medium; border-radius: 30px; padding: 5px; margin-right: 0px}
+div.box8 {border-style: solid; border-color: #f5f5f0; border-width: medium; border-radius: 30px; padding: 5px; margin-right: 0px}
+
+.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {background-color: #76b82a; border-color: #76b82a}
+h1 {text-align: center; color: #3c7b8a}
+h2 {text-align: center; color: #76b82a}
+
+/*-- Add logo (based on https://rstudio4edu.github.io/rstudio4edu-book/rmd-fancy.html): --*/
+#TOC::before {content: ""; display: block; height: 60px; margin: 15px 10px 15px; background-image: url("conception_logo.png"); background-size: contain; background-position: center center; background-repeat: no-repeat}
+```
+
+<div class = 'box1'>
+
+
+<br> 
+
+The aim of this report is to check for patterns in some key date values in the study population.
+<ul>
+<li>Start follow up</li>
+<li>End follow up</li>
+<li>Birth date </li>
+</ul>
+
+</div>
+
+<br>
+
+<div class = 'box2'>
+
+
+
+
+
+## 1. Distribution of start_follow_up  by year and month
+
+```{r echo=F,fig.width=9,fig.height=5}
+
+
+
+    TEMP <- fread(paste0(report_dir2,"/",i,"_R_01_0608_DT_start_follow_up.csv"), sep = ";")
+    
+    datatable(TEMP, options = list(scrollX=T),rownames = F)
+    
+    
+    rm(TEMP)
+
+    TEMP <- readRDS(paste0(report_dir1,"/",i,"_R_01_0608_DT_start_follow_up_PLOT.rds"))
+    
+    if(nrow(TEMP) > 0) {
+    #par(mar = c(3,3,1,4),mgp = c(2,1,0), oma = c(1,1,1,1), xpd = T)
+    #Line_plot2(
+    #MATRIX = TEMP,
+    #title = "",
+    #x.l = "Month",
+    #y.l = "Count"
+    
+    #)
+    
+    TEMP[, start_follow_up_month := as.numeric(start_follow_up_month) ]
+    setnames(TEMP,"start_follow_up_year","Year")
+    
+          
+    ggplotly(ggplot(TEMP, aes(x = start_follow_up_month, y = count, group = Year)) +
+             geom_line(aes(color = Year)) +
+             geom_point(aes(color = Year)) + 
+             #facet_wrap(~ meaning, ncol=2, scales = "fixed") +
+             ggtitle("") + 
+             xlab("Month") +
+             ylab("Count")+
+             theme_classic() +
+             guides(shape = guide_legend(override.aes = list(size = 0.5))) +
+             theme(text=element_text(size = 10),
+                   axis.text.x = element_text(angle = 0, hjust = 1),
+                   axis.title.x = element_text(colour = "#76b82a"),
+                   axis.title.y = element_text(colour = "#76b82a"),
+                   plot.title = element_text(colour = "#76b82a"),
+                   strip.text.y = element_text(angle = 0),
+                   legend.title = element_text(size = 12, face = "bold"), 
+                   legend.text = element_text(size = 7)) +
+             #scale_x_continuous(breaks = unique(TEMP[["start_follow_up_month"]]), labels = as.character(unique(TEMP[["start_follow_up_month"]]))) 
+          
+             scale_x_continuous(breaks = c(1:12), labels = as.character(c(1:12)))
+           
+           ) 
+    
+      
+      
+    }
+    rm(TEMP)
+
+
+```
+
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+
+
+## 2. Distribution of end_follow_up by year and month
+
+```{r echo=F,fig.width=9,fig.height=5}
+
+
+    TEMP <- fread(paste0(report_dir2,"/",i,"_R_01_0608_DT_end_follow_up.csv"), sep = ";")
+    
+    datatable(TEMP, options = list(scrollX=T),rownames = F)
+    
+    
+    rm(TEMP)
+    
+    
+    
+    TEMP <- readRDS(paste0(report_dir1,"/",i,"_R_01_0608_DT_end_follow_up_PLOT.rds"))
+    
+    if(nrow(TEMP) > 0) {
+    
+    TEMP[, end_follow_up_month := as.numeric(end_follow_up_month) ]
+    setnames(TEMP,"end_follow_up_year","Year")
+    
+          
+    ggplotly(ggplot(TEMP, aes(x = end_follow_up_month, y = count, group = Year)) +
+             geom_line(aes(color = Year)) +
+             geom_point(aes(color = Year)) + 
+             #facet_wrap(~ meaning, ncol=2, scales = "fixed") +
+             ggtitle("") + 
+             xlab("Month") +
+             ylab("Count")+
+             theme_classic() +
+             guides(shape = guide_legend(override.aes = list(size = 0.5))) +
+             theme(text=element_text(size = 10),
+                   axis.text.x = element_text(angle = 0, hjust = 1),
+                   axis.title.x = element_text(colour = "#76b82a"),
+                   axis.title.y = element_text(colour = "#76b82a"),
+                   plot.title = element_text(colour = "#76b82a"),
+                   strip.text.y = element_text(angle = 0),
+                   legend.title = element_text(size = 12, face = "bold"), 
+                   legend.text = element_text(size = 7)) +
+             #scale_x_continuous(breaks = unique(TEMP[["start_follow_up_month"]]), labels = as.character(unique(TEMP[["start_follow_up_month"]]))) 
+            scale_x_continuous(breaks = c(1:12), labels = as.character(c(1:12)))
+             #scale_y_continuous(limits = c(0,1.1*max(TEMP1[["PY"]])))
+           
+           )   
+      
+      
+      
+    #par(mar = c(3,3,1,4),mgp = c(2,1,0), oma = c(1,1,1,1), xpd = T)
+    #Line_plot2(
+    #MATRIX = TEMP,
+    #title = "",
+    #x.l = "Month",
+    #y.l = "Count"
+    #)
+    }
+    #rm(TEMP)
+
+
+
+
+
+```
+
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+
+
+## 3. Distribution of birth date by year and month
+
+```{r echo=F}
+
+
+
+    TEMP <- fread(paste0(report_dir2,"/",i,"_R_01_0608_DT_birth_date.csv"), sep = ";")
+    
+    datatable(TEMP, options = list(scrollX=T),rownames = F)
+    
+    rm(TEMP)
+    
+    
+    
+    TEMP <- fread(paste0(report_dir1,"/",i,"_R_01_0608_DT_birth_date.csv"), sep = ";")
+
+    if(nrow(TEMP) > 0) {
+    
+    TEMP <- melt(TEMP,id.vars = "year",variable.name = "month",value.name = "count")[,":=" (year = as.character(year),month = as.character(month),count = as.numeric(count))]
+    
+    
+    TEMP <- INPUTMATRIX(
+      
+      d = TEMP,
+      value = "count",
+      type = "none",
+      var = "month",
+      var.v = c(1:12),
+      cat = "year",
+      cat.v = c(min(TEMP[["year"]]):max(TEMP[["year"]])),
+      per = F
+      
+      
+    )
+    
+    
+    heatmap(TEMP,Rowv = NA, Colv = NA, xlab = "Month", ylab = "Year", scale = "none", distfun = dist(x, method = "euclidean")   )
+    
+    
+    
+        
+    }    
+    
+    rm(TEMP)
+
+
+    
+
+
+
+```
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+
+## 4. Distribution of birth date by day month
+
+```{r echo=F}
+
+TEMP <- fread(paste0(report_dir2,"/",i,"_R_01_09_DT_birth_date_day.csv"), sep = ";")  
+
+datatable(TEMP, options = list(scrollX=T), rownames = F)
+
+rm(TEMP)
+
+TEMP <- fread(paste0(report_dir1,"/",i,"_R_01_09_DT_birth_date_day.csv"), sep = ";")
+
+if(nrow(TEMP) > 0) {
+
+TEMP <- melt(TEMP,id.vars = "day",variable.name = "month",value.name = "count")[,":=" (day = as.character(day),month = as.character(month),count = as.numeric(count))]
+
+TEMP <- INPUTMATRIX(
+  
+  d = TEMP,
+  value = "count",
+  type = "none",
+  var = "month",
+  var.v = c(1:12),
+  cat = "day",
+  cat.v = c(1:31),
+  per = F
+  
+  
+)
+
+
+heatmap(TEMP,Rowv = NA, Colv = NA, xlab = "Month", ylab = "Day", scale = "none", distfun = dist(x, method = "euclidean")   )
+
+}
+
+rm(TEMP)
+
+
+
+
+
+
+```
+
+
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+
+
+<div class = 'box9'>
+
+Author: Roel Elbers   
+email: r.j.h.elbers@umcutrecht.nl   
+Organisation: UMC Utrecht, Utrecht, The Netherlands    
+
+</div>

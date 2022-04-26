@@ -1,0 +1,587 @@
+---
+title: "CONCEPTION - Level 3 checks: Medicines exposure"
+output: 
+  html_document:
+    theme: spacelab
+    toc: true
+    toc_float: true
+    toc_depth: 3
+    output_dir: output_dir
+---
+
+```{css,  echo = F}
+/*-- Specify div's for 'boxes', change color of TOC and center align titles: --*/
+div.box1 {background-color: #f5f5f0; border-radius: 5px; padding: 30px; margin-right: 0px}
+div.box2 {border-style: solid; border-color: #f5f5f0; border-width: medium; border-radius: 30px; padding: 5px; margin-right: 0px}
+div.box3 {border-style: solid; border-color: #f5f5f0; border-width: medium; border-radius: 30px; padding: 5px; margin-right: 0px}
+div.box4 {border-style: solid; border-color: #f5f5f0; border-width: medium; border-radius: 30px; padding: 5px; margin-right: 0px}
+div.box5 {border-style: solid; border-color: #f5f5f0; border-width: medium; border-radius: 30px; padding: 5px; margin-right: 0px}
+div.box6 {border-style: solid; border-color: #f5f5f0; border-width: medium; border-radius: 30px; padding: 5px; margin-right: 0px}
+div.box7 {border-style: solid; border-color: #f5f5f0; border-width: medium; border-radius: 30px; padding: 5px; margin-right: 0px}
+div.box8 {border-style: solid; border-color: #f5f5f0; border-width: medium; border-radius: 30px; padding: 5px; margin-right: 0px}
+
+.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {background-color: #76b82a; border-color: #76b82a}
+h1 {text-align: center; color: #3c7b8a}
+h2 {text-align: center; color: #76b82a}
+
+/*-- Add logo (based on https://rstudio4edu.github.io/rstudio4edu-book/rmd-fancy.html): --*/
+#TOC::before {content: ""; display: block; height: 60px; margin: 30px 10px 30px; background-image: url("conception_logo.png"); background-size: contain; background-position: center center; background-repeat: no-repeat}
+```
+
+```{r set_locale, include=FALSE}
+Sys.setlocale("LC_ALL", "C")
+`%!in%` = Negate(`%in%`)
+```
+
+<div class = 'box1'>
+
+**Level 3:** Medicines exposure in the study population and in females of childbearing age (12-55 years old)  
+
+<br> 
+
+The analysis contains the following steps:
+
+<br>
+
+![steps in analysis](medicines_l3.png)
+
+If subpopulations are available in your data the analysis will be performed separately for each subpopulation.
+In case there is an overlapping subpopulation only subjects in the overlap period will be taken into account.
+***Example:***
+
+<br>
+
+![subpopulations analysis](subpopulations.png)
+
+`year` is retrieved from `date_prescription` or `date_dispensing`. If both dates are present, `date_dispensing` will be used.
+
+</div>
+
+<br>
+
+<div class = 'box2'>
+
+## 1. Flowchart
+
+```{r flowchart, echo=F}
+if (subpopulations_present=="No"){
+flowchart<-fread(paste0(med_dir,"Masked/", "flowchart_masked.csv"))
+datatable(flowchart, options = list(scrollX=T))
+} else {
+flowchart<-fread(paste0(med_dir,subpopulations_names[a], "/Masked/", subpopulations_names[a],"_flowchart_masked.csv"))
+datatable(flowchart, options = list(scrollX=T))
+}
+```
+
+</div>
+
+<br>
+
+<div class = 'box3'>
+
+## 2. Description of medicines_study_population
+
+```{r description, echo=F}
+if (subpopulations_present=="No"){
+description<-fread(paste0(med_dir,"Masked/", "description_masked.csv"))
+datatable(description, options = list(scrollX=T))
+} else {
+  description<-fread(paste0(med_dir,subpopulations_names[a], "/Masked/", subpopulations_names[a],"_description_masked.csv"))
+datatable(description, options = list(scrollX=T))
+}
+```
+
+</div>
+
+<br>
+
+<div class = 'box4'>
+
+## 3. Counts in the study population
+
+#### Number of records by ATC code, year and meaning
+
+```{r counts_atc_1_my, echo=F}
+if (subpopulations_present=="No"){
+  if(sum(grepl(list.files(paste0(med_dir,"Masked/")), pattern="medicines_my_atc_1_masked.csv"))>0){
+tab10<-fread(paste0(med_dir,"Masked/", "medicines_my_atc_1_masked.csv"))
+if(tab10[,.N]>0){
+setcolorder(tab10,c("atc_code_1", "count", "meaning", "year", "data_access_provider", "data_source"))
+datatable(tab10, options = list(scrollX=T))
+} else {
+  tab10<-NULL
+  print("This table cannot be produced based on the available data.")
+}
+  } else {
+    tab10<-NULL
+  print("This table cannot be produced based on the available data.")
+}
+} else {
+    if(sum(grepl(list.files(paste0(med_dir,subpopulations_names[a], "/Masked/")), pattern="medicines_my_atc_1_masked.csv"))>0){
+  tab10<-fread(paste0(med_dir,subpopulations_names[a], "/Masked/", subpopulations_names[a],"_medicines_my_atc_1_masked.csv"))
+  if (tab10[,.N]>0){
+  setcolorder(tab10,c("atc_code_1", "count", "meaning", "year", "data_access_provider", "data_source"))
+datatable(tab10, options = list(scrollX=T))
+  } else {
+    tab10<-NULL
+    print("This table cannot be produced based on the available data.")
+}
+    } else {
+      tab10<-NULL
+  print("This table cannot be produced based on the available data.")
+    }
+}
+```
+
+<br>
+
+```{r tab10_graph, echo=FALSE, warning=FALSE}
+if(!is.null(tab10)){
+tab10_graph<-tab10[count=="<5", count:= 0.9]
+tab10_graph<-tab10_graph[,count:=as.numeric(count)]
+tab10_graph<-tab10_graph[!is.na(atc_code_1) | atc_code_1!="All"]
+
+} else {
+ tab10_graph<-NULL 
+}
+
+if(!is.null(tab10_graph)){
+if (tab10_graph[,.N] != 0){
+ggplotly(ggplot(tab10_graph, aes(x = year, y = count, group=atc_code_1)) +
+                           geom_line(aes(color=atc_code_1)) +
+                           geom_point(aes(color=atc_code_1)) + 
+                            facet_wrap(~ meaning, ncol=2, scales = "fixed") +
+                               ggtitle("Number of records by ATC code, year and meaning") + 
+                               xlab("Year") +
+                               ylab("Count")+
+                             theme_classic() +
+                             guides(shape = guide_legend(override.aes = list(size = 0.3))) +
+                               theme(text=element_text(size=10),
+                                 axis.text.x = element_text(angle = 90, hjust = 1),
+                                     axis.title.x = element_text(colour = "#76b82a"),
+                                     axis.title.y = element_text(colour = "#76b82a"),
+                                     plot.title = element_text(colour = "#76b82a"),
+                                     strip.text.y = element_text(angle = 0),
+                                     legend.title = element_text(size = 7), 
+               legend.text = element_text(size = 7))) 
+                                     
+}
+}
+```
+
+<br>
+
+
+#### Number of records and users by ATC code, year and meaning
+
+```{r counts_atc_4_my, echo=F}
+if (subpopulations_present=="No"){
+  if(sum(grepl(list.files(paste0(med_dir,"Masked/")), pattern="medicines_my_atc_4_masked.csv"))>0){
+tab12<-fread(paste0(med_dir,"Masked/", "medicines_my_atc_4_masked.csv"))
+if(tab12[,.N]>0){
+setcolorder(tab12,c("atc_code_4", "no_records", "no_male_users", "median_rx_male_users", "no_female_users", "median_rx_female_users","meaning", "year", "atc_code_3","atc_code_1", "data_access_provider", "data_source"))
+datatable(tab12, options = list(scrollX=T))
+} else {
+  tab12<-NULL
+    print("This table cannot be produced based on the available data.")
+}
+  } else {
+    tab12<-NULL
+    print("This table cannot be produced based on the available data.")
+}
+} else {
+    if(sum(grepl(list.files(paste0(med_dir,subpopulations_names[a], "/Masked/")), pattern="medicines_my_atc_4_masked.csv"))>0){
+  tab12<-fread(paste0(med_dir,subpopulations_names[a], "/Masked/", subpopulations_names[a],"_medicines_my_atc_4_masked.csv"))
+  if(tab12[,.N]>0){
+  setcolorder(tab12,c("atc_code_4", "no_records", "no_male_users", "median_rx_male_users", "no_female_users", "median_rx_female_users","meaning", "year", "atc_code_3","atc_code_1", "data_access_provider", "data_source"))
+datatable(tab12, options = list(scrollX=T))
+  } else {
+    tab12<-NULL
+    print("This table cannot be produced based on the available data.")
+}
+    } else {
+      tab12<-NULL
+    print("This table cannot be produced based on the available data.")
+    }
+}
+```
+
+<br>
+
+```{r tab12_records_graph, echo=FALSE, warning=FALSE}
+if(!is.null(tab12)){
+tab12_graph<-tab12[,.(meaning,year,atc_code_4,no_records,no_male_users, no_female_users, median_rx_male_users, median_rx_female_users)]
+tab12_graph<-tab12_graph[no_records=="<5",no_records:=0.9]
+tab12_graph<-tab12_graph[no_male_users=="<5",no_male_users:=0.9]
+tab12_graph<-tab12_graph[no_female_users=="<5",no_female_users:=0.9]
+}
+
+if(!is.null(tab12_graph)){
+if (tab12_graph[,.N] != 0){
+  tab12_graph<-tab12_graph[,no_records:=as.numeric(no_records)]
+ggplotly(ggplot(tab12_graph[meaning!="All"], aes(x = year, y = no_records, group=atc_code_4)) +
+                           geom_line(aes(color=atc_code_4)) +
+                           geom_point(aes(color=atc_code_4)) + 
+                            facet_wrap(~ meaning, ncol=2, scales = "fixed") +
+                               ggtitle("Number of records by ATC code, year and meaning") + 
+                               xlab("Year") +
+                               ylab("Count")+
+                             theme_classic() +
+                             guides(shape = guide_legend(override.aes = list(size = 0.3))) +
+                               theme(text=element_text(size=10),
+                                 axis.text.x = element_text(angle = 90, hjust = 1),
+                                     axis.title.x = element_text(colour = "#76b82a"),
+                                     axis.title.y = element_text(colour = "#76b82a"),
+                                     plot.title = element_text(colour = "#76b82a"),
+                                     strip.text.y = element_text(angle = 0),
+                                     legend.title = element_text(size = 7), 
+               legend.text = element_text(size = 7))) 
+                                     
+}
+}
+```
+
+<br>
+
+```{r tab12_users_graph, echo=FALSE, warning=FALSE}
+
+if(!is.null(tab12_graph)){
+tab12_graph_users<-tab12_graph[meaning!="All",.(meaning,year,atc_code_4,no_male_users,no_female_users)]
+tab12_graph_users<-melt(tab12_graph_users, id.vars = c("meaning", "year","atc_code_4"), variable.name = "sex")
+setnames(tab12_graph_users, "value", "count")
+tab12_graph_users<-tab12_graph_users[,count:=as.numeric(count)]
+tab12_graph_users<-tab12_graph_users[sex=="no_male_users", sex:="Male"][sex=="no_female_users", sex:="Female"]
+fig.tab12_users<-vector(mode="list", length=length(unique(tab12_graph_users[,meaning])))
+for(i in 1:length(unique(tab12_graph_users[,meaning]))) {
+fig.tab12_users[[i]]<-ggplotly(ggplot(tab12_graph_users[meaning==unique(tab12_graph_users[,meaning])[i]], aes(x = year, y = count, group=atc_code_4)) +
+                           geom_line(aes(color=atc_code_4)) +
+                           geom_point(aes(color=atc_code_4)) + 
+                            facet_wrap(~ sex, ncol=2, scales = "fixed") +
+                               ggtitle(paste0("Number of subjects by ATC code, year and meaning:", unique(tab12_graph_users[,meaning])[i])) + 
+                               xlab("Year") +
+                               ylab("Count")+
+                             theme_classic() +
+                             guides(shape = guide_legend(override.aes = list(size = 0.3))) +
+                               theme(text=element_text(size=10),
+                                 axis.text.x = element_text(angle = 90, hjust = 1),
+                                     axis.title.x = element_text(colour = "#76b82a"),
+                                     axis.title.y = element_text(colour = "#76b82a"),
+                                     plot.title = element_text(colour = "#76b82a"),
+                                     strip.text.y = element_text(angle = 0),
+                                     legend.title = element_text(size = 7), 
+               legend.text = element_text(size = 7))) 
+                                     
+}
+
+#Move the x axis title down so it doesn't overlap with the labels
+for (i in 1: length(fig.tab12_users)){
+fig.tab12_users[[i]][['x']][['layout']][['annotations']][[1]][['y']] <--0.15
+}
+}
+
+
+```
+
+```{r display_tab12_users_graph, echo=FALSE}
+if(!is.null(tab12_graph)){
+htmltools::tagList(list(fig.tab12_users))
+}
+```
+
+<br>
+
+```{r tab12_median_graph, echo=FALSE, warning=FALSE}
+
+if(!is.null(tab12_graph)){
+tab12_graph_median<-tab12_graph[meaning!="All",.(meaning,year,atc_code_4,median_rx_male_users,median_rx_female_users)]
+tab12_graph_median<-melt(tab12_graph_median, id.vars = c("meaning", "year","atc_code_4"), variable.name = "sex")
+setnames(tab12_graph_median, "value", "median_prescriptions")
+tab12_graph_median<-tab12_graph_median[,median_prescriptions:=as.numeric(median_prescriptions)]
+tab12_graph_median<-tab12_graph_median[sex=="median_rx_male_users", sex:="Male"][sex=="median_rx_female_users", sex:="Female"]
+fig.tab12_median<-vector(mode="list", length=length(unique(tab12_graph_median[,meaning])))
+for(i in 1:length(unique(tab12_graph_median[,meaning]))) {
+fig.tab12_median[[i]]<-ggplotly(ggplot(tab12_graph_median[meaning==unique(tab12_graph_median[,meaning])[i]], aes(x = year, y = median_prescriptions, group=atc_code_4)) +
+                           geom_line(aes(color=atc_code_4)) +
+                           geom_point(aes(color=atc_code_4)) + 
+                            facet_wrap(~ sex, ncol=2, scales = "fixed") +
+                               ggtitle(paste0("Median number of prescriptions by ATC code, year and meaning:",unique(tab12_graph_median[,meaning])[i])) + 
+                               xlab("Year") +
+                               ylab("Count")+
+                             theme_classic() +
+                             guides(shape = guide_legend(override.aes = list(size = 0.3))) +
+                               theme(text=element_text(size=10),
+                                 axis.text.x = element_text(angle = 90, hjust = 1),
+                                     axis.title.x = element_text(colour = "#76b82a"),
+                                     axis.title.y = element_text(colour = "#76b82a"),
+                                     plot.title = element_text(colour = "#76b82a"),
+                                     strip.text.y = element_text(angle = 0),
+                                     legend.title = element_text(size = 7), 
+               legend.text = element_text(size = 7))) 
+                                     
+}
+
+#Move the x axis title down so it doesn't overlap with the labels
+for (i in 1: length(fig.tab12_median)){
+fig.tab12_median[[i]][['x']][['layout']][['annotations']][[1]][['y']] <--0.15
+}
+}
+
+
+```
+
+```{r display_tab12_median_graph, echo=FALSE}
+if(!is.null(tab12_graph)){
+htmltools::tagList(list(fig.tab12_median))
+}
+```
+
+<br>
+
+#### Number of records and users by ATC code, year and meaning
+
+```{r counts_atc_7_my, echo=F}
+if (subpopulations_present=="No"){
+  if(sum(grepl(list.files(paste0(med_dir,"Masked/")), pattern="medicines_my_atc_7_masked.csv"))>0){
+tab13<-fread(paste0(med_dir,"Masked/", "medicines_my_atc_7_masked.csv"))
+setcolorder(tab13,c("atc_code_7", "no_records", "no_male_users", "median_rx_male_users", "no_female_users", "median_rx_female_users","meaning", "year", "atc_code_3", "data_access_provider", "data_source"))
+
+if(tab13[,.N]>0){
+  datatable(tab13, options = list(scrollX=T))
+} else {
+    print("This table cannot be produced based on the available data.")
+}
+  } else {
+    print("This table cannot be produced based on the available data.")
+}
+} else {
+    if(sum(grepl(list.files(paste0(med_dir,subpopulations_names[a], "/Masked/")), pattern="medicines_my_atc_7_masked.csv"))>0){
+  tab13<-fread(paste0(med_dir,subpopulations_names[a], "/Masked/", subpopulations_names[a],"_medicines_my_atc_7_masked.csv"))
+  if(tab13[,.N]>0){
+  setcolorder(tab13,c("atc_code_7", "no_records", "no_male_users", "median_rx_male_users", "no_female_users", "median_rx_female_users","meaning", "year", "atc_code_3", "data_access_provider", "data_source"))
+datatable(tab13, options = list(scrollX=T))
+  } else {
+    print("This table cannot be produced based on the available data.")
+}
+    } else {
+    print("This table cannot be produced based on the available data.")
+    }
+}
+```
+
+</div>
+
+<br>
+
+<div class = 'box5'>
+
+## 4. Counts in females of childbearing age (12-55 years old)
+
+#### Number of records by ATC code, meaning, year and age at start follow up 
+
+```{r counts_atc_1_f_my, echo=F}
+if (subpopulations_present=="No"){
+  if(sum(grepl(list.files(paste0(med_dir,"Masked/")), pattern="medicines_my_atc_1_f_masked.csv"))>0){
+tab11<-fread(paste0(med_dir,"Masked/", "medicines_my_atc_1_f_masked.csv"))
+if(tab11[,.N]>0){
+  setcolorder(tab11,c("atc_code_1", "count", "meaning", "year", "data_access_provider", "data_source"))
+datatable(tab11, options = list(scrollX=T))
+} else {
+    print("This table cannot be produced based on the available data.")
+}
+  } else {
+    print("This table cannot be produced based on the available data.")
+}
+} else {
+    if(sum(grepl(list.files(paste0(med_dir,subpopulations_names[a], "/Masked/")), pattern="medicines_my_atc_1_f_masked.csv"))>0){
+  tab11<-fread(paste0(med_dir,subpopulations_names[a], "/Masked/", subpopulations_names[a],"_medicines_my_atc_1_f_masked.csv"))
+  if(tab11[,.N]>0){
+    setcolorder(tab11,c("atc_code_1", "count", "meaning", "year", "data_access_provider", "data_source"))
+datatable(tab11, options = list(scrollX=T))
+  } else {
+    print("This table cannot be produced based on the available data.")
+}
+    } else {
+   print("This table cannot be produced based on the available data.")
+    }
+}
+```
+
+<br>
+
+```{r tab11_graph, echo=FALSE, warning=FALSE}
+if(!is.null(tab11)){
+tab11_graph<-tab11[count=="<5", count:= 0.9]
+tab11_graph<-tab11_graph[,count:=as.numeric(count)]
+tab11_graph<-tab11_graph[is.na(atc_code_1),atc_code_1:="All"]
+} else {
+ tab11_graph<-NULL 
+}
+
+if(!is.null(tab11_graph)){
+if (tab11_graph[,.N] != 0){
+ggplotly(ggplot(tab11_graph, aes(x = year, y = count, group=atc_code_1)) +
+                           geom_line(aes(color=atc_code_1)) +
+                           geom_point(aes(color=atc_code_1)) + 
+                            facet_wrap(~ meaning, ncol=2, scales = "fixed") +
+                               ggtitle("Number of records by ATC code, year and meaning") + 
+                               xlab("Year") +
+                               ylab("Count")+
+                             theme_classic() +
+                             guides(shape = guide_legend(override.aes = list(size = 0.3))) +
+                               theme(text=element_text(size=10),
+                                 axis.text.x = element_text(angle = 90, hjust = 1),
+                                     axis.title.x = element_text(colour = "#76b82a"),
+                                     axis.title.y = element_text(colour = "#76b82a"),
+                                     plot.title = element_text(colour = "#76b82a"),
+                                     strip.text.y = element_text(angle = 0),
+                                     legend.title = element_text(size = 7), 
+               legend.text = element_text(size = 7))) 
+                                     
+}
+}
+```
+
+
+<br>
+
+#### Number of records by ATC code, meaning, year and age at start follow up
+
+```{r counts_atc_7_f_my, echo=F}
+if (subpopulations_present=="No"){
+  if(sum(grepl(list.files(paste0(med_dir,"Masked/")), pattern="medicines_my_atc_7_f_masked.csv"))>0){
+tab14<-fread(paste0(med_dir,"Masked/", "medicines_my_atc_7_f_masked.csv"))
+if (tab14[,.N]>0){
+  setcolorder(tab14,c("atc_code_7", "no_records", "no_female_users", "median_rx_female_users","meaning", "year", "atc_code_3", "data_access_provider", "data_source"))
+datatable(tab14, options = list(scrollX=T))
+} else {
+    print("This table cannot be produced based on the available data.")
+}
+  } else {
+    print("This table cannot be produced based on the available data.")
+}
+} else {
+    if(sum(grepl(list.files(paste0(med_dir,subpopulations_names[a], "/Masked/")), pattern="medicines_my_atc_7_f_masked.csv"))>0){
+  tab14<-fread(paste0(med_dir,subpopulations_names[a], "/Masked/", subpopulations_names[a],"_medicines_my_atc_7_f_masked.csv"))
+  if(tab14[,.N]>0){
+    setcolorder(tab14,c("atc_code_7", "no_records", "no_female_users", "median_rx_female_users","meaning", "year", "atc_code_3", "data_access_provider", "data_source"))
+datatable(tab14, options = list(scrollX=T))
+  } else {
+    print("This table cannot be produced based on the available data.")
+}
+    } else {
+    print("This table cannot be produced based on the available data.")
+    }
+}
+```
+
+<br>
+
+</div>
+
+<div class = 'box6'>
+
+## 5. Rates of medicine use
+
+#### Rates of medicines exposure in females of childbearing age (12-55 years old) by year and ATC code
+
+```{r rates_year, echo=F}
+if (subpopulations_present=="No"){
+  if(sum(grepl(list.files(paste0(med_dir,"Masked/")), pattern="medicines_rates_year_atc_masked.csv"))>0){
+tab15<-fread(paste0(med_dir,"Masked/", "medicines_rates_year_atc_masked.csv"))
+if (tab15[,.N]>0){
+datatable(tab15, options = list(scrollX=T))
+} else {
+    print("This table cannot be produced based on the available data.")
+}
+  } else {
+    print("This table cannot be produced based on the available data.")
+}
+} else {
+    if(sum(grepl(list.files(paste0(med_dir,subpopulations_names[a], "/Masked/")), pattern="medicines_rates_year_atc_masked.csv"))>0){
+  tab15<-fread(paste0(med_dir,subpopulations_names[a], "/Masked/", subpopulations_names[a],"_medicines_rates_year_atc_masked.csv"))
+  if (tab15[,.N]>0){
+datatable(tab15, options = list(scrollX=T))
+  } else {
+      print("This table cannot be produced based on the available data.")
+  }
+    } else {
+    print("This table cannot be produced based on the available data.")
+    }
+}
+```
+
+<br>
+
+#### Rates of medicines exposure in females of childbearing age (12-55 years old) by year, age and ATC code
+
+```{r rates_year_age, echo=F}
+if (subpopulations_present=="No"){
+  if(sum(grepl(list.files(paste0(med_dir,"Masked/")), pattern="medicines_rates_year_age_atc_masked.csv"))>0){
+tab16<-fread(paste0(med_dir,"Masked/", "medicines_rates_year_age_atc_masked.csv"))
+if (tab16[,.N]>0){
+datatable(tab16, options = list(scrollX=T))
+} else {
+    print("This table cannot be produced based on the available data.")
+}
+  } else {
+    print("This table cannot be produced based on the available data.")
+}
+} else {
+    if(sum(grepl(list.files(paste0(med_dir,subpopulations_names[a], "/Masked/")), pattern="medicines_rates_by_year_age_atc_masked.csv"))>0){
+  tab16<-fread(paste0(med_dir,subpopulations_names[a], "/Masked/", subpopulations_names[a],"_medicines_rates_year_age_atc_masked.csv"))
+  if (tab16[,.N]>0){
+datatable(tab16, options = list(scrollX=T))
+  } else {
+      print("This table cannot be produced based on the available data.")
+  }
+    } else {
+    print("This table cannot be produced based on the available data.")
+    }
+}
+```
+
+</div>
+
+<div class = 'box7'>
+
+## 6. Data completeness
+
+#### Number of records with incomplete data
+
+```{r completeness, echo=F}
+if (subpopulations_present=="No"){
+  if(sum(grepl(list.files(paste0(med_dir,"Masked/")), pattern="medicines_completeness_masked.csv"))>0){
+tab15<-fread(paste0(med_dir,"Masked/", "medicines_completeness_masked.csv"))
+if (tab15[,.N]>0){
+datatable(tab15, options = list(scrollX=T))
+} else {
+    print("This table cannot be produced based on the available data.")
+}
+  } else {
+    print("This table cannot be produced based on the available data.")
+}
+} else {
+    if(sum(grepl(list.files(paste0(med_dir,subpopulations_names[a], "/Masked/")), pattern="medicines_completeness_masked.csv"))>0){
+  tab15<-fread(paste0(med_dir,subpopulations_names[a], "/Masked/", subpopulations_names[a],"_medicines_completeness_masked.csv"))
+  if (tab15[,.N]>0){
+datatable(tab15, options = list(scrollX=T))
+  } else {
+      print("This table cannot be produced based on the available data.")
+  }
+    } else {
+    print("This table cannot be produced based on the available data.")
+    }
+}
+```
+
+</div>
+
+<br>
+
+<div class = 'box8'>
+
+**Author:** Vjola Hoxhaj Drs.   
+**email:** v.hoxhaj@umcutrecht.nl   
+**Organisation:** UMC Utrecht, Utrecht, The Netherlands   
+
+</div>

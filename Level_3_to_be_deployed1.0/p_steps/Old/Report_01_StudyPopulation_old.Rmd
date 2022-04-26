@@ -1,0 +1,801 @@
+---
+title: "Level 3"
+author: "Roel Elbers"
+date: "5/24/2021"
+output: html_document
+---
+
+```{css,  echo = F}
+/*-- Specify div's for 'boxes', change color of TOC and center align titles: --*/
+div.box1 {background-color: #f5f5f0; border-radius: 5px; padding: 30px; margin-right: 0px}
+div.box2 {border-style: solid; border-color: #f5f5f0; border-width: medium; border-radius: 30px; padding: 5px; margin-right: 0px}
+div.box3 {border-style: solid; border-color: #f5f5f0; border-width: medium; border-radius: 30px; padding: 5px; margin-right: 0px}
+div.box4 {border-style: solid; border-color: #f5f5f0; border-width: medium; border-radius: 30px; padding: 5px; margin-right: 0px}
+div.box5 {border-style: solid; border-color: #f5f5f0; border-width: medium; border-radius: 30px; padding: 5px; margin-right: 0px}
+div.box6 {border-style: solid; border-color: #f5f5f0; border-width: medium; border-radius: 30px; padding: 5px; margin-right: 0px}
+div.box7 {border-style: solid; border-color: #f5f5f0; border-width: medium; border-radius: 30px; padding: 5px; margin-right: 0px}
+div.box8 {border-style: solid; border-color: #f5f5f0; border-width: medium; border-radius: 30px; padding: 5px; margin-right: 0px}
+
+.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {background-color: #76b82a; border-color: #76b82a}
+h1 {text-align: center; color: #3c7b8a}
+h2 {text-align: center; color: #76b82a}
+
+/*-- Add logo (based on https://rstudio4edu.github.io/rstudio4edu-book/rmd-fancy.html): --*/
+#TOC::before {content: ""; display: block; height: 60px; margin: 15px 10px 15px; background-image: url("conception_logo.png"); background-size: contain; background-position: center center; background-repeat: no-repeat}
+```
+
+<div class = 'box1'>
+
+Level 3: Studypopulation  
+
+<br> 
+
+Add short explantion
+
+</div>
+
+<br>
+
+<div class = 'box2'>
+
+## 1. Population tree input source population ALL at start study (age < 0 deleted)
+
+```{r echo=F,fig.width=8,fig.height=5}
+
+TEMP <- readRDS(paste0(std_source_pop_dir,"R_01_01_POPTREE.rds")) 
+
+datatable(t(TEMP), options = list(scrollX=T))
+
+
+POP_TREE(
+  m = TEMP, 
+  xlabel = 'Percentage', 
+  offset = 2, 
+  linewidth = 15, 
+  cols = c('pink', 'lightblue'), 
+  x.axis.steps = 2, 
+  cex.percentage = 0.7
+  )
+
+rm(TEMP)
+
+
+
+```
+
+
+## 2. Compare Source versus Study population 
+
+```{r echo=F,  fig.show="hold", out.width="50%"}
+
+#TEMP <- readRDS(paste0(thisdir,"/g_output/output2/",i,"_R_01_01_CompareToSource.rds"))  
+
+TEMP <- fread(paste0(std_source_pop_dir,i,"_R_01_02_CompareToSource.csv"), sep = ";")[, Order := NULL]
+
+datatable(TEMP, 
+          
+            rownames = F,
+            escape = 1
+          )
+
+```
+
+### Persontime per year op_start_date and ageband at op_start_date
+
+
+```{r echo=F}
+TEMP <- fread(paste0(std_source_pop_dir,i,"_R_01_02_CompareToSource.csv"), sep = ";") 
+colnames(TEMP) <- c("year","Ageband","Order","NbSource","PYSource","SpellsSource","NbStudy","PYStudy","SpellsStudy")
+TEMP <- TEMP[year != 9999,]
+setorder(TEMP,Order)
+years <- c(min(TEMP[,year]):max(TEMP[,year]))
+stack <- unique(TEMP[["Ageband"]]) 
+colors <- c(2:(length(years)+1))
+
+
+```
+
+
+### Absolute
+
+```{r echo=F,figures-side,  fig.show="hold", out.width="50%"}
+
+TEMP1 <- INPUTMATRIX(
+  d = TEMP,
+  value = "PYSource",
+  type = "none",
+  var = "year",
+  var.v= years,
+  cat = "Ageband" ,
+  cat.v = stack , 
+  per = F,
+  perdir = "col"
+  
+  )
+
+
+barplot(TEMP1,main = "Source",ylim = c(0,max(TEMP[["PYSource"]])+(0.1*max(TEMP[["PYSource"]]))),xlab = "Year op_start_date", ylab = "Personyears"  , col = colors)
+#legend("right",title = "Agebands",legend =  rownames(TEMP1), col = c(2:(length(years)+1)), cex = 0.4,pch=10, box.col = "white")
+
+rm(TEMP1)
+
+TEMP2 <- INPUTMATRIX(
+  d = TEMP,
+  value = "PYStudy",
+  type = "none",
+  var = "year",
+  var.v= years,
+  cat = "Ageband" ,
+  cat.v = stack , 
+  per = F,
+  perdir = "col"
+  
+  )
+
+ 
+
+barplot(TEMP2,main = "Study",ylim = c(0,max(TEMP[["PYSource"]])+(0.1*max(TEMP[["PYSource"]]))),xlab = "Year op_start_date", ylab = "Personyears"  , col = colors)
+#legend("right",title = "Agebands",legend =  rownames(TEMP2), col = c(2:(length(years)+1)), cex = 0.5,pch=10, box.col = "white",inset = c(-0.05,0))
+
+rm(TEMP2)
+
+
+
+```
+
+### Relative 
+```{r echo=F,  fig.show="hold", out.width="50%"}
+
+TEMP1 <- INPUTMATRIX(
+  d = TEMP,
+  value = "PYSource",
+  type = "none",
+  var = "year",
+  var.v= years,
+  cat = "Ageband" ,
+  cat.v = stack , 
+  per = T,
+  perdir = "col"
+  
+  )
+
+ 
+
+barplot(TEMP1,main = "Source",xlab = "Year op_start_date", ylab = "%"  , col = colors)
+#legend("right",title = "Agebands",legend =  rownames(TEMP1), col = c(2:(length(years)+1)), cex = 0.4,pch=10, box.col = "white")
+
+rm(TEMP1)
+
+TEMP2 <- INPUTMATRIX(
+  d = TEMP,
+  value = "PYStudy",
+  type = "none",
+  var = "year",
+  var.v= years,
+  cat = "Ageband" ,
+  cat.v = stack , 
+  per = T,
+  perdir = "col"
+  
+  )
+
+ 
+
+barplot(TEMP2, main = "Study",xlab = "Year op_start_date", ylab = "%"  , col = colors)
+#legend("right",title = "Agebands",legend =  rownames(TEMP2), col = c(2:(length(years)+1)), cex = 0.4,pch=10, box.col = "white")
+
+
+
+
+rm(TEMP2)
+
+
+
+```
+
+### Decline
+```{r echo=F,  fig.show="hold", out.width="50%"}
+
+COUNT2 <- TEMP[,.(year,Order,Ageband,PYSource,PYStudy)][is.na(PYStudy), PYStudy := 0][,diff_per := ((PYStudy - PYSource)/PYSource)*-1][,diff_abs := (PYStudy - PYSource)*-100][Ageband != "9999",][PYSource > PYStudy,]
+setorderv(COUNT2,c("Order"))
+
+TEMP2 <- INPUTMATRIX(
+  d = COUNT2,
+  value = "diff_per",
+  type = "none",
+  var = "year",
+  var.v = years,
+  cat = "Ageband",
+  cat.v = stack,
+  per = F
+)
+
+par(mar = c(3.5,3.5,1,0),mgp = c(2.5,1,0), oma = c(1,1,1,1), xpd = T)
+Line_plot2(MATRIX =  TEMP2,title = "Relative decline",x.l = "Year", y.l =  "Percentage of lost PY", color = colors, leg = F)
+
+rm(TEMP2)
+
+TEMP3 <- INPUTMATRIX(
+  d = COUNT2,
+  value = "diff_abs",
+  type = "none",
+  var = "year",
+  var.v = years,
+  cat = "Ageband",
+  cat.v = stack,
+  per = F
+)
+
+
+par(mar = c(3.5,3.5,1,0),mgp = c(2.5,1,0), oma = c(1,1,1,1), xpd = T)
+Line_plot2(MATRIX =  TEMP3,title = "Absolute decline",x.l = "Year", y.l =  "Lost PY",color = colors,leg = F)
+
+rm(COUNT2,TEMP3)
+
+
+
+
+```
+```{r echo=F,fig.width=8,fig.height=3}
+plot.new()
+legend("top",horiz = T,title = "Agebands",legend =  unique(TEMP[["Ageband"]]), col = colors, cex = 0.7,pch=10, box.col = "white")
+rm(TEMP,years,colors,stack)
+
+
+
+```
+
+
+
+## 3. Number of persons and follow up time by age at start follow up and year of start follow up
+
+```{r echo=F}
+
+#TEMP <- readRDS(paste0(thisdir,"/g_intermediate/STUDYPOP_DIS_ALL.rds")) 
+
+TEMP <- fread(paste0(std_source_pop_dir,i,"_R_01_03_STUDYPOP.csv"), sep = ";") 
+
+datatable(TEMP, 
+          #options = 
+            
+            #list(
+            #list(pageLength = 5),
+            #scrollX=T,
+            #autoWidth = T,
+            #colReorder = F,
+            #columnDefs = list(
+            #  list(width = '20px', targets = c(0:ncol(TEMP)-1)),
+            #  list(className = "dt-center", targets = "_all")
+            #  
+            #  )
+            #),
+            rownames = F,
+            escape = 1
+          )
+
+
+
+
+
+rm(TEMP)
+
+
+
+
+```
+
+```{r echo=F,  fig.show="hold", out.width="50%"}
+
+
+TEMP <- fread(paste0(std_source_pop_dir,i,"_R_01_03_STUDYPOP.csv"), sep = ";")[Ageband != "Total",]
+
+
+
+TEMP1 <- INPUTMATRIX(
+  
+  d = TEMP,
+  value = "Mean Male",
+  type = "none",
+  var = "Year",
+  var.v = c(min(TEMP[["Year"]]):max(TEMP[["Year"]])),
+  cat = "Ageband",
+  cat.v = unique(TEMP[["Ageband"]]),
+  per = F
+  
+  
+)
+
+par(mar = c(3.5,3.5,1,4),mgp = c(2.5,1,0), oma = c(1,1,1,1), xpd = T)
+Line_plot2(
+  
+  MATRIX = TEMP1,
+  title = "Male",
+  x.l = "Year op_start_date",
+  y.l = "Mean follow up in person years ",
+  leg = F
+  
+)
+
+TEMP2 <- INPUTMATRIX(
+  
+  d = TEMP,
+  value = "Mean Female",
+  type = "none",
+  var = "Year",
+  var.v = c(min(TEMP[["Year"]]):max(TEMP[["Year"]])),
+  cat = "Ageband",
+  cat.v = unique(TEMP[["Ageband"]]),
+  per = F
+  
+  
+)
+
+par(mar = c(3.5,3.5,1,4),mgp = c(2.5,1,0), oma = c(1,1,1,1), xpd = T)
+Line_plot2(
+  
+  MATRIX = TEMP2,
+  title = "Female",
+  x.l = "Year op_start_date",
+  y.l = "Mean follow up in person years ",
+  leg = T
+  
+)
+
+rm(TEMP,TEMP1,TEMP2)
+
+
+```
+
+
+
+## 4. Persontime distribution by age, sex and calendar year (CountPersonTime)
+
+```{r echo=F}
+
+TEMP <- fread(paste0(std_source_pop_dir,i,"_R_01_04_STUDYPOPPY.csv"), sep = ";") 
+#TEMP <- readRDS(paste0(thisdir,"/g_intermediate/STUDYPOP_PY_ALL.rds")) 
+
+
+datatable(TEMP, options = list(scrollX=T))
+rm(TEMP)
+
+
+
+
+```
+
+```{r echo=F,fig.show="hold",out.width="50%"}
+
+
+TEMP <- fread(paste0(std_source_pop_dir,i,"_R_01_04_STUDYPOPPY.csv"), sep = ";")[Ageband != "Total",]
+
+TEMP1 <- INPUTMATRIX(
+  d = TEMP,
+  value = "PY Male",
+  type = "none",
+  var = "Year",
+  var.v= c(min(TEMP[,Year]):max(TEMP[,Year])),
+  cat = "Ageband" ,
+  cat.v = unique(TEMP[,Ageband]) , 
+  per = F,
+  perdir = "col"
+  
+)
+
+
+TEMP2 <- INPUTMATRIX(
+  d = TEMP,
+  value = "PY Female",
+  type = "none",
+  var = "Year",
+  var.v= c(min(TEMP[,Year]):max(TEMP[,Year])),
+  cat = "Ageband" ,
+  cat.v = unique(TEMP[,Ageband]) , 
+  per = F,
+  perdir = "col"
+  
+)
+
+par(mar=c(5, 4, 4, 4), xpd=TRUE)
+barplot(TEMP1,main = "Male",xlab = "Year", ylab = "Personyears"  , col = c(2:(length(unique(TEMP[,Ageband]))+1)))
+barplot(TEMP2,main = "Female",xlab = "Year", ylab = "Personyears"  , col = c(2:(length(unique(TEMP[,Ageband]))+1)))
+
+legend("right",inset = c(-0.1,1, 0),title = "Agebands",legend =  unique(TEMP[,Ageband]), col = c(2:(length(unique(TEMP[,Ageband]))+1)), cex = 0.4,pch=10, box.col = "white")
+
+
+
+rm(TEMP,TEMP1,TEMP2)
+
+
+```
+
+## 5. Persontime by Year Month (CountPersonTime)
+
+```{r echo=F}
+
+TEMP <- fread(paste0(std_source_pop_dir,i,"_R_01_05_STUDYPOPPY2.csv"), sep = ";") 
+#TEMP <- readRDS(paste0(thisdir,"/g_intermediate/STUDYPOP_PY2_ALL.rds")) 
+
+datatable(TEMP, options = list(scrollX=T))
+rm(TEMP)
+
+
+
+
+```
+
+```{r echo=F,fig.width=8,fig.height=5}
+
+
+TEMP <- fread(paste0(std_source_pop_dir,i,"_R_01_05_STUDYPOPPY2.csv"))
+
+TEMP <- TEMP[, ':=' (Year = as.numeric(Year), Month = as.numeric(Month)) ]
+setorderv(TEMP,c("Year","Month"))
+TEMP <- TEMP[, X := paste0(Year," - ",Month)  ]
+TEMP1 <- melt(TEMP,id.vars = "X", measure.vars = c("PY Male","PY Female"),variable.name = "Gender",value.name = "PY")[,":=" (X = as.character(X), Gender = as.character(Gender),PY = as.numeric(PY))]
+
+
+TEMP1 <- INPUTMATRIX(
+  
+  d = TEMP1,
+  value = "PY",
+  type = "none",
+  var = "X",
+  var.v = paste0(sort(rep(min(TEMP[["Year"]]):max(TEMP[["Year"]]),12))," - ", rep(1:12,max(TEMP[["Year"]])-min(TEMP[["Year"]]))),
+  cat = "Gender",
+  cat.v = c("PY Male","PY Female"),
+  per = F
+  
+  
+)
+
+par(mar = c(4,4,1,4),mgp = c(3,1,0), oma = c(1,1,1,1), xpd = T)
+
+
+
+Line_plot2(
+  
+  MATRIX = TEMP1,
+  title = "",
+  x.l = "Year",
+  y.l = "PY",
+  col = c("blue","red"),
+  y.axis = T,
+  y.labels = substr(colnames(TEMP1)[substr(colnames(TEMP1),8,10) == "1"],1,4),
+  y.thicks = c(1:length(colnames(TEMP1)))[substr(colnames(TEMP1),8,10) == "1"]
+  
+  
+)
+
+
+
+rm(TEMP,TEMP1)
+
+
+```
+
+## 6. Distribution of start_follow_up  by year and month
+
+```{r echo=F,fig.width=8,fig.height=5}
+
+
+
+    TEMP <- fread(paste0(std_source_pop_dir,i,"_R_01_0608_DT_start_follow_up.csv"), sep = ";")
+    
+    datatable(TEMP, options = list(scrollX=T),rownames = F)
+    
+    
+    rm(TEMP)
+
+    TEMP <- readRDS(paste0(std_source_pop_dir,i,"_R_01_0608_DT_start_follow_up_PLOT.rds"))
+    
+    par(mar = c(3,3,1,4),mgp = c(2,1,0), oma = c(1,1,1,1), xpd = T)
+    
+    Line_plot2(
+  
+    MATRIX = TEMP,
+    title = "",
+    x.l = "Month",
+    y.l = "Count"
+    
+    )
+    
+    rm(TEMP)
+
+
+```
+
+## 7. Distribution of end_follow_up by year and month
+
+```{r echo=F}
+
+
+    TEMP <- fread(paste0(std_source_pop_dir,i,"_R_01_0608_DT_end_follow_up.csv"), sep = ";")
+    
+    datatable(TEMP, options = list(scrollX=T),rownames = F)
+    
+    
+    rm(TEMP)
+    
+    TEMP <- readRDS(paste0(std_source_pop_dir,i,"_R_01_0608_DT_end_follow_up_PLOT.rds"))
+    
+    par(mar = c(3,3,1,4),mgp = c(2,1,0), oma = c(1,1,1,1), xpd = T)
+    
+    Line_plot2(
+  
+    MATRIX = TEMP,
+    title = "",
+    x.l = "Month",
+    y.l = "Count"
+    
+    )
+    
+    rm(TEMP)
+
+
+
+
+
+```
+
+
+## 8. Distribution of birth date by year and month
+
+```{r echo=F}
+
+
+
+    TEMP <- fread(paste0(std_source_pop_dir,i,"_R_01_0608_DT_birth_date.csv"), sep = ";")
+    
+    datatable(TEMP, options = list(scrollX=T),rownames = F)
+    
+    TEMP <- fread(paste0(std_source_pop_dir,i,"_R_01_0608_DT_birth_date.csv"), sep = ";")
+
+    TEMP <- melt(TEMP,id.vars = "year",variable.name = "month",value.name = "count")[,":=" (year = as.character(year),month = as.character(month),count = as.numeric(count))]
+    
+    
+    TEMP <- INPUTMATRIX(
+      
+      d = TEMP,
+      value = "count",
+      type = "none",
+      var = "month",
+      var.v = c(1:12),
+      cat = "year",
+      cat.v = c(min(TEMP[["year"]]):max(TEMP[["year"]])),
+      per = F
+      
+      
+    )
+    
+    
+    heatmap(TEMP,Rowv = NA, Colv = NA, xlab = "Month", ylab = "Year", scale = "none", distfun = dist(x, method = "euclidean")   )
+    
+    
+    
+        
+        
+    
+    rm(TEMP)
+
+
+    
+
+
+
+```
+
+## 9. Distribution of birth date by day month
+
+```{r echo=F}
+
+TEMP <- fread(paste0(std_source_pop_dir,i,"_R_01_09_DT_birth_date_day.csv"), sep = ";")  
+
+
+datatable(TEMP, options = list(scrollX=T), rownames = F)
+
+TEMP <- fread(paste0(std_source_pop_dir,i,"_R_01_09_DT_birth_date_day.csv"), sep = ";")
+
+TEMP <- melt(TEMP,id.vars = "day",variable.name = "month",value.name = "count")[,":=" (day = as.character(day),month = as.character(month),count = as.numeric(count))]
+
+TEMP <- INPUTMATRIX(
+  
+  d = TEMP,
+  value = "count",
+  type = "none",
+  var = "month",
+  var.v = c(1:12),
+  cat = "day",
+  cat.v = c(1:31),
+  per = F
+  
+  
+)
+
+
+heatmap(TEMP,Rowv = NA, Colv = NA, xlab = "Month", ylab = "Day", scale = "none", distfun = dist(x, method = "euclidean")   )
+
+
+
+rm(TEMP)
+
+
+
+
+
+
+```
+
+
+## 10. Duration for persons to be registered in the database after birth (weeks)
+
+```{R plot, fig.width=14,fig.height=5, echo = F}
+
+TEMP <- readRDS(paste0(std_source_pop_dir,i,"_R_01_10_InDatabaseAtAfterBirth.rds")) 
+
+
+
+datatable(TEMP, options = list(scrollX=T), rownames = F)
+
+par(mar = c(3,3,1,4),mgp = c(2,1,0), oma = c(1,1,1,1), xpd = T)
+Line_plot2(
+  MATRIX = TEMP,
+  title = "",
+  x.l = "Weeks",
+  y.l = "Count",
+  y.axis = T,
+  y.thicks = seq(from = 0, to = ncol(TEMP), by = 100),
+  y.labels = seq(from = 0, to = ncol(TEMP), by = 100),
+  y.las = 1,
+  
+  leg = F
+)
+
+
+rm(TEMP)
+
+
+
+
+```
+
+
+## 11. Median follow-up for persons that are registered in database within 2 weeks after birth by year of birth
+
+```{r echo=F}
+
+
+TEMP <- fread(paste0(std_source_pop_dir,i,"_R_01_11_InDatabaseDuration.csv"), sep = ";") 
+TEMP <- TEMP[get("Distance in months") == "Median",][,"Distance in months" := NULL][,"%" := NULL]
+setnames(TEMP,"No","Median distance in months")
+
+datatable(TEMP, options = list(scrollX=T), rownames = F)
+
+
+TEMP <- INPUTMATRIX(
+  
+  d = TEMP,
+  value = "Median distance in months",
+  type = "none",
+  var = "Year of birth",
+  var.v = c(min(TEMP[["Year of birth"]]):max(TEMP[["Year of birth"]])),
+  per = F
+  
+  
+)
+
+par(mar = c(3,3,1,4),mgp = c(2,1,0), oma = c(1,1,1,1), xpd = T)
+Line_plot2(
+  MATRIX = TEMP,
+  title = "",
+  x.l = "Year of birth",
+  y.l = "Median in months",
+  leg = F
+)
+
+
+rm(TEMP)
+
+
+
+
+```
+
+## 12. Number of visits in study population per year and age at the moment of the visit
+
+```{r echo=F}
+
+TEMP <- fread(paste0(std_source_pop_dir,i,"_R_01_12_VISITS.csv"), sep = ";") 
+
+
+
+datatable(TEMP, options = list(scrollX=T), rownames = F)
+
+
+
+rm(TEMP)
+
+
+
+
+```
+```{r echo=F,  fig.show="hold", out.width="50%"}
+
+TEMP <- fread(paste0(std_source_pop_dir,i,"_R_01_12_VISITS.csv"), sep = ";") 
+bands <- unique(TEMP[["Age"]])
+colors <- c(2:(length(bands)+1))
+
+for(k in unique(TEMP[["Visit meaning"]])){
+
+TEMP1 <- TEMP[get("Visit meaning") == k,]
+
+TEMP1 <- INPUTMATRIX(
+  
+  d = TEMP1,
+  value = "Visit rate, No. of visits/1000 PY",
+  type = "none",
+  var = "Calendar year",
+  var.v = c(min(TEMP[["Calendar year" ]]):max(TEMP[["Calendar year" ]])),
+  cat = "Age",
+  cat.v = bands,
+  per = F
+  
+  
+)
+
+par(mar = c(4,4,1,0),mgp = c(3,1,0), oma = c(1,1,1,1), xpd = T)
+
+
+
+Line_plot2(
+  
+  MATRIX = TEMP1,
+  title = k,
+  x.l = "Year",
+  y.l = "visits/1000 PY",
+  color = colors
+  
+  
+  
+
+)
+rm(TEMP1)
+
+}
+
+rm(TEMP)
+
+```
+
+```{r echo=F,fig.width=8,fig.height=3}
+plot.new()
+legend("top",horiz = T,title = "Agebands",legend =  bands, col = colors, cex = 0.7,pch=10, box.col = "white")
+#rm(TEMP,colors,bands)
+
+
+
+```
+
+
+
+
+
+
+## 13. Lifestyle facors in women of childbearing age 
+
+```{r echo=F}
+
+TEMP <- fread(paste0(std_source_pop_dir,i,"_R_01_13_LIFESTYLE.csv"), sep = ";")[, Order := NULL]
+
+
+
+datatable(TEMP, options = list(scrollX=T), rownames = F)
+
+
+
+rm(TEMP)
+
+
+
+
+```

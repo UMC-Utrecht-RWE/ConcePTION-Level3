@@ -1,0 +1,366 @@
+---
+title: "Level 3"
+author: "Vjola Hoxhaj"
+date: "5/24/2021"
+output: html_document
+---
+
+```{css,  echo = F}
+/*-- Specify div's for 'boxes', change color of TOC and center align titles: --*/
+div.box1 {background-color: #f5f5f0; border-radius: 5px; padding: 30px; margin-right: 0px}
+div.box2 {border-style: solid; border-color: #f5f5f0; border-width: medium; border-radius: 30px; padding: 5px; margin-right: 0px}
+div.box3 {border-style: solid; border-color: #f5f5f0; border-width: medium; border-radius: 30px; padding: 5px; margin-right: 0px}
+div.box4 {border-style: solid; border-color: #f5f5f0; border-width: medium; border-radius: 30px; padding: 5px; margin-right: 0px}
+div.box5 {border-style: solid; border-color: #f5f5f0; border-width: medium; border-radius: 30px; padding: 5px; margin-right: 0px}
+div.box6 {border-style: solid; border-color: #f5f5f0; border-width: medium; border-radius: 30px; padding: 5px; margin-right: 0px}
+div.box7 {border-style: solid; border-color: #f5f5f0; border-width: medium; border-radius: 30px; padding: 5px; margin-right: 0px}
+div.box8 {border-style: solid; border-color: #f5f5f0; border-width: medium; border-radius: 30px; padding: 5px; margin-right: 0px}
+
+.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {background-color: #76b82a; border-color: #76b82a}
+h1 {text-align: center; color: #3c7b8a}
+h2 {text-align: center; color: #76b82a}
+
+/*-- Add logo (based on https://rstudio4edu.github.io/rstudio4edu-book/rmd-fancy.html): --*/
+#TOC::before {content: ""; display: block; height: 60px; margin: 15px 10px 15px; background-image: url("conception_logo.png"); background-size: contain; background-position: center center; background-repeat: no-repeat}
+```
+
+<div class = 'box1'>
+
+Level 3: Studypopulation  
+
+<br> 
+
+Add short explantion
+
+</div>
+
+<br>
+
+<div class = 'box2'>
+
+## 1. Flowchart
+
+```{r echo=F}
+
+FlowChart_CreateSpells <- readRDS(paste0(thisdir,"/g_intermediate/FlowChart_CreateSpells.rds")) 
+FlowChart_Source_to_Study <- readRDS(file = paste0(thisdir,"/g_intermediate/FlowChart_Source_to_Study.rds"))
+FlowChart3 <- readRDS(file = paste0(thisdir,"/g_intermediate/FlowChart3.rds"))
+FLOWCHART <- rbind(as.data.table(t(as.data.table(FlowChart_CreateSpells)),keep.rownames = T)[,step := "SPELLS"],as.data.table(t(as.data.table(FlowChart_Source_to_Study)),keep.rownames = T)[,step := "SOURCE_TO_STUDY"],as.data.table(t(as.data.table(FlowChart3)),keep.rownames = T)[,step := "SOURCE_TO_STUDY2"])
+
+colnames(FLOWCHART) <- c("Action/Selection","Before","After","Step in flow")
+
+datatable(FLOWCHART, options = list(scrollX=T))
+rm(FlowChart_CreateSpells,FlowChart_Source_to_Study,FlowChart3,FLOWCHART)
+
+
+
+
+```
+
+</div>
+
+<br>
+
+<div class = 'box3'>
+
+## 2. Population Tree input source population at start study (age < 0 deleted)
+
+```{r echo=F,fig.width=8,fig.height=5}
+
+TEMP <- readRDS(paste0(thisdir,"/g_intermediate/POPTREE_INPUT_ALL.rds")) 
+
+datatable(t(TEMP), options = list(scrollX=T))
+
+
+POP_TREE(
+  m = TEMP, 
+  xlabel = 'Percentage', 
+  offset = 2, 
+  linewidth = 15, 
+  cols = c('pink', 'lightblue'), 
+  x.axis.steps = 2, 
+  cex.percentage = 0.7
+  )
+
+rm(TEMP)
+
+
+
+
+```
+
+
+## 3. Compare Source versus Study population 
+
+```{r echo=F}
+
+TEMP <- readRDS(paste0(thisdir,"/g_intermediate/CompareSourceStudy_ALL.rds")) 
+
+datatable(TEMP, 
+          
+            rownames = F,
+            escape = 1
+          )
+
+
+
+rm(TEMP)
+
+
+
+
+```
+
+
+
+## 3. Number of persons and follow up time by age at start follow up and year of start follwo up
+
+```{r echo=F}
+
+TEMP <- readRDS(paste0(thisdir,"/g_intermediate/STUDYPOP_DIS_ALL.rds")) 
+
+datatable(TEMP, 
+          #options = 
+            
+            #list(
+            #list(pageLength = 5),
+            #scrollX=T,
+            #autoWidth = T,
+            #colReorder = F,
+            #columnDefs = list(
+            #  list(width = '20px', targets = c(0:ncol(TEMP)-1)),
+            #  list(className = "dt-center", targets = "_all")
+            #  
+            #  )
+            #),
+            rownames = F,
+            escape = 1
+          )
+
+
+
+
+
+rm(TEMP)
+
+
+
+
+```
+
+## 4. Persontime distribution by age, sex and calander year (CountPersonTime)
+
+```{r echo=F}
+
+TEMP <- readRDS(paste0(thisdir,"/g_intermediate/STUDYPOP_PY_ALL.rds")) 
+
+datatable(TEMP, options = list(scrollX=T))
+rm(TEMP)
+
+
+
+
+```
+
+
+## 5. Persontime by Year Month (CountPersonTime)
+
+```{r echo=F}
+
+TEMP <- readRDS(paste0(thisdir,"/g_intermediate/STUDYPOP_PY2_ALL.rds")) 
+
+datatable(TEMP, options = list(scrollX=T))
+rm(TEMP)
+
+
+
+
+```
+
+## 6. Distribution of start follow up date by year and month
+
+```{r echo=F}
+
+TEMP <- readRDS(paste0(thisdir,"/g_intermediate/DT_start_follow_up_ALL.rds")) 
+
+datatable(TEMP, options = list(scrollX=T),rownames = F)
+
+
+rm(TEMP)
+
+
+
+
+```
+
+## 7. Distribution of end follow up date by year and month
+
+```{r echo=F}
+
+TEMP <- readRDS(paste0(thisdir,"/g_intermediate/DT_end_follow_up_ALL.rds")) 
+
+datatable(TEMP, options = list(scrollX=T), rownames = F)
+rm(TEMP)
+
+
+
+
+
+
+```
+
+
+```{r echo=F,figures-side,  fig.show="hold", out.width="50%"}
+
+
+
+
+Analyse_dates <- c("start_follow_up","end_follow_up")
+#par(mfrow=c(1,2))
+for(j in Analyse_dates){
+  
+  
+  TEMP <- readRDS(file = paste0(thisdir,"/g_intermediate/DT_",j,"_LONG_",i,".rds"))
+  
+  TEMP <- INPUTMATRIX(
+    
+    d = TEMP,
+    value = "count",
+    type = "none",
+    var = paste0(j,"_month"),
+    var.v = c(1:12),
+    cat = paste0(j,"_year"),
+    cat.v = c(min(TEMP[[paste0(j,"_year")]]):max(TEMP[[paste0(j,"_year")]])),
+    per = F
+    
+    
+  )
+  
+  heatmap(
+    t(TEMP),
+    Rowv = NA, 
+    Colv = NA, 
+    cexRow = 0.8, 
+    cexCol = 0.8,
+    main = j,
+    scale = "row"
+    
+    )
+  
+  #mtext(j,cex = 1, side = 3)
+  
+
+  library(robustbase)
+  tmp <- adjbox(TEMP)
+  #TEMP[TEMP %in% tmp$out]
+  print(paste0(length(tmp$group)," outlier(s) for ", j))
+  rm(tmp)
+  
+  rm(TEMP)
+  gc()
+  
+}
+
+
+
+
+
+
+```
+
+
+
+
+
+## 8. Distribution of birth date by year and month
+
+```{r echo=F}
+
+TEMP <- readRDS(paste0(thisdir,"/g_intermediate/DT_birth_date_ALL.rds")) 
+
+datatable(TEMP, options = list(scrollX=T), rownames = F)
+rm(TEMP)
+
+TEMP <- readRDS(paste0(thisdir,"/g_intermediate/DT_birth_date_LONG_ALL.rds")) 
+TEMP <- INPUTMATRIX(
+  
+  d = TEMP,
+  value = "count",
+  type = "none",
+  var = "birth_date_month",
+  var.v = c(1:12),
+  cat = "birth_date_year",
+  cat.v = c(min(TEMP[["birth_date_year"]]):max(TEMP[["birth_date_year"]])),
+  per = F
+  
+  
+)
+
+
+heatmap(TEMP,Rowv = NA, Colv = NA, xlab = "Month", ylab = "Year", scale = "row"  )
+
+rm(TEMP)
+
+```
+
+## 9. Distribution of birth date by day month
+
+```{r echo=F}
+
+TEMP <- readRDS(paste0(thisdir,"/g_intermediate/DT_birth_date_day_ALL.rds")) 
+
+datatable(TEMP, options = list(scrollX=T), rownames = F)
+rm(TEMP)
+
+
+
+
+```
+
+## 10. Weeks after birth that subject is in database
+
+```{R plot, fig.width=14,fig.height=5, echo = F}
+
+TEMP <- readRDS(paste0(thisdir,"/g_intermediate/InDatabaseAtAfterBirth_ALL.rds")) 
+
+datatable(TEMP, options = list(scrollX=T), rownames = F)
+
+
+#Line_plot2(
+#  MATRIX = TEMP,
+#  title = "",
+#  x.l = "Weeks",
+#  y.l = "Count",
+#  y.axis = seq(from = 0, to =length(TEMP), by = 50)
+#)
+#plot(test)
+
+rm(TEMP)
+
+
+
+
+```
+
+## 11. Months in database if included in database within 2 weeks after birth
+
+```{R echo = F}
+
+library(knitr)
+library(kableExtra)
+
+
+TEMP <- readRDS(paste0(thisdir,"/g_intermediate/InDatabaseDuration.rds")) 
+
+kable(TEMP,results='asis' ) %>% kable_styling(bootstrap_options = c("striped", "hover"),fixed_thead = TRUE,full_width =  T,font_size = 20) 
+#print(TEMP)
+#datatable(TEMP, options = list(scrollX=T), rownames = F)
+
+
+rm(TEMP)
+
+
+
+
+```
+

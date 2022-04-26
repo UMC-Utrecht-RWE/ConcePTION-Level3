@@ -1,0 +1,740 @@
+---
+title: "CONCEPTION - Level 3 checks: Diagnoses"
+output: 
+  html_document:
+    theme: spacelab
+    toc: true
+    toc_float: true
+    toc_depth: 3
+    output_dir: output_dir
+---
+
+```{css,  echo = F}
+/*-- Specify div's for 'boxes', change color of TOC and center align titles: --*/
+div.box1 {background-color: #f5f5f0; border-radius: 5px; padding: 30px; margin-right: 0px}
+div.box2 {border-style: solid; border-color: #f5f5f0; border-width: medium; border-radius: 30px; padding: 5px; margin-right: 0px}
+div.box3 {border-style: solid; border-color: #f5f5f0; border-width: medium; border-radius: 30px; padding: 5px; margin-right: 0px}
+div.box4 {border-style: solid; border-color: #f5f5f0; border-width: medium; border-radius: 30px; padding: 5px; margin-right: 0px}
+div.box5 {border-style: solid; border-color: #f5f5f0; border-width: medium; border-radius: 30px; padding: 5px; margin-right: 0px}
+div.box6 {border-style: solid; border-color: #f5f5f0; border-width: medium; border-radius: 30px; padding: 5px; margin-right: 0px}
+div.box7 {border-style: solid; border-color: #f5f5f0; border-width: medium; border-radius: 30px; padding: 5px; margin-right: 0px}
+div.box8 {border-style: solid; border-color: #f5f5f0; border-width: medium; border-radius: 30px; padding: 5px; margin-right: 0px}
+div.box9 {border-style: solid; border-color: #f5f5f0; border-width: medium; border-radius: 30px; padding: 5px; margin-right: 0px}
+
+.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {background-color: #76b82a; border-color: #76b82a}
+h1 {text-align: center; color: #3c7b8a}
+h2 {text-align: center; color: #76b82a}
+
+/*-- Add logo (based on https://rstudio4edu.github.io/rstudio4edu-book/rmd-fancy.html): --*/
+#TOC::before {content: ""; display: block; height: 60px; margin: 30px 10px 30px; background-image: url("conception_logo.png"); background-size: contain; background-position: center center; background-repeat: no-repeat}
+```
+
+```{r set_locale, include=FALSE}
+Sys.setlocale("LC_ALL", "C")
+`%!in%` = Negate(`%in%`)
+```
+
+<div class = 'box1'>
+
+**Level 3:** Diagnoses counts and rates in the study population 
+
+<br> 
+
+The analysis contains the following steps:
+![diagnoses steps](diagnoses.png)
+
+The codelist algorithm is explained below:
+
+<br>
+
+![codelist algorithm](codelist_algorithm.png)
+
+<br>
+
+Time lag between two diagnoses is as follows:
+
+For chronic conditions and not applicable condition rates of first events only will be reported.   
+
+<br>
+
+![diagnoses time lag](diagnoses_timelag.png)
+
+<br>
+
+If subpopulations are available in your data the analysis will be performed separately for each subpopulation.
+In case there is an overlapping subpopulation only subjects in the overlap period will be taken into account.
+***Example:***
+
+<br>
+
+![subpopulations analysis](subpopulations.png)
+
+`year` is retrieved from `start_date_record` for the **EVENTS** table, `mo_date` for the **MEDICAL_OBSERVATIONS** table and `so_date` for **SURVEY_OBSERVATIONS** table.
+
+</div>
+
+<br>
+
+<div class = 'box2'>
+
+
+## 1. Flowchart
+<br> 
+
+```{r echo=F}
+if (subpopulations_present=="No"){
+flowchart<-fread(paste0(diag_dir,"Masked/", "diagnoses_flowchart_masked.csv"))
+datatable(flowchart, options = list(scrollX=T))
+} else {
+flowchart<-fread(paste0(diag_dir,subpopulations_names[a], "/Masked/", subpopulations_names[a],"_diagnoses_flowchart_masked.csv"))
+datatable(flowchart, options = list(scrollX=T))
+}
+```
+
+
+</div>
+
+<br>
+
+<div class = 'box3'>
+
+## 2. Description of diagnoses_study_population
+
+<br> 
+
+```{r echo=F}
+if (subpopulations_present=="No"){
+description<-fread(paste0(diag_dir,"Masked/", "diagnoses_description_masked.csv"))
+datatable(description, options = list(scrollX=T))
+} else {
+  description<-fread(paste0(diag_dir,subpopulations_names[a], "/Masked/", subpopulations_names[a],"_diagnoses_description_masked.csv"))
+datatable(description, options = list(scrollX=T))
+}
+```
+
+</div>
+
+
+<br>
+
+<div class = 'box4'>
+
+## 3. Missingness of diagnoses codes
+
+<br> 
+
+```{r echo=F}
+if (subpopulations_present=="No"){
+  if(sum(grepl(list.files(paste0(diag_dir,"Masked/")), pattern="diagnoses_completeness_masked.csv"))>0){
+tab20<-fread(paste0(diag_dir,"Masked/", "diagnoses_completeness_masked.csv"))
+if(tab20[,.N]>0){
+datatable(tab20, options = list(scrollX=T))
+  } else {
+    tab20<-NULL
+  print("This table cannot be produced based on the available data.")
+  }
+} else {
+  tab20<-NULL
+  print("This table cannot be produced based on the available data.")
+}
+} else {
+    if(sum(grepl(list.files(paste0(diag_dir,subpopulations_names[a], "/Masked/")), pattern="diagnoses_completeness_masked.csv"))>0){
+    tab20<-fread(paste0(diag_dir,subpopulations_names[a], "/Masked/", subpopulations_names[a],"_diagnoses_completeness_masked.csv"))
+    if(tab20[,.N]>0){
+datatable(tab20, options = list(scrollX=T))
+    } else {
+      tab20<-NULL
+    print("This table cannot be produced based on the available data.") 
+    }
+  } else {
+    tab20<-NULL
+    print("This table cannot be produced based on the available data.")
+  }
+}
+```
+
+A count smaller than 5(counts between 1 and 4) will be represented in the graphs with a value of 3 for visualization. Counts of 0 are not plotted. If a category is missing in the plot, it means that it had a count of zero. 
+
+```{r tab20_graph, echo=F}
+if(!is.null(tab20)){
+tab20_graph<-tab20[no_records=="<5", no_records:= 3]
+tab20_graph<-tab20_graph[,no_records:=as.numeric(no_records)]
+tab20_graph<-tab20[no_empty_code=="<5", no_empty_code:= 3]
+tab20_graph<-tab20_graph[,no_empty_code:=as.numeric(no_empty_code)]
+tab20_graph<-tab20_graph[no_empty_code!=0]
+tab20_graph<-tab20_graph[,year:=as.factor(year)]
+} else {
+ tab20_graph<-NULL 
+}
+
+
+if(!is.null(tab20)){
+# Compute the cumulative percentages (top of each rectangle)
+  if(tab20_graph[,.N]>0){
+ggplot(tab20_graph, aes(fill=year, y=percentage_empty_code, x=meaning, label= percentage_empty_code)) + 
+  geom_bar(position="stack", stat="identity") +
+  geom_text(size=3, position=position_stack(vjust=0.5)) +
+    ggtitle("Diagoses completeness information") +
+    xlab("") + 
+  ylab("Percentage") +
+  theme(axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        axis.text.x=element_text(angle = 90),
+        plot.title = element_text(color="#76b82a", face="bold"))
+  } else {
+    print("There are no records with empty codes so the graph is not displayed.")
+  }
+} else {
+    print("This table cannot be produced based on the available data.")
+  }
+
+```
+<br>
+
+</div>
+
+<br>
+
+<div class = 'box5'>
+
+## 4. Code count by meaning and event definition
+
+<br>
+
+```{r counts_atc_1_my, echo=F}
+if (subpopulations_present=="No"){
+  if(sum(grepl(list.files(paste0(diag_dir,"Masked/")), pattern="diagnoses_counts_m_masked.csv"))>0){
+tab21<-fread(paste0(diag_dir,"Masked/", "diagnoses_counts_m_masked.csv"))
+if(tab21[,.N]>0){
+setcolorder(tab21,c("event_definition","year", "truncated_code","no_records","total_records","meaning","vocabulary","data_access_provider","data_source"))
+ if(tab21[,.N]>12000){
+           print("If the table contanins more than 12000 records it can not be displayed in the report. For the complete table, go to g_output/DIAGNOSES/diagnoses_counts_m_masked.csv")
+datatable(head(tab21,12000), options = list(scrollX=T))
+ } else {
+        datatable(tab21, options = list(scrollX=T))
+ }
+} else {
+  tab21<-NULL
+  print("This table cannot be produced based on the available data.")
+}
+  } else {
+    tab21<-NULL
+  print("This table cannot be produced based on the available data.")
+}
+} else {
+    if(sum(grepl(list.files(paste0(diag_dir,subpopulations_names[a], "/Masked/")), pattern="diagnoses_counts_m_masked.csv"))>0){
+  tab21<-fread(paste0(diag_dir,subpopulations_names[a], "/Masked/", subpopulations_names[a],"_diagnoses_counts_m_masked.csv"))
+  if (tab21[,.N]>0){
+  setcolorder(tab21,c("event_definition","year", "truncated_code","no_records","total_records","meaning","vocabulary","data_access_provider","data_source"))
+      if(tab21[,.N]>12000){  
+    print("If the table contanins more than 12000 records it can not be displayed in the report. For the complete table, go to g_output/DIAGNOSES/diagnoses_counts_m_masked.csv")
+      datatable(head(tab21,12000), options = list(scrollX=T))
+        } else {
+    datatable(tab21, options = list(scrollX=T))
+      }
+  } else {
+    tab21<-NULL
+    print("This table cannot be produced based on the available data.")
+}
+    } else {
+      tab21<-NULL
+  print("This table cannot be produced based on the available data.")
+    }
+}
+```
+
+<br>
+
+A count smaller than 5(counts between 1 and 4) will be represented in the graphs with a value of 3 for visualization. 
+
+```{r tab21_graph, echo=FALSE, warning=FALSE}
+if(!is.null(tab21)){
+tab21_graph<-tab21[no_records=="<5", no_records:= 3]
+tab21_graph<-tab21_graph[,no_records:=as.numeric(no_records)]
+tab21_graph<-tab21_graph[,diagnosis_code:=paste(truncated_code,vocabulary,sep=":")]
+} else {
+  tab21_graph<-NULL
+}
+
+if (!is.null(tab21_graph)){
+fig.tab21<-vector(mode="list", length=length(unique(tab21_graph[,meaning])))
+for(i in 1:length(unique(tab21_graph[,meaning]))){
+fig.tab21[[i]]<-ggplotly(ggplot(tab21_graph[meaning==unique(tab21_graph[,meaning])[i]], aes(x = event_definition, y = no_records, group=diagnosis_code)) +
+                           geom_line(aes(color=diagnosis_code)) +
+                           geom_point(aes(color=diagnosis_code)) + 
+                               ggtitle(paste0("Code count by event definition:", unique(tab21_graph[,meaning])[i])) + 
+                               xlab("Event definition") +
+                               ylab("Count")+
+                             theme_classic() +
+                             guides(shape = guide_legend(override.aes = list(size = 0.3))) +
+                               theme(text=element_text(size=10),
+                                 axis.text.x = element_text(angle = 90, hjust = 1),
+                                     axis.title.x = element_text(colour = "#76b82a"),
+                                     axis.title.y = element_text(colour = "#76b82a"),
+                                     plot.title = element_text(colour = "#76b82a"),
+                                     strip.text.y = element_text(angle = 0),
+                                     legend.title = element_text(size = 7), 
+               legend.text = element_text(size = 7))) 
+                                     
+}
+} 
+
+```
+
+```{r display_tab21graph, echo=FALSE}
+if(!is.null(tab21_graph)){
+htmltools::tagList(list(fig.tab21))
+} else {
+  print("This table cannot be produced based on the available data.") 
+}
+```
+
+</div>
+
+<br>
+
+<div class = 'box6'>
+
+## 5. Rates of events
+
+#### Rates of recurrent events by year, sex and age band
+
+Person years are calculated as the observed period for each subject of the study population per year of observation. All duplicated records and records within the time lag(for recurrent events) are removed. The removed number of rows is displayed below.      
+
+```{r removed_subjects, echo=F}
+
+if (subpopulations_present=="No"){
+  if(sum(grepl(list.files(diag_dir), pattern="diagnoses_remove_duplicated_diagoses.csv"))>0){
+    removed_duplicates<-fread(paste0(diag_dir,"diagnoses_remove_duplicated_diagoses.csv"))
+    
+    datatable(removed_duplicates, options = list(scrollX=T))
+  }
+} else {
+ if(sum(grepl(list.files(paste0(diag_dir,subpopulations_names[a], "/")), pattern="diagnoses_remove_duplicated_diagoses.csv"))>0){
+ removed_duplicates<-fread(paste0(diag_dir,subpopulations_names[a],"/diagnoses_remove_duplicated_diagoses.csv"))
+ 
+  datatable(removed_duplicates, options = list(scrollX=T))
+   }}
+```
+
+
+Incidence rates of zero will ot be shown in the table but will be shown in the graphs.    
+```{r rates_year, echo=F, warning=FALSE}
+if (subpopulations_present=="No"){
+  if(sum(grepl(list.files(paste0(diag_dir,"Masked/")), pattern="diagnoses_rates_agg_recurrent_masked.csv"))>0){
+tab22a<-fread(paste0(diag_dir,"Masked/", "diagnoses_rates_agg_recurrent_masked.csv"))
+setcolorder(tab22a, c("event_definition","sex","age_band","year","no_records","person_years","rate_per_100_py"))
+if (tab22a[,.N]>0){
+  if (tab22a[,.N]>12000){
+        print("If the table contanins more than 12000 records it can not be displayed in the report. For the complete table, go to g_output/DIAGNOSES/diagnoses_rates_agg_recurrent_masked.csv")
+    datatable(head(tab22a[no_records!=0],12000), options = list(scrollX=T))
+  } else {
+datatable(tab22a[no_records!=0], options = list(scrollX=T))
+  }
+} else {
+  tab22a<-NULL
+    print("This table cannot be produced based on the available data.")
+}
+  } else {
+      tab22a<-NULL
+    print("This table cannot be produced based on the available data.")
+}
+} else {
+    if(sum(grepl(list.files(paste0(diag_dir,subpopulations_names[a], "/Masked/")), pattern="diagnoses_rates_agg_recurrent_masked.csv"))>0){
+  tab22a<-fread(paste0(diag_dir,subpopulations_names[a], "/Masked/", subpopulations_names[a],"_diagnoses_rates_agg_recurrent_masked.csv"))
+  setcolorder(tab22a, c("event_definition","sex","age_band","year","no_records","person_years","rate_per_100_py"))
+  if (tab22a[,.N]>0){
+   if (tab22a[,.N]>12000){   
+            print("If the table contanins more than 12000 records it can not be displayed in the report. For the complete table, go to g_output/DIAGNOSES/diagnoses_rates_agg_recurrent_masked.csv")
+        datatable(head(tab22a[no_records!=0],12000), options = list(scrollX=T))
+   } else {
+datatable(tab22a[no_records!=0], options = list(scrollX=T))
+   }
+  } else {
+      tab22a<-NULL
+      print("This table cannot be produced based on the available data.")
+  }
+    } else {
+        tab22a<-NULL
+    print("This table cannot be produced based on the available data.")
+    }
+}
+```
+
+<br>
+
+Counts smaller than 5 will be replaced with a count of 3. Then the approximate incidence rates will be calculated as the variable of interest divided by the person years and multiplied by 100. The incidence is shown for all age bands.         
+
+```{r tab22a_graph_diag, echo=FALSE, warning=FALSE}
+if(!is.null(tab22a)){
+tab22a_graph<-tab22a[no_records=="<5", no_records:= 3]
+tab22a_graph<-tab22a_graph[,no_records:=as.numeric(no_records)]
+tab22a_graph<-tab22a_graph[person_years=="<5", person_years:= 3]
+tab22a_graph<-tab22a_graph[,person_years:=as.numeric(person_years)]
+tab22a_graph<-tab22a_graph[,year:=as.factor(year)]
+tab22a_graph<-tab22a_graph[rate_per_100_py=="N/A", rate_per_100_py:= round((no_records/person_years)*100,2)]
+tab22a_graph<-tab22a_graph[sex!="All"]
+tab22a_graph<-tab22a_graph[age_band=="All"]
+} else {
+ tab22a_graph<-NULL 
+}
+
+if(!is.null(tab22a_graph)){
+tab22a_graph[,event_definition:=gsub(" ","- \n", event_definition)] 
+ggplotly(ggplot(tab22a_graph, aes(x = year, y = rate_per_100_py, group=event_definition)) +
+                           geom_line(aes(color=event_definition)) +
+                           geom_point(aes(color=event_definition)) + 
+                            facet_wrap(~ sex) +
+                               ggtitle("Rate of diagnoses by sex and year in the study population") + 
+                               xlab("Year") +
+                               ylab("Rate per 100 person-years")+
+                             theme_classic() +
+                             guides(shape = guide_legend(override.aes = list(size = 0.3))) +
+                               theme(text=element_text(size=10),
+                                 axis.text.x = element_text(angle = 90, hjust = 1),
+                                     axis.title.x = element_text(colour = "#76b82a"),
+                                     axis.title.y = element_text(colour = "#76b82a"),
+                                     plot.title = element_text(colour = "#76b82a"),
+                                     strip.text.y = element_text(angle = 0),
+                                     legend.title = element_text(size = 6),
+               legend.text = element_text(size = 6))) 
+                                     
+} else {
+  print("This table cannot be produced based on the available data.") 
+}
+```
+
+
+<br>
+
+Person years are calculated as the observed period for each subject of the study population per year of observation stratified by other covariates such as sex and age band.  
+
+```{r rates_year_covariate, echo=F, warning=FALSE}
+if (subpopulations_present=="No"){
+  if(sum(grepl(list.files(paste0(diag_dir,"Masked/")), pattern="diagnoses_rates_recurrent_masked.csv"))>0){
+tab22a_cov<-fread(paste0(diag_dir,"Masked/", "diagnoses_rates_recurrent_masked.csv"))
+setcolorder(tab22a_cov, c("event_definition","sex","age_band","year","no_records","person_years","rate_per_100_py"))
+if (tab22a_cov[,.N]>0){
+  if (tab22a_cov[,.N]>12000){
+        print("If the table contanins more than 12000 records it can not be displayed in the report. For the complete table, go to g_output/DIAGNOSES/diagnoses_rates_recurrent_masked.csv")
+    datatable(head(tab22a_cov[no_records!=0],12000), options = list(scrollX=T))
+  } else {
+datatable(tab22a_cov[no_records!=0], options = list(scrollX=T))
+  }
+} else {
+  tab22a_cov<-NULL
+    print("This table cannot be produced based on the available data.")
+}
+  } else {
+      tab22a_cov<-NULL
+    print("This table cannot be produced based on the available data.")
+}
+} else {
+    if(sum(grepl(list.files(paste0(diag_dir,subpopulations_names[a], "/Masked/")), pattern="diagnoses_rates_recurrent_masked.csv"))>0){
+  tab22a_cov<-fread(paste0(diag_dir,subpopulations_names[a], "/Masked/", subpopulations_names[a],"_diagnoses_rates_recurrent_masked.csv"))
+  setcolorder(tab22a_cov, c("event_definition","sex","age_band","year","no_records","person_years","rate_per_100_py"))
+  if (tab22a_cov[,.N]>0){
+   if (tab22a_cov[,.N]>12000){   
+            print("If the table contanins more than 12000 records it can not be displayed in the report. For the complete table, go to g_output/DIAGNOSES/diagnoses_rates_recurrent_masked.csv")
+        datatable(head(tab22a_cov[no_records!=0],12000), options = list(scrollX=T))
+   } else {
+datatable(tab22a_cov[no_records!=0], options = list(scrollX=T))
+   }
+  } else {
+      tab22a_cov<-NULL
+      print("This table cannot be produced based on the available data.")
+  }
+    } else {
+        tab22a_cov<-NULL
+    print("This table cannot be produced based on the available data.")
+    }
+}
+```
+
+Counts smaller than 5 will be replaced with a count of 3. Then the approximate incidence rates will be calculated as the variable of interest divided by the person years and multiplied by 100. The incidence is shown for all age bands.   
+
+```{r tab22a_graph_diag_cov, echo=FALSE, warning=FALSE}
+if(!is.null(tab22a)){
+tab22a_graph_cov<-tab22a_cov[no_records=="<5", no_records:= 3]
+tab22a_graph_cov<-tab22a_graph_cov[,no_records:=as.numeric(no_records)]
+tab22a_graph_cov<-tab22a_graph_cov[person_years=="<5", person_years:= 3]
+tab22a_graph_cov<-tab22a_graph_cov[,person_years:=as.numeric(person_years)]
+tab22a_graph_cov<-tab22a_graph_cov[,year:=as.factor(year)]
+tab22a_graph_cov<-tab22a_graph_cov[rate_per_100_py=="N/A", rate_per_100_py:= round((no_records/person_years)*100,2)]
+tab22a_graph_cov<-tab22a_graph_cov[sex!="All"]
+tab22a_graph_cov<-tab22a_graph_cov[age_band=="All"]
+} else {
+ tab22a_graph_cov<-NULL 
+}
+
+
+if(!is.null(tab22a_graph_cov)){
+tab22a_graph_cov[,event_definition:=gsub(" ","- \n", event_definition)] 
+ggplotly(ggplot(tab22a_graph_cov, aes(x = year, y = rate_per_100_py, group=event_definition)) +
+                           geom_line(aes(color=event_definition)) +
+                           geom_point(aes(color=event_definition)) + 
+                            facet_wrap( ~ sex) +
+                               ggtitle("Rate of diagnoses by sex, age and year in the study population") + 
+                               xlab("Year") +
+                               ylab("Rate per 100 person-years")+
+                             theme_classic() +
+                             guides(shape = guide_legend(override.aes = list(size = 0.3))) +
+                               theme(text=element_text(size=10),
+                                 axis.text.x = element_text(angle = 90, hjust = 1),
+                                     axis.title.x = element_text(colour = "#76b82a"),
+                                     axis.title.y = element_text(colour = "#76b82a"),
+                                     plot.title = element_text(colour = "#76b82a"),
+                                     strip.text.y = element_text(angle = 0),
+                                     legend.title = element_text(size = 7), 
+               legend.text = element_text(size = 7))) 
+                                     
+} else {
+  print("This table cannot be produced based on the available data.") 
+}
+```
+
+
+#### Rates of first event by year, sex and age band
+
+Person years are calculated as the observed period for each subject of the study population per year of observation. All subjects that had an event before start follow up are removed(separately for each event). The removed number of rows is displayed below.    
+
+```{r removed_prior, echo=F}
+
+if (subpopulations_present=="No"){
+  if(sum(grepl(list.files(diag_dir), pattern="diagnoses_remove_subj_prior_events.csv"))>0){
+    removed_prior<-fread(paste0(diag_dir,"diagnoses_remove_subj_prior_events.csv"))
+    
+    datatable(removed_prior, options = list(scrollX=T))
+  }
+} else {
+ if(sum(grepl(list.files(paste0(diag_dir,subpopulations_names[a], "/")), pattern="diagnoses_remove_subj_prior_events.csv"))>0){
+ removed_prior<-fread(paste0(diag_dir,subpopulations_names[a],"/diagnoses_remove_subj_prior_events.csv"))
+ 
+  datatable(removed_prior, options = list(scrollX=T))
+   }}
+```
+
+
+Incidence rates of zero will ot be shown in the table but will be shown in the graphs.    
+
+```{r rates_year_first, echo=F, warning=FALSE}
+if (subpopulations_present=="No"){
+  if(sum(grepl(list.files(paste0(diag_dir,"Masked/")), pattern="diagnoses_rates_agg_first_masked.csv"))>0){
+tab23a<-fread(paste0(diag_dir,"Masked/", "diagnoses_rates_agg_first_masked.csv"))
+setcolorder(tab23a, c("event_definition","sex","age_band","year","no_records","person_years","rate_per_100_py"))
+if (tab23a[,.N]>0){
+  if (tab23a[,.N]>12000){
+        print("If the table contanins more than 12000 records it can not be displayed in the report. For the complete table, go to g_output/DIAGNOSES/diagnoses_rates_agg_first_masked.csv")
+    datatable(head(tab23a[no_records!=0],12000), options = list(scrollX=T))
+  } else {
+datatable(tab23a[no_records!=0], options = list(scrollX=T))
+  }
+} else {
+  tab23a<-NULL
+    print("This table cannot be produced based on the available data.")
+}
+  } else {
+      tab23a<-NULL
+    print("This table cannot be produced based on the available data.")
+}
+} else {
+    if(sum(grepl(list.files(paste0(diag_dir,subpopulations_names[a], "/Masked/")), pattern="diagnoses_rates_agg_first_masked.csv"))>0){
+  tab23a<-fread(paste0(diag_dir,subpopulations_names[a], "/Masked/", subpopulations_names[a],"_diagnoses_rates_agg_first_masked.csv"))
+  setcolorder(tab23a, c("event_definition","sex","age_band","year","no_records","person_years","rate_per_100_py"))
+  if (tab23a[,.N]>0){
+   if (tab23a[,.N]>12000){   
+            print("If the table contanins more than 12000 records it can not be displayed in the report. For the complete table, go to g_output/DIAGNOSES/diagnoses_rates_agg_first_masked.csv")
+        datatable(head(tab23a[no_records!=0],12000), options = list(scrollX=T))
+   } else {
+datatable(tab23a[no_records!=0], options = list(scrollX=T))
+   }
+  } else {
+      tab23a<-NULL
+      print("This table cannot be produced based on the available data.")
+  }
+    } else {
+        tab23a<-NULL
+    print("This table cannot be produced based on the available data.")
+    }
+}
+```
+
+<br>
+
+Counts smaller than 5 will be replaced with a count of 3. Then the approximate incidence rates will be calculated as the variable of interest divided by the person years and multiplied by 100. The incidence is shown for all age bands.     
+
+```{r tab23a_graph_diag_first, echo=FALSE, warning=FALSE}
+if(!is.null(tab22a)){
+tab23a_graph<-tab23a[no_records=="<5", no_records:= 3]
+tab23a_graph<-tab23a_graph[,no_records:=as.numeric(no_records)]
+tab23a_graph<-tab23a_graph[person_years=="<5", person_years:= 3]
+tab23a_graph<-tab23a_graph[,person_years:=as.numeric(person_years)]
+tab23a_graph<-tab23a_graph[,year:=as.factor(year)]
+tab23a_graph<-tab23a_graph[rate_per_100_py=="N/A", rate_per_100_py:= round((no_records/person_years)*100,2)]
+tab23a_graph<-tab23a_graph[sex!="All"]
+tab23a_graph<-tab23a_graph[age_band=="All"]
+
+} else {
+ tab23a_graph<-NULL 
+}
+
+if(!is.null(tab23a_graph)){
+tab23a_graph[,event_definition:=gsub(" ","- \n", event_definition)] 
+ggplotly(ggplot(tab23a_graph, aes(x = year, y = rate_per_100_py, group=event_definition)) +
+                           geom_line(aes(color=event_definition)) +
+                           geom_point(aes(color=event_definition)) + 
+                            facet_wrap(~ sex) +
+                               ggtitle("Rate of diagnoses by sex, age and year in the study population") + 
+                               xlab("Year") +
+                               ylab("Rate per 100 person-years")+
+                             theme_classic() +
+                             guides(shape = guide_legend(override.aes = list(size = 0.3))) +
+                               theme(text=element_text(size=10),
+                                 axis.text.x = element_text(angle = 90, hjust = 1),
+                                     axis.title.x = element_text(colour = "#76b82a"),
+                                     axis.title.y = element_text(colour = "#76b82a"),
+                                     plot.title = element_text(colour = "#76b82a"),
+                                     strip.text.y = element_text(angle = 0),
+                                     legend.title = element_text(size = 7),
+                                 legend.position = "bottom",
+               legend.text = element_text(size = 7))) 
+                                     
+} else {
+  print("This table cannot be produced based on the available data.") 
+}
+```
+
+
+<br>
+
+Person years are calculated as the observed period for each subject of the study population per year of observation stratified by other covariates such as sex and age band.  
+
+```{r rates_year_first_covariate, echo=F, warning=FALSE}
+if (subpopulations_present=="No"){
+  if(sum(grepl(list.files(paste0(diag_dir,"Masked/")), pattern="diagnoses_rates_first_masked.csv"))>0){
+tab23a_cov<-fread(paste0(diag_dir,"Masked/", "diagnoses_rates_first_masked.csv"))
+setcolorder(tab23a_cov, c("event_definition","sex","age_band","year","no_records","person_years","rate_per_100_py"))
+if (tab23a_cov[,.N]>0){
+  if (tab23a_cov[,.N]>12000){
+        print("If the table contanins more than 12000 records it can not be displayed in the report. For the complete table, go to g_output/DIAGNOSES/diagnoses_rates_first_masked.csv")
+    datatable(head(tab23a_cov[no_records!=0],12000), options = list(scrollX=T))
+  } else {
+datatable(tab23a_cov[no_records!=0], options = list(scrollX=T))
+  }
+} else {
+  tab23a_cov<-NULL
+    print("This table cannot be produced based on the available data.")
+}
+  } else {
+      tab23a_cov<-NULL
+    print("This table cannot be produced based on the available data.")
+}
+} else {
+    if(sum(grepl(list.files(paste0(diag_dir,subpopulations_names[a], "/Masked/")), pattern="diagnoses_rates_first_masked.csv"))>0){
+  tab23a_cov<-fread(paste0(diag_dir,subpopulations_names[a], "/Masked/", subpopulations_names[a],"_diagnoses_rates_first_masked.csv"))
+  setcolorder(tab23a_cov, c("event_definition","sex","age_band","year","no_records","person_years","rate_per_100_py"))
+  if (tab23a_cov[,.N]>0){
+   if (tab23a_cov[,.N]>12000){   
+            print("If the table contanins more than 12000 records it can not be displayed in the report. For the complete table, go to g_output/DIAGNOSES/diagnoses_rates_first_masked.csv")
+        datatable(head(tab23a_cov[no_records!=0],12000), options = list(scrollX=T))
+   } else {
+datatable(tab23a_cov[no_records!=0], options = list(scrollX=T))
+   }
+  } else {
+      tab23a_cov<-NULL
+      print("This table cannot be produced based on the available data.")
+  }
+    } else {
+        tab23a_cov<-NULL
+    print("This table cannot be produced based on the available data.")
+    }
+}
+```
+
+Counts smaller than 5 will be replaced with a count of 3. Then the approximate incidence rates will be calculated as the variable of interest divided by the person years and multiplied by 100. The incidence is shown for all age bands.    
+
+```{r tab23a_graph_diag_cov, echo=FALSE, warning=FALSE}
+if(!is.null(tab22a)){
+tab23a_graph_cov<-tab23a_cov[no_records=="<5", no_records:= 3]
+tab23a_graph_cov<-tab23a_graph_cov[,no_records:=as.numeric(no_records)]
+tab23a_graph_cov<-tab23a_graph_cov[person_years=="<5", person_years:= 3]
+tab23a_graph_cov<-tab23a_graph_cov[,person_years:=as.numeric(person_years)]
+tab23a_graph_cov<-tab23a_graph_cov[,year:=as.factor(year)]
+tab23a_graph_cov<-tab23a_graph_cov[rate_per_100_py=="N/A", rate_per_100_py:= round((no_records/person_years)*100,2)]
+tab23a_graph_cov<-tab23a_graph_cov[sex!="All"]
+tab23a_graph_cov<-tab23a_graph_cov[age_band=="All"]
+
+} else {
+ tab23a_graph_cov<-NULL 
+}
+
+if(!is.null(tab23a_graph_cov)){
+tab23a_graph_cov[,event_definition:=gsub(" ","- \n", event_definition)] 
+ggplotly(ggplot(tab23a_graph_cov, aes(x = year, y = rate_per_100_py, group=event_definition)) +
+                           geom_line(aes(color=event_definition)) +
+                           geom_point(aes(color=event_definition)) + 
+                            facet_wrap(~ sex) +
+                               ggtitle("Rate of diagnoses by sex, age and year in the study population") + 
+                               xlab("Year") +
+                               ylab("Rate per 100 person-years")+
+                             theme_classic() +
+                             guides(shape = guide_legend(override.aes = list(size = 0.3))) +
+                               theme(text=element_text(size=10),
+                                 axis.text.x = element_text(angle = 90, hjust = 1),
+                                     axis.title.x = element_text(colour = "#76b82a"),
+                                     axis.title.y = element_text(colour = "#76b82a"),
+                                     plot.title = element_text(colour = "#76b82a"),
+                                     strip.text.y = element_text(angle = 0),
+                                     legend.title = element_text(size = 7), 
+               legend.text = element_text(size = 7))) 
+                                     
+} else {
+  print("This table cannot be produced based on the available data.") 
+}
+```
+
+</div>
+
+<br>
+
+<div class = 'box7'>
+
+## 5. Codelist: Event definition
+
+<br> 
+
+```{r echo=F}
+codes<-fread(paste0(output_dir,"Info/","data_characterisation_codelist.csv"))
+datatable(codes, options = list(scrollX=T))
+```
+
+</div>
+
+<br>
+
+<div class = 'box8'>
+
+## 6. References
+
+<br>
+
+**1.** Alessandri, M., Thorp, D., Mundy, P., & Tuchman, R. F. (2005). [Can we cure autism? From outcome to intervention]. Revista De Neurologia.    
+**2.** A. T. F. (2013). Recurrence of major depressive disorder across different treatment settings: Results from the NESDA study. Journal of Affective Disorders, 147(1), 225–231.    
+**3.** Bullock, J., Rizvi, S. A. A., Saleh, A. M., Ahmed, S. S., Do, D. P., Ansari, R. A., & Ahmed, J. (2018). Rheumatoid Arthritis: A Brief Overview of the Treatment. Medical Principles and Practice, 27(6), 501–507.    
+**4.** Gohil, K. (2015). Multiple Sclerosis: Progress, but No Cure. P & T.: A Peer-Reviewed Journal for Formulary Management, 40(9), 604–605.    
+**5.** Hardeveld, F., Spijker, J., Graaf, R. D., Hendriks, S. M., Licht, C. M. M., Nolen, W. A., Penninx, B. W.J.H., Beekman, A. T. F. (2013). Recurrence of major depressive disorder across different treatment settings: Results from the NESDA study. Journal of Affective Disorders, 147(1), 225–231.    
+**6.** Kalra, A. A., & Elliott, D. (2007). Acute migraine: Current treatment and emerging therapies. Therapeutics and Clinical Risk Management, 3(3), 449–459.    
+**7.** Klein, P., & Tyrlikova, I. (2020). No prevention or cure of epilepsy as yet. Neuropharmacology, 168, 107762.    
+**8.** Matcho, A., Ryan, P., Fife, D., Gifkins, D., Knoll, C., & Friedman, A. (2018). Inferring pregnancy episodes and outcomes within a network of observational databases. PLOS ONE, 13(2).    
+**9.** Rosario, C., Seguro, L., Vasconcelos, C., & Shoenfeld, Y. (2013). Is there a cure for systemic lupus erythematosus. Lupus, 22(5), 417–421.    
+**10.** Wilens, T. E., & Spencer, T. J. (2010). Understanding Attention-Deficit/Hyperactivity Disorder from Childhood to Adulthood. Postgraduate Medicine, 122(5), 97–109.     
+
+</div>
+
+<div class = 'box9'>
+
+Author: Vjola Hoxhaj Drs.   
+email: v.hoxhaj@umcutrecht.nl   
+Organisation: UMC Utrecht, Utrecht, The Netherlands    
+
+</div>
