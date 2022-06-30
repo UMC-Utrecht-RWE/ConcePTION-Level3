@@ -5,15 +5,8 @@ library(rstudioapi)
 projectFolder<-dirname(rstudioapi::getSourceEditorContext()$path)
 setwd(projectFolder)
 
-########################################################################################################################
-#Specify all meanings that refer to birth registry in the SURVEY_ID table(if applicable) for identifying pregnancy
-########################################################################################################################
-#example meanings_birth_registry<-c("birth_registry", "birth_registry_meanings")
-#keep in mind this records will be classified as end_of_pregnancy so no spontaneous abortion registry should be included
-meanings_birth_registry<-c("birth_registry")
-########################################################################################################################
-#Specify all variables of interest to generate the Lifestyle report
-########################################################################################################################
+#####Specify all variables of interest to generate the Lifestyle report#####
+
 #Variables of interest:Smoking, Folic acid use, Alcohol abuse, BMI, SES
 #1.Identify the CDM table you used to save the information about the variables of interest.
 #2.Identify the original name of the variable of interest.
@@ -45,7 +38,7 @@ meanings_birth_registry<-c("birth_registry")
 #  v.date = "so_date"
 #)
 
-Lifestyle <- list()
+######Example how to fill out the Lifestyle list
 
 # Lifestyle <- list(
 #   Smoking = list(
@@ -89,16 +82,18 @@ Lifestyle <- list()
 #     v.date = ""
 #   )
 # )
-###############################################
+
+Lifestyle <- list()
+
 source("packages.R")
 source("99_path.R")
 source(paste0(pre_dir, "info.R"))
 source(paste0(pre_dir,"study_parameters.R"))
 setwd(projectFolder)
 
-#################################################
-#Study_source_population
-#################################################
+
+#####Study_source_population#####
+
 system.time(source(paste0(pre_dir,"study_source_population_script.R")))
 
 #Create report
@@ -132,9 +127,7 @@ for(i in readRDS(paste0(std_pop_tmp,"SCHEME_06.rds"))[["subpopulations"]]){
   rm(report_dir1,report_dir2)
 }
 source(paste0(pre_dir,"save_environment.R"))
-####################################################
-#Medicine exposure
-####################################################
+#####Medicine exposure#####
 rm(list=ls())
 if(!require(rstudioapi)){install.packages("rstudioapi")}
 library(rstudioapi)
@@ -148,23 +141,24 @@ system.time(source(paste0(pre_dir,"Step_08_00_MEDICINES_L3.R")))
 
 if(length(actual_tables$MEDICINES)>0){
   if(subpopulations_present=="No"){
-    system.time(render(paste0(pre_dir,"/Report_08_MEDICINES_Overview_Completeness_L3.Rmd"), output_dir = paste0(output_dir,"MEDICINES/"), output_file = "MEDICINES_Overview_Completeness_L3.html")) 
-    system.time(render(paste0(pre_dir,"/Report_08_MEDICINES_Counts_L3.Rmd"), output_dir = paste0(output_dir,"MEDICINES/"), output_file = "MEDICINES_Counts_L3.html")) 
-    system.time(render(paste0(pre_dir,"/Report_08_MEDICINES_Rates_L3.Rmd"), output_dir = paste0(output_dir,"MEDICINES/"), output_file = "MEDICINES_Rates_L3.html")) 
+    system.time(render(paste0(pre_dir,"/Report_08_MEDICINES_Overview_Completeness_L3.Rmd"), output_dir = paste0(output_dir,"MEDICINES/"), output_file = paste0(format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", "MEDICINES_Overview_Completeness_L3.html"))) 
+    system.time(render(paste0(pre_dir,"/Report_08_MEDICINES_Counts_L3.Rmd"), output_dir = paste0(output_dir,"MEDICINES/"), output_file = paste0(format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_","MEDICINES_Counts_L3.html"))) 
+    system.time(render(paste0(pre_dir,"/Report_08_MEDICINES_Rates_L3.Rmd"), output_dir = paste0(output_dir,"MEDICINES/"), output_file = paste0(format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_","MEDICINES_Rates_L3.html"))) 
     
   } else {
     for (a in 1: length(subpopulations_names)){
-      system.time(render(paste0(pre_dir,"/Report_08_MEDICINES_Overview_Completeness_L3.Rmd"), output_dir = paste0(output_dir,"MEDICINES/"), output_file = paste0(subpopulations_names[a],"_MEDICINES_Overview_Completeness_L3.html")))  
+      system.time(render(paste0(pre_dir,"/Report_08_MEDICINES_Overview_Completeness_L3.Rmd"), output_dir = paste0(output_dir,"MEDICINES/"), output_file = paste0(format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_",subpopulations_names[a],"_MEDICINES_Overview_Completeness_L3.html")))  
     }
     for (a in 1: length(subpopulations_names)){
-      system.time(render(paste0(pre_dir,"/Report_08_MEDICINES_Counts_L3.Rmd"), output_dir = paste0(output_dir,"MEDICINES/"), output_file = paste0(subpopulations_names[a],"_MEDICINES_Counts_L3.html")))  
+      system.time(render(paste0(pre_dir,"/Report_08_MEDICINES_Counts_L3.Rmd"), output_dir = paste0(output_dir,"MEDICINES/"), output_file = paste0(format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_",subpopulations_names[a],"_MEDICINES_Counts_L3.html")))  
     }
     for (a in 1: length(subpopulations_names)){
-      system.time(render(paste0(pre_dir,"/Report_08_MEDICINES_Rates_L3.Rmd"), output_dir = paste0(output_dir,"MEDICINES/"), output_file = paste0(subpopulations_names[a],"_MEDICINES_Rates_L3.html")))  
+      system.time(render(paste0(pre_dir,"/Report_08_MEDICINES_Rates_L3.Rmd"), output_dir = paste0(output_dir,"MEDICINES/"), output_file = paste0(format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_",subpopulations_names[a],"_MEDICINES_Rates_L3.html")))  
     }
   }
 }
 source(paste0(pre_dir,"save_environment.R"))
+
 ##################################################
 #Vaccine exposure
 ##################################################
