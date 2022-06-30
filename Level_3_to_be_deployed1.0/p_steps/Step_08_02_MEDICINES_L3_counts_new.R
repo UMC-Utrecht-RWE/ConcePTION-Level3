@@ -67,18 +67,18 @@ rm(orig_no_rows,med_excluded_meanings,med_study_pop,med_date_miss,med_out_st_per
 
 print("Export flowchart to g_output.")
 if(subpopulations_present=="Yes"){
-  write.csv(flowchart, paste0(med_dir,subpopulations_names[s], "/", subpopulations_names[s],"_medicines_flowchart.csv"), row.names = F)
+  fwrite(flowchart, paste0(med_dir,subpopulations_names[s], "/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", subpopulations_names[s],"_medicines_flowchart.csv"), row.names = F)
 } else {
-  write.csv(flowchart, paste0(med_dir, "medicines_flowchart.csv"), row.names = F)
+  fwrite(flowchart, paste0(med_dir,format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", "medicines_flowchart.csv"), row.names = F)
 }
 
 #####Apply masking
 print("Masking results for flowchart.")
 flowchart[, COUNT:= as.character(COUNT)][as.numeric(COUNT) > 0 & as.numeric(COUNT) < 5, COUNT := "<5"]
 if(subpopulations_present=="Yes"){
-  write.csv(flowchart, paste0(med_dir,subpopulations_names[s], "/","Masked/", subpopulations_names[s],"_medicines_flowchart_masked.csv"), row.names = F)
+  fwrite(flowchart, paste0(med_dir,subpopulations_names[s], "/","Masked/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", subpopulations_names[s],"_medicines_flowchart_masked.csv"), row.names = F)
 } else {
-  write.csv(flowchart, paste0(med_dir,"Masked/","medicines_flowchart_masked.csv"), row.names = F)
+  fwrite(flowchart, paste0(med_dir,"Masked/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_","medicines_flowchart_masked.csv"), row.names = F)
 }
 
 rm(flowchart)
@@ -198,9 +198,9 @@ rm(meanings_des, years_des, sex_included, stdpop_not_med,empty_atc_code,comp_atc
    no_level3_atc,no_level4_atc,no_level5_atc,no_level6_atc,no_level7_atc)
 
 if(subpopulations_present=="Yes"){
-  write.csv(description, paste0(med_dir,subpopulations_names[s], "/", subpopulations_names[s],"_medicines_description.csv"), row.names = F)
+  fwrite(description, paste0(med_dir,subpopulations_names[s], "/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", subpopulations_names[s],"_medicines_description.csv"), row.names = F)
 } else {
-  write.csv(description, paste0(med_dir,"medicines_description.csv"), row.names = F)
+  fwrite(description, paste0(med_dir,format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_","medicines_description.csv"), row.names = F)
 }
 
 #Apply masking
@@ -216,9 +216,9 @@ if(as.numeric(description[12, 2])<5 & as.numeric(description[12, 2])>0) {descrip
 if(as.numeric(description[13, 2])<5 & as.numeric(description[13, 2])>0) {description[13, 2]<-"<5"} 
 
 if(subpopulations_present=="Yes"){
-  write.csv(description, paste0(med_dir,subpopulations_names[s], "/","Masked/", subpopulations_names[s],"_medicines_description_masked.csv"), row.names = F)
+  fwrite(description, paste0(med_dir,subpopulations_names[s], "/","Masked/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", subpopulations_names[s],"_medicines_description_masked.csv"), row.names = F)
 } else {
-  write.csv(description, paste0(med_dir,"Masked/","medicines_description_masked.csv"), row.names = F)
+  fwrite(description, paste0(med_dir,"Masked/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_","medicines_description_masked.csv"), row.names = F)
 }
 
 rm(description)
@@ -367,9 +367,9 @@ print("Export table 15.")
 if(!is.null(tab15)){
   tab15<-data.table(tab15, data_access_provider= data_access_provider_name, data_source=data_source_name)
   if(subpopulations_present=="Yes"){
-    write.csv(tab15, paste0(med_dir,subpopulations_names[s], "/", subpopulations_names[s],"_medicines_completeness.csv"), row.names = F)
+    fwrite(tab15, paste0(med_dir,subpopulations_names[s], "/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", subpopulations_names[s],"_medicines_completeness.csv"), row.names = F)
   } else {
-    write.csv(tab15, paste0(med_dir,"medicinies_completeness.csv"), row.names = F)
+    fwrite(tab15, paste0(med_dir,format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_","medicinies_completeness.csv"), row.names = F)
   }
 }
 
@@ -383,9 +383,9 @@ if(!is.null(tab15)){
   tab15[, records_no_prescribed_quantity_unit:= as.character(records_no_prescribed_quantity_unit)][as.numeric(records_no_prescribed_quantity_unit) > 0 & as.numeric(records_no_prescribed_quantity_unit) < 5, records_no_prescribed_quantity_unit := "<5"]
   
   if (subpopulations_present=="Yes"){
-    write.csv(tab15, paste0(med_dir,subpopulations_names[s], "/","Masked/", subpopulations_names[s],"_medicines_completeness_masked.csv"), row.names = F)
+    fwrite(tab15, paste0(med_dir,subpopulations_names[s], "/","Masked/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", subpopulations_names[s],"_medicines_completeness_masked.csv"), row.names = F)
   } else {
-    write.csv(tab15, paste0(med_dir,"Masked/","medicines_completeness_masked.csv"), row.names = F)
+    fwrite(tab15, paste0(med_dir,"Masked/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_","medicines_completeness_masked.csv"), row.names = F)
   }
 }
 rm(tab15)
@@ -456,9 +456,9 @@ print("Export table 10.")
 if(!is.null(tab10)){
   tab10<-data.table(tab10, data_access_provider= data_access_provider_name, data_source=data_source_name)
   if (subpopulations_present=="Yes"){
-    fwrite(tab10, paste0(med_dir,subpopulations_names[s], "/", subpopulations_names[s],"_medicines_my_atc_1.csv"), row.names = F)
+    fwrite(tab10, paste0(med_dir,subpopulations_names[s], "/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", subpopulations_names[s],"_medicines_my_atc_1.csv"), row.names = F)
   } else {
-    fwrite(tab10, paste0(med_dir,"medicines_my_atc_1.csv"), row.names = F)
+    fwrite(tab10, paste0(med_dir,format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_","medicines_my_atc_1.csv"), row.names = F)
   }
 }
 
@@ -468,9 +468,9 @@ if(!is.null(tab10)){
   suppressWarnings(tab10[, count:= as.character(count)][as.numeric(count) > 0 & as.numeric(count) < 5, count := "<5"])
   suppressWarnings(tab10[, total:= as.character(total)][as.numeric(total) > 0 & as.numeric(total) < 5, total := "<5"])
   if(subpopulations_present=="Yes"){
-    fwrite(tab10, paste0(med_dir,subpopulations_names[s], "/","Masked/", subpopulations_names[s],"_medicines_my_atc_1_masked.csv"), row.names = F)
+    fwrite(tab10, paste0(med_dir,subpopulations_names[s], "/","Masked/", format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_",subpopulations_names[s],"_medicines_my_atc_1_masked.csv"), row.names = F)
   } else {
-    fwrite(tab10, paste0(med_dir,"Masked/","medicines_my_atc_1_masked.csv"), row.names = F)
+    fwrite(tab10, paste0(med_dir,"Masked/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_","medicines_my_atc_1_masked.csv"), row.names = F)
   }
 }
 rm(tab10)
@@ -550,9 +550,9 @@ print("Export table 11.")
 if(!is.null(tab11)){
   tab11<-data.table(tab11, data_access_provider= data_access_provider_name, data_source=data_source_name)
   if(subpopulations_present=="Yes"){
-    fwrite(tab11, paste0(med_dir,subpopulations_names[s], "/", subpopulations_names[s],"_medicines_my_atc_1_f.csv"), row.names = F)
+    fwrite(tab11, paste0(med_dir,subpopulations_names[s], "/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", subpopulations_names[s],"_medicines_my_atc_1_f.csv"), row.names = F)
   } else {
-    fwrite(tab11, paste0(med_dir,"medicines_my_atc_1_f.csv"), row.names = F)
+    fwrite(tab11, paste0(med_dir,format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_","medicines_my_atc_1_f.csv"), row.names = F)
   }
 }
 
@@ -561,9 +561,9 @@ if(!is.null(tab11)){
   suppressWarnings(tab11[, count:= as.character(count)][as.numeric(count) > 0 & as.numeric(count) < 5, count := "<5"])
   suppressWarnings(tab11[, total:= as.character(total)][as.numeric(total) > 0 & as.numeric(total) < 5, total := "<5"])
   if (subpopulations_present=="Yes"){
-    fwrite(tab11, paste0(med_dir,subpopulations_names[s], "/","Masked/", subpopulations_names[s],"_medicines_my_atc_1_f_masked.csv"), row.names = F)
+    fwrite(tab11, paste0(med_dir,subpopulations_names[s], "/","Masked/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", subpopulations_names[s],"_medicines_my_atc_1_f_masked.csv"), row.names = F)
   } else {
-    fwrite(tab11, paste0(med_dir,"Masked/", "medicines_my_atc_1_f_masked.csv"), row.names = F)
+    fwrite(tab11, paste0(med_dir,"Masked/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", "medicines_my_atc_1_f_masked.csv"), row.names = F)
   }
 }
 rm(tab11)
@@ -1205,9 +1205,9 @@ rm(tab12_f)
 if(!is.null(tab12)){
   tab12<-data.table(tab12, data_access_provider= data_access_provider_name, data_source=data_source_name)
   if (subpopulations_present=="Yes"){
-    fwrite(tab12, paste0(med_dir,subpopulations_names[s], "/", subpopulations_names[s],"_medicines_my_atc_4.csv"), row.names = F)
+    fwrite(tab12, paste0(med_dir,subpopulations_names[s], "/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", subpopulations_names[s],"_medicines_my_atc_4.csv"), row.names = F)
   } else {
-    fwrite(tab12, paste0(med_dir,"medicines_my_atc_4.csv"), row.names = F)
+    fwrite(tab12, paste0(med_dir,format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_","medicines_my_atc_4.csv"), row.names = F)
   }
 }
 
@@ -1216,11 +1216,11 @@ if(!is.null(tab12)){
 if(!is.null(tab12)){
   tab12[, no_records:= as.character(no_records)][as.numeric(no_records) > 0 & as.numeric(no_records) < 5, no_records := "<5"]
   tab12[, no_users:= as.character(no_users)][as.numeric(no_users) > 0 & as.numeric(no_users) < 5, no_users := "<5"]
-
+  
   if(subpopulations_present=="Yes"){
-    fwrite(tab12, paste0(med_dir,subpopulations_names[s], "/","Masked/", subpopulations_names[s],"_medicines_my_atc_4_masked.csv"), row.names = F)
+    fwrite(tab12, paste0(med_dir,subpopulations_names[s], "/","Masked/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", subpopulations_names[s],"_medicines_my_atc_4_masked.csv"), row.names = F)
   } else {
-    fwrite(tab12, paste0(med_dir,"Masked/", "medicines_my_atc_4_masked.csv"), row.names = F)
+    fwrite(tab12, paste0(med_dir,"Masked/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", "medicines_my_atc_4_masked.csv"), row.names = F)
   }
 }
 
@@ -1248,9 +1248,9 @@ rm(tab13_f)
 if(!is.null(tab13)){
   tab13<-data.table(tab13, data_access_provider= data_access_provider_name, data_source=data_source_name)
   if(subpopulations_present=="Yes"){
-    fwrite(tab13, paste0(med_dir,subpopulations_names[s], "/", subpopulations_names[s],"_medicines_my_atc_7.csv"), row.names = F)
+    fwrite(tab13, paste0(med_dir,subpopulations_names[s], "/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", subpopulations_names[s],"_medicines_my_atc_7.csv"), row.names = F)
   } else {
-    fwrite(tab13, paste0(med_dir,"medicines_my_atc_7.csv"), row.names = F)
+    fwrite(tab13, paste0(med_dir,format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_","medicines_my_atc_7.csv"), row.names = F)
   }
 }
 
@@ -1258,11 +1258,11 @@ if(!is.null(tab13)){
 if(!is.null(tab13)){
   tab13[, no_records:= as.character(no_records)][as.numeric(no_records) > 0 & as.numeric(no_records) < 5, no_records := "<5"]
   tab13[, no_users:= as.character(no_users)][as.numeric(no_users) > 0 & as.numeric(no_users) < 5, no_users := "<5"]
-
+  
   if(subpopulations_present=="Yes"){
-    fwrite(tab13, paste0(med_dir,subpopulations_names[s], "/","Masked/", subpopulations_names[s],"_medicines_my_atc_7_masked.csv"), row.names = F)
+    fwrite(tab13, paste0(med_dir,subpopulations_names[s], "/","Masked/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", subpopulations_names[s],"_medicines_my_atc_7_masked.csv"), row.names = F)
   } else {
-    fwrite(tab13, paste0(med_dir,"Masked/", "medicines_my_atc_7_masked.csv"), row.names = F)
+    fwrite(tab13, paste0(med_dir,"Masked/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", "medicines_my_atc_7_masked.csv"), row.names = F)
   }
 }
 
