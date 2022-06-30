@@ -3,12 +3,11 @@
 #Organisation: UMC Utrecht, Utrecht, The Netherlands
 #Date: 06/07/2021
 
-##############################################################################################
+####Load parameters####
 source(paste0(pre_dir, "DAP_info.R"))
 source(paste0(pre_dir, "info.R"))
 source(paste0(pre_dir,"date_parameters.R"))
 source(paste0(pre_dir,"/functions/create_age_band.R"))
-###############################################################################################
 
 #functions
 #calculate the number of records for desired atc level by meaning and year
@@ -27,9 +26,8 @@ m_year_atc<-function(dt, year_var, meaning_var, atc_var, level_num){
   results<-list("count"=a.1, "total"=a.2)
   return(results)
 }
-########################################################
-#Create output folders
-########################################################
+####Create output folders####
+
 if (subpopulations_present=="No"){
   #output folder for VACCINES report in g_output
   if ("VACCINES" %in% list.files(output_dir)){
@@ -124,12 +122,8 @@ if (subpopulations_present=="No"){
   }
   
 }
-########################################################
-
+####Main script####
 if(length(actual_tables$VACCINES)>0){
-####################################################################################################
-#Main script
-####################################################################################################
 if (subpopulations_present=="Yes"){
   for (s in 1: length(subpopulations_names)){
     study_sub_population<-study_population_dir[grepl(study_population_dir, pattern=paste0(subpopulations_names[s],"_study_population"), fixed=T)]
@@ -178,6 +172,7 @@ if (subpopulations_present=="Yes"){
 }
 }
 
+####Clean environment####
 #Delete folders vaccines from tmp
 unlink(paste0(tmp,"VACCINES"), recursive = T)
 
