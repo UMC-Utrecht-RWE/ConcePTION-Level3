@@ -78,8 +78,8 @@ When subjects are being followed(i.e. they contribute to the person time in a pa
 
 ```{r rates_year, echo=F}
 if (subpopulations_present=="No"){
-  if(sum(grepl(list.files(paste0(vacc_dir,"Masked/")), pattern="vaccines_rates_year_atc_masked.csv"))>0){
-tab15_vacc<-fread(paste0(vacc_dir,"Masked/", "vaccines_rates_year_atc_masked.csv"))
+  if(length(list.files(paste0(vacc_dir,"Masked/"), pattern="vaccines_rates_year_atc_masked.csv"))>0){
+tab15_vacc<-fread(paste0(vacc_dir,"Masked/", list.files(paste0(vacc_dir,"Masked/"), pattern="vaccines_rates_year_atc_masked.csv")))
 if (tab15_vacc[,.N]>0){
   if (tab15_vacc[,.N]>12000){
         print("If the table contanins more than 12000 records it can not be displayed in the report. For the complete table, go to g_output/VACCINES/vaccines_rates_year_atc_masked.csv")
@@ -96,8 +96,8 @@ datatable(tab15_vacc, options = list(scrollX=T))
     print("This table cannot be produced based on the available data.")
 }
 } else {
-    if(sum(grepl(list.files(paste0(vacc_dir,subpopulations_names[a], "/Masked/")), pattern="vaccines_rates_year_atc_masked.csv"))>0){
-  tab15_vacc<-fread(paste0(vacc_dir,subpopulations_names[a], "/Masked/", subpopulations_names[a],"_vaccines_rates_year_atc_masked.csv"))
+    if(length(list.files(paste0(vacc_dir,subpopulations_names[a], "/Masked/"), pattern="vaccines_rates_year_atc_masked.csv"))>0){
+  tab15_vacc<-fread(paste0(vacc_dir,subpopulations_names[a], "/Masked/", list.files(paste0(vacc_dir,subpopulations_names[a], "/Masked/"), pattern="vaccines_rates_year_atc_masked.csv")))
   if (tab15_vacc[,.N]>0){
    if (tab15_vacc[,.N]>12000){   
             print("If the table contanins more than 12000 records it can not be displayed in the report. For the complete table, go to g_output/VACCINES/vaccines_rates_year_atc_masked.csv")
@@ -263,8 +263,8 @@ When subjects are being followed(i.e. they contribute to the person time in a pa
 
 ```{r rates_year_age, echo=F}
 if (subpopulations_present=="No"){
-  if(sum(grepl(list.files(paste0(vacc_dir,"Masked/")), pattern="vaccines_rates_year_age_atc_masked.csv"))>0){
-tab16_vacc<-fread(paste0(vacc_dir,"Masked/", "vaccines_rates_year_age_atc_masked.csv"))
+  if(length(list.files(paste0(vacc_dir,"Masked/"), pattern="vaccines_rates_year_age_atc_masked.csv"))>0){
+tab16_vacc<-fread(paste0(vacc_dir,"Masked/", list.files(paste0(vacc_dir,"Masked/"), pattern="vaccines_rates_year_age_atc_masked.csv")))
 if (tab16_vacc[,.N]>0){
   if (tab16_vacc[,.N]>12000){
 print("If the table contanins more than 12000 records it can not be displayed in the report. For the complete table, go to g_output/VACCINES/vaccines_rates_year_age_atc_masked.csv")
@@ -281,8 +281,8 @@ datatable(tab16_vacc, options = list(scrollX=T))
     print("This table cannot be produced based on the available data.")
 }
 } else {
-    if(sum(grepl(list.files(paste0(vacc_dir,subpopulations_names[a], "/Masked/")), pattern="vaccines_rates_by_year_age_atc_masked.csv"))>0){
-  tab16_vacc<-fread(paste0(vacc_dir,subpopulations_names[a], "/Masked/", subpopulations_names[a],"_vaccines_rates_year_age_atc_masked.csv"))
+    if(length(list.files(paste0(vacc_dir,subpopulations_names[a], "/Masked/"), pattern="vaccines_rates_by_year_age_atc_masked.csv"))>0){
+  tab16_vacc<-fread(paste0(vacc_dir,subpopulations_names[a], "/Masked/", list.files(paste0(vacc_dir,subpopulations_names[a], "/Masked/"), pattern="vaccines_rates_by_year_age_atc_masked.csv")))
   if (tab16_vacc[,.N]>0){
     if(tab16_vacc[,.N]>12000){
       print("If the table contanins more than 12000 records it can not be displayed in the report. For the complete table, go to g_output/VACCINES/vaccines_rates_year_age_atc_masked.csv")
