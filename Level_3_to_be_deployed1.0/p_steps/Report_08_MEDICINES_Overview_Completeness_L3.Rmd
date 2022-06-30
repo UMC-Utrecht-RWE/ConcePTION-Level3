@@ -71,10 +71,10 @@ In case there is an overlapping subpopulation only subjects in the overlap perio
 
 ```{r flowchart, echo=F}
 if (subpopulations_present=="No"){
-flowchart_med<-fread(paste0(med_dir,"Masked/", "medicines_flowchart_masked.csv"))
+flowchart_med<-fread(paste0(med_dir,"Masked/", list.files(paste0(med_dir,"Masked/"),"medicines_flowchart_masked.csv")))
 datatable(flowchart_med, options = list(scrollX=T))
 } else {
-flowchart_med<-fread(paste0(med_dir,subpopulations_names[a], "/Masked/", subpopulations_names[a],"_medicines_flowchart_masked.csv"))
+flowchart_med<-fread(paste0(med_dir,subpopulations_names[a], "/Masked/",list.files(paste0(med_dir,subpopulations_names[a], "/Masked/"),paste0(subpopulations_names[a],"_medicines_flowchart_masked.csv"))))
 datatable(flowchart_med, options = list(scrollX=T))
 }
 ```
@@ -89,10 +89,11 @@ datatable(flowchart_med, options = list(scrollX=T))
 
 ```{r description, echo=F}
 if (subpopulations_present=="No"){
-description_med<-fread(paste0(med_dir,"Masked/", "medicines_description_masked.csv"))
+description_med<-fread(paste0(med_dir,"Masked/", list.files(paste0(med_dir, "Masked/"),"medicines_description_masked.csv")))
 datatable(description_med, options = list(scrollX=T))
 } else {
-  description_med<-fread(paste0(med_dir,subpopulations_names[a], "/Masked/", subpopulations_names[a],"_medicines_description_masked.csv"))
+  description_med<-fread(paste0(med_dir,subpopulations_names[a], "/Masked/",
+                                list.files(paste0(med_dir,subpopulations_names[a], "/Masked/"),paste0(subpopulations_names[a],"_medicines_description_masked.csv"))))
 datatable(description_med, options = list(scrollX=T))
 }
 ```
@@ -109,8 +110,8 @@ datatable(description_med, options = list(scrollX=T))
 
 ```{r completeness, echo=F}
 if (subpopulations_present=="No"){
-  if(sum(grepl(list.files(paste0(med_dir,"Masked/")), pattern="medicines_completeness_masked.csv"))>0){
-tab15_med<-fread(paste0(med_dir,"Masked/", "medicines_completeness_masked.csv"))
+  if(length(list.files(paste0(med_dir,"Masked/"), pattern="medicines_completeness_masked.csv"))>0){
+tab15_med<-fread(paste0(med_dir,"Masked/", list.files(paste0(med_dir,"Masked/"), pattern="medicines_completeness_masked.csv")))
 if (tab15_med[,.N]>0){
 datatable(tab15_med, options = list(scrollX=T))
 } else {
@@ -122,8 +123,8 @@ datatable(tab15_med, options = list(scrollX=T))
     print("This table cannot be produced based on the available data.")
 }
 } else {
-    if(sum(grepl(list.files(paste0(med_dir,subpopulations_names[a], "/Masked/")), pattern="medicines_completeness_masked.csv"))>0){
-  tab15_med<-fread(paste0(med_dir,subpopulations_names[a], "/Masked/", subpopulations_names[a],"_medicines_completeness_masked.csv"))
+    if(length(list.files(paste0(med_dir,subpopulations_names[a], "/Masked/"), pattern="medicines_completeness_masked.csv"))>0){
+  tab15_med<-fread(paste0(med_dir,subpopulations_names[a], "/Masked/", list.files(paste0(med_dir,subpopulations_names[a], "/Masked/"), pattern="medicines_completeness_masked.csv")))
   if (tab15_med[,.N]>0){
 datatable(tab15_med, options = list(scrollX=T))
   } else {
