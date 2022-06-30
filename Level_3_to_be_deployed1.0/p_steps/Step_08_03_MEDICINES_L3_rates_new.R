@@ -37,6 +37,7 @@ if(length(counts_ys_fl)>0){
 #Create chunks of 100.000
 size<-200000
 groups<-round(study_population[,.N]/size)
+if(groups==0){groups<-1}
 index<-1
 min<-1
 max<-study_population[,.N]
@@ -274,9 +275,9 @@ rates_yas[,person_years:=round(person_years,3)]
 
 
 if(subpopulations_present=="Yes"){
-  fwrite(rates_yas, paste0(med_dir, subpopulations_names[s], "/", subpopulations_names[s], "_medicines_rates_year_age_atc.csv"), row.names = F)
+  fwrite(rates_yas, paste0(med_dir, subpopulations_names[s], "/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", subpopulations_names[s], "_medicines_rates_year_age_atc.csv"), row.names = F)
 } else {
-  fwrite(rates_yas, paste0(med_dir, "medicines_rates_year_age_atc.csv"), row.names = F)
+  fwrite(rates_yas, paste0(med_dir,format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", "medicines_rates_year_age_atc.csv"), row.names = F)
 }
 
 ################
@@ -292,9 +293,9 @@ rates_yas[, users_per_100_py:= as.character(users_per_100_py)][no_users=="<5" | 
 rates_yas[, subjects_per_100_py:= as.character(subjects_per_100_py)][no_subjects=="<5" | person_years=="<5", subjects_per_100_py := "N/A"]
 
 if(subpopulations_present=="Yes"){
-  fwrite(rates_yas, paste0(med_dir,subpopulations_names[s], "/","Masked/", subpopulations_names[s],"_medicines_rates_year_age_atc_masked.csv"), row.names = F)
+  fwrite(rates_yas, paste0(med_dir,subpopulations_names[s], "/","Masked/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", subpopulations_names[s],"_medicines_rates_year_age_atc_masked.csv"), row.names = F)
 } else {
-  fwrite(rates_yas, paste0(med_dir, "Masked/", "medicines_rates_year_age_atc_masked.csv"), row.names = F)
+  fwrite(rates_yas, paste0(med_dir, "Masked/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", "medicines_rates_year_age_atc_masked.csv"), row.names = F)
 }
 
 rm(rates_yas) 
@@ -331,9 +332,9 @@ if(!is.null(counts_ys) & !is.null(subjects_ys)){
   
   
   if(subpopulations_present=="Yes"){
-    fwrite(rates_ys, paste0(med_dir, subpopulations_names[s], "/", subpopulations_names[s], "_medicines_rates_year_atc.csv"), row.names = F)
+    fwrite(rates_ys, paste0(med_dir, subpopulations_names[s], "/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", subpopulations_names[s], "_medicines_rates_year_atc.csv"), row.names = F)
   } else {
-    fwrite(rates_ys, paste0(med_dir, "medicines_rates_year_atc.csv"), row.names = F)
+    fwrite(rates_ys, paste0(med_dir,format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", "medicines_rates_year_atc.csv"), row.names = F)
   }
   
   ################
@@ -349,9 +350,9 @@ if(!is.null(counts_ys) & !is.null(subjects_ys)){
   rates_ys[, subjects_per_100_py:= as.character(subjects_per_100_py)][no_subjects=="<5" | person_years=="<5", subjects_per_100_py := "N/A"]
   
   if(subpopulations_present=="Yes"){
-    fwrite(rates_ys, paste0(med_dir,subpopulations_names[s], "/","Masked/", subpopulations_names[s],"_medicines_rates_year_atc_masked.csv"), row.names = F)
+    fwrite(rates_ys, paste0(med_dir,subpopulations_names[s], "/","Masked/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", subpopulations_names[s],"_medicines_rates_year_atc_masked.csv"), row.names = F)
   } else {
-    fwrite(rates_ys, paste0(med_dir, "Masked/", "medicines_rates_year_atc_masked.csv"), row.names = F)
+    fwrite(rates_ys, paste0(med_dir, "Masked/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", "medicines_rates_year_atc_masked.csv"), row.names = F)
   }
   
   rm(rates_ys) 
