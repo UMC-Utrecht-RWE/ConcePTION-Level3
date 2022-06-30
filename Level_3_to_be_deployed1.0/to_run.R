@@ -159,9 +159,7 @@ if(length(actual_tables$MEDICINES)>0){
 }
 source(paste0(pre_dir,"save_environment.R"))
 
-##################################################
-#Vaccine exposure
-##################################################
+####Vaccine exposure####
 rm(list=ls())
 if(!require(rstudioapi)){install.packages("rstudioapi")}
 library(rstudioapi)
@@ -176,19 +174,19 @@ system.time(source(paste0(pre_dir,"Step_09_00_VACCINES_L3.R")))
 
 if(length(actual_tables$VACCINES)>0){
   if(subpopulations_present=="No"){
-    system.time(render(paste0(pre_dir,"/Report_09_VACCINES_Overview_Completeness_L3.Rmd"), output_dir = paste0(output_dir,"VACCINES/"), output_file = "VACCINES_Overview_Completeness_L3.html")) 
-    system.time(render(paste0(pre_dir,"/Report_09_VACCINES_Counts_L3.Rmd"), output_dir = paste0(output_dir,"VACCINES/"), output_file = "VACCINES_Counts_L3.html")) 
-    system.time(render(paste0(pre_dir,"/Report_09_VACCINES_Rates_L3.Rmd"), output_dir = paste0(output_dir,"VACCINES/"), output_file = "VACCINES_Rates_L3.html")) 
+    system.time(render(paste0(pre_dir,"/Report_09_VACCINES_Overview_Completeness_L3.Rmd"), output_dir = paste0(output_dir,"VACCINES/"), output_file = paste0(format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_","VACCINES_Overview_Completeness_L3.html")) )
+    system.time(render(paste0(pre_dir,"/Report_09_VACCINES_Counts_L3.Rmd"), output_dir = paste0(output_dir,"VACCINES/"), output_file = paste0(format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_","VACCINES_Counts_L3.html"))) 
+    system.time(render(paste0(pre_dir,"/Report_09_VACCINES_Rates_L3.Rmd"), output_dir = paste0(output_dir,"VACCINES/"), output_file = paste0(format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_","VACCINES_Rates_L3.html"))) 
     
   } else {
     for (a in 1: length(subpopulations_names)){
-      system.time(render(paste0(pre_dir,"/Report_09_VACCINES_Overview_Completeness_L3.Rmd"), output_dir = paste0(output_dir,"VACCINES/"), output_file = paste0(subpopulations_names[a],"_VACCINES_Overview_Completeness_L3.html")))  
+      system.time(render(paste0(pre_dir,"/Report_09_VACCINES_Overview_Completeness_L3.Rmd"), output_dir = paste0(output_dir,"VACCINES/"), output_file = paste0(format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_",subpopulations_names[a],"_VACCINES_Overview_Completeness_L3.html")))  
     }
     for (a in 1: length(subpopulations_names)){
-      system.time(render(paste0(pre_dir,"/Report_09_VACCINES_Counts_L3.Rmd"), output_dir = paste0(output_dir,"VACCINES/"), output_file = paste0(subpopulations_names[a],"_VACCINES_Counts_L3.html")))  
+      system.time(render(paste0(pre_dir,"/Report_09_VACCINES_Counts_L3.Rmd"), output_dir = paste0(output_dir,"VACCINES/"), output_file = paste0(format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_",subpopulations_names[a],"_VACCINES_Counts_L3.html")))  
     }
     for (a in 1: length(subpopulations_names)){
-      system.time(render(paste0(pre_dir,"/Report_09_VACCINES_Rates_L3.Rmd"), output_dir = paste0(output_dir,"VACCINES/"), output_file = paste0(subpopulations_names[a],"_VACCINES_Rates_L3.html")))  
+      system.time(render(paste0(pre_dir,"/Report_09_VACCINES_Rates_L3.Rmd"), output_dir = paste0(output_dir,"VACCINES/"), output_file = paste0(format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_",subpopulations_names[a],"_VACCINES_Rates_L3.html")))  
     }
   }
 }
