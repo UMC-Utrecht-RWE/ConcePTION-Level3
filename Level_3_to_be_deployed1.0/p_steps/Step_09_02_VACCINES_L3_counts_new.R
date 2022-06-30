@@ -67,18 +67,18 @@ if(length(actual_tables$VACCINES)>0){
   
   print("Export flowchart to g_output.")
   if(subpopulations_present=="Yes"){
-    write.csv(flowchart, paste0(vacc_dir,subpopulations_names[s], "/", subpopulations_names[s],"_vaccines_flowchart.csv"), row.names = F)
+    fwrite(flowchart, paste0(vacc_dir,subpopulations_names[s], "/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", subpopulations_names[s],"_vaccines_flowchart.csv"), row.names = F)
   } else {
-    write.csv(flowchart, paste0(vacc_dir, "vaccines_flowchart.csv"), row.names = F)
+    fwrite(flowchart, paste0(vacc_dir,format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", "vaccines_flowchart.csv"), row.names = F)
   }
   
   #####Apply masking
   print("Masking results for flowchart.")
   flowchart[, COUNT:= as.character(COUNT)][as.numeric(COUNT) > 0 & as.numeric(COUNT) < 5, COUNT := "<5"]
   if(subpopulations_present=="Yes"){
-    write.csv(flowchart, paste0(vacc_dir,subpopulations_names[s], "/","Masked/", subpopulations_names[s],"_vaccines_flowchart_masked.csv"), row.names = F)
+    fwrite(flowchart, paste0(vacc_dir,subpopulations_names[s], "/","Masked/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", subpopulations_names[s],"_vaccines_flowchart_masked.csv"), row.names = F)
   } else {
-    write.csv(flowchart, paste0(vacc_dir,"Masked/","vaccines_flowchart_masked.csv"), row.names = F)
+    fwrite(flowchart, paste0(vacc_dir,"Masked/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", "vaccines_flowchart_masked.csv"), row.names = F)
   }
   
   rm(flowchart)
@@ -198,9 +198,9 @@ if(length(actual_tables$VACCINES)>0){
      no_level3_atc,no_level4_atc,no_level5_atc,no_level6_atc,no_level7_atc)
   
   if(subpopulations_present=="Yes"){
-    write.csv(description, paste0(vacc_dir,subpopulations_names[s], "/", subpopulations_names[s],"_vaccines_description.csv"), row.names = F)
+    fwrite(description, paste0(vacc_dir,subpopulations_names[s], "/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", subpopulations_names[s],"_vaccines_description.csv"), row.names = F)
   } else {
-    write.csv(description, paste0(vacc_dir,"vaccines_description.csv"), row.names = F)
+    fwrite(description, paste0(vacc_dir,format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_","vaccines_description.csv"), row.names = F)
   }
   
   #Apply masking
@@ -216,9 +216,9 @@ if(length(actual_tables$VACCINES)>0){
   if(as.numeric(description[13, 2])<5 & as.numeric(description[13, 2])>0) {description[13, 2]<-"<5"} 
   
   if(subpopulations_present=="Yes"){
-    write.csv(description, paste0(vacc_dir,subpopulations_names[s], "/","Masked/", subpopulations_names[s],"_vaccines_description_masked.csv"), row.names = F)
+    fwrite(description, paste0(vacc_dir,subpopulations_names[s], "/","Masked/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", subpopulations_names[s],"_vaccines_description_masked.csv"), row.names = F)
   } else {
-    write.csv(description, paste0(vacc_dir,"Masked/","vaccines_description_masked.csv"), row.names = F)
+    fwrite(description, paste0(vacc_dir,"Masked/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_","vaccines_description_masked.csv"), row.names = F)
   }
   
   rm(description)
@@ -326,9 +326,9 @@ if(length(actual_tables$VACCINES)>0){
   if(!is.null(tab15)){
     tab15<-data.table(tab15, data_access_provider= data_access_provider_name, data_source=data_source_name)
     if(subpopulations_present=="Yes"){
-      write.csv(tab15, paste0(vacc_dir,subpopulations_names[s], "/", subpopulations_names[s],"_vaccines_completeness.csv"), row.names = F)
+      fwrite(tab15, paste0(vacc_dir,subpopulations_names[s], "/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", subpopulations_names[s],"_vaccines_completeness.csv"), row.names = F)
     } else {
-      write.csv(tab15, paste0(vacc_dir,"vaccines_completeness.csv"), row.names = F)
+      fwrite(tab15, paste0(vacc_dir,format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_","vaccines_completeness.csv"), row.names = F)
     }
   }
   
@@ -340,9 +340,9 @@ if(length(actual_tables$VACCINES)>0){
     tab15[, records_no_vx_manufacturer:= as.character(records_no_vx_manufacturer)][as.numeric(records_no_vx_manufacturer) > 0 & as.numeric(records_no_vx_manufacturer) < 5, records_no_vx_manufacturer := "<5"]
 
     if (subpopulations_present=="Yes"){
-      write.csv(tab15, paste0(vacc_dir,subpopulations_names[s], "/","Masked/", subpopulations_names[s],"_vaccines_completeness_masked.csv"), row.names = F)
+      fwrite(tab15, paste0(vacc_dir,subpopulations_names[s], "/","Masked/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", subpopulations_names[s],"_vaccines_completeness_masked.csv"), row.names = F)
     } else {
-      write.csv(tab15, paste0(vacc_dir,"Masked/","vaccines_completeness_masked.csv"), row.names = F)
+      fwrite(tab15, paste0(vacc_dir,"Masked/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_","vaccines_completeness_masked.csv"), row.names = F)
     }
   }
   rm(tab15)
@@ -413,9 +413,9 @@ if(length(actual_tables$VACCINES)>0){
   if(!is.null(tab10)){
     tab10<-data.table(tab10, data_access_provider= data_access_provider_name, data_source=data_source_name)
     if (subpopulations_present=="Yes"){
-      fwrite(tab10, paste0(vacc_dir,subpopulations_names[s], "/", subpopulations_names[s],"_vaccines_my_atc_1.csv"), row.names = F)
+      fwrite(tab10, paste0(vacc_dir,subpopulations_names[s], "/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", subpopulations_names[s],"_vaccines_my_atc_1.csv"), row.names = F)
     } else {
-      fwrite(tab10, paste0(vacc_dir,"vaccines_my_atc_1.csv"), row.names = F)
+      fwrite(tab10, paste0(vacc_dir,format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_","vaccines_my_atc_1.csv"), row.names = F)
     }
   }
   
@@ -425,9 +425,9 @@ if(length(actual_tables$VACCINES)>0){
     suppressWarnings(tab10[, count:= as.character(count)][as.numeric(count) > 0 & as.numeric(count) < 5, count := "<5"])
     suppressWarnings(tab10[, total:= as.character(total)][as.numeric(total) > 0 & as.numeric(total) < 5, total := "<5"])
     if(subpopulations_present=="Yes"){
-      fwrite(tab10, paste0(vacc_dir,subpopulations_names[s], "/","Masked/", subpopulations_names[s],"_vaccines_my_atc_1_masked.csv"), row.names = F)
+      fwrite(tab10, paste0(vacc_dir,subpopulations_names[s], "/","Masked/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", subpopulations_names[s],"_vaccines_my_atc_1_masked.csv"), row.names = F)
     } else {
-      fwrite(tab10, paste0(vacc_dir,"Masked/","vaccines_my_atc_1_masked.csv"), row.names = F)
+      fwrite(tab10, paste0(vacc_dir,"Masked/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_","vaccines_my_atc_1_masked.csv"), row.names = F)
     }
   }
   rm(tab10)
@@ -507,9 +507,9 @@ if(length(actual_tables$VACCINES)>0){
   if(!is.null(tab11)){
     tab11<-data.table(tab11, data_access_provider= data_access_provider_name, data_source=data_source_name)
     if(subpopulations_present=="Yes"){
-      fwrite(tab11, paste0(vacc_dir,subpopulations_names[s], "/", subpopulations_names[s],"_vaccines_my_atc_1_f.csv"), row.names = F)
+      fwrite(tab11, paste0(vacc_dir,subpopulations_names[s], "/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", subpopulations_names[s],"_vaccines_my_atc_1_f.csv"), row.names = F)
     } else {
-      fwrite(tab11, paste0(vacc_dir,"vaccines_my_atc_1_f.csv"), row.names = F)
+      fwrite(tab11, paste0(vacc_dir,format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_","vaccines_my_atc_1_f.csv"), row.names = F)
     }
   }
   
@@ -518,9 +518,9 @@ if(length(actual_tables$VACCINES)>0){
     suppressWarnings(tab11[, count:= as.character(count)][as.numeric(count) > 0 & as.numeric(count) < 5, count := "<5"])
     suppressWarnings(tab11[, total:= as.character(total)][as.numeric(total) > 0 & as.numeric(total) < 5, total := "<5"])
     if (subpopulations_present=="Yes"){
-      fwrite(tab11, paste0(vacc_dir,subpopulations_names[s], "/","Masked/", subpopulations_names[s],"_vaccines_my_atc_1_f_masked.csv"), row.names = F)
+      fwrite(tab11, paste0(vacc_dir,subpopulations_names[s], "/","Masked/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", subpopulations_names[s],"_vaccines_my_atc_1_f_masked.csv"), row.names = F)
     } else {
-      fwrite(tab11, paste0(vacc_dir,"Masked/", "vaccines_my_atc_1_f_masked.csv"), row.names = F)
+      fwrite(tab11, paste0(vacc_dir,"Masked/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", "vaccines_my_atc_1_f_masked.csv"), row.names = F)
     }
   }
   rm(tab11)
@@ -1158,9 +1158,9 @@ if(length(actual_tables$VACCINES)>0){
   if(!is.null(tab12)){
     tab12<-data.table(tab12, data_access_provider= data_access_provider_name, data_source=data_source_name)
     if (subpopulations_present=="Yes"){
-      fwrite(tab12, paste0(vacc_dir,subpopulations_names[s], "/", subpopulations_names[s],"_vaccines_my_atc_4.csv"), row.names = F)
+      fwrite(tab12, paste0(vacc_dir,subpopulations_names[s], "/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", subpopulations_names[s],"_vaccines_my_atc_4.csv"), row.names = F)
     } else {
-      fwrite(tab12, paste0(vacc_dir,"vaccines_my_atc_4.csv"), row.names = F)
+      fwrite(tab12, paste0(vacc_dir,format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_","vaccines_my_atc_4.csv"), row.names = F)
     }
   }
   
@@ -1171,9 +1171,9 @@ if(length(actual_tables$VACCINES)>0){
     tab12[, no_users:= as.character(no_users)][as.numeric(no_users) > 0 & as.numeric(no_users) < 5, no_users := "<5"]
     
     if(subpopulations_present=="Yes"){
-      fwrite(tab12, paste0(vacc_dir,subpopulations_names[s], "/","Masked/", subpopulations_names[s],"_vaccines_my_atc_4_masked.csv"), row.names = F)
+      fwrite(tab12, paste0(vacc_dir,subpopulations_names[s], "/","Masked/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", subpopulations_names[s],"_vaccines_my_atc_4_masked.csv"), row.names = F)
     } else {
-      fwrite(tab12, paste0(vacc_dir,"Masked/", "vaccines_my_atc_4_masked.csv"), row.names = F)
+      fwrite(tab12, paste0(vacc_dir,"Masked/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", "vaccines_my_atc_4_masked.csv"), row.names = F)
     }
   }
   
@@ -1201,9 +1201,9 @@ if(length(actual_tables$VACCINES)>0){
   if(!is.null(tab13)){
     tab13<-data.table(tab13, data_access_provider= data_access_provider_name, data_source=data_source_name)
     if(subpopulations_present=="Yes"){
-      fwrite(tab13, paste0(vacc_dir,subpopulations_names[s], "/", subpopulations_names[s],"_vaccines_my_atc_7.csv"), row.names = F)
+      fwrite(tab13, paste0(vacc_dir,subpopulations_names[s], "/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", subpopulations_names[s],"_vaccines_my_atc_7.csv"), row.names = F)
     } else {
-      fwrite(tab13, paste0(vacc_dir,"vaccines_my_atc_7.csv"), row.names = F)
+      fwrite(tab13, paste0(vacc_dir,format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_","vaccines_my_atc_7.csv"), row.names = F)
     }
   }
   
@@ -1213,9 +1213,9 @@ if(length(actual_tables$VACCINES)>0){
     tab13[, no_users:= as.character(no_users)][as.numeric(no_users) > 0 & as.numeric(no_users) < 5, no_users := "<5"]
     
     if(subpopulations_present=="Yes"){
-      fwrite(tab13, paste0(vacc_dir,subpopulations_names[s], "/","Masked/", subpopulations_names[s],"_vaccines_my_atc_7_masked.csv"), row.names = F)
+      fwrite(tab13, paste0(vacc_dir,subpopulations_names[s], "/","Masked/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", subpopulations_names[s],"_vaccines_my_atc_7_masked.csv"), row.names = F)
     } else {
-      fwrite(tab13, paste0(vacc_dir,"Masked/", "vaccines_my_atc_7_masked.csv"), row.names = F)
+      fwrite(tab13, paste0(vacc_dir,"Masked/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", "vaccines_my_atc_7_masked.csv"), row.names = F)
     }
   }
   
