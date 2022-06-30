@@ -35,7 +35,7 @@ if(length(counts_ys_fl)>0){
 #split the study populationin chunks of 100000
 
 #Create chunks of 100.000
-size<-200000
+size<-100000
 groups<-round(study_population[,.N]/size)
 if(groups==0){groups<-1}
 index<-1
