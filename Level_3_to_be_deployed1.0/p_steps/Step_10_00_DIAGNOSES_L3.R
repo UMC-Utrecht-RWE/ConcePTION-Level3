@@ -3,17 +3,12 @@
 #Organisation: UMC Utrecht, Utrecht, The Netherlands
 #Date: 06/07/2021
 
-###############################################################################################
+####Load parameters####
 source(paste0(pre_dir, "DAP_info.R")) 
 source(paste0(pre_dir, "info.R")) 
 source(paste0(pre_dir, "date_parameters.R"))
 source(paste0(pre_dir, "create_conceptsets.R")) #for diagnoses
-########################################################
-#Create output folders
-########################################################
-#########################
-#Diagnoses
-#########################
+####Create output folders####
 if (subpopulations_present=="No"){
   #output folder for DIAGNOSES report in g_output
   if ("DIAGNOSES" %in% list.files(output_dir)){
@@ -166,14 +161,11 @@ if (subpopulations_present=="No"){
   
 }
 
-###############################################################
-
+####Main script####
 if(sum(length(actual_tables$EVENTS),length(actual_tables$MEDICAL_OBSERVATIONS),length(actual_tables$SURVEY_OBSERVATIONS))>0){
-####################################################################################################
-#Main script
-####################################################################################################
 if (subpopulations_present=="Yes"){
 for (s in 1: length(subpopulations_names)){
+  #Load study population
   study_sub_population<-study_population_dir[grepl(study_population_dir, pattern=paste0(subpopulations_names[s],"_study_population"), fixed=T)]
   study_sub_population<-study_sub_population[grepl(study_sub_population, pattern=paste0("^", subpopulations_names[s]))]
   study_population<-readRDS(paste0(g_intermediate, "populations/", study_sub_population))[,c("person_id","sex_at_instance_creation","birth_date","end_follow_up","start_follow_up","age_start_follow_up")]
@@ -199,6 +191,7 @@ for (s in 1: length(subpopulations_names)){
   rm(nr_std)
   }
 } else {
+  #Load study population
   study_population_dir<-study_population_dir[grepl(study_population_dir, pattern="ALL_study_population", fixed=T)]
   study_population<-readRDS(paste0(g_intermediate, "populations/", study_population_dir))[,c("person_id","sex_at_instance_creation","birth_date","end_follow_up","start_follow_up","age_start_follow_up")]
   study_population<-study_population[,person_id:=as.character(person_id)]
@@ -224,7 +217,7 @@ for (s in 1: length(subpopulations_names)){
   
 }
 }
-
+####Clean environment####
 #Delete folders events, so, mo from tmp
 unlink(paste0(tmp,"EVENTS"), recursive = T)
 unlink(paste0(tmp,"MO"), recursive = T)
