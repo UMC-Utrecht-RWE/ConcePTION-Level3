@@ -11,12 +11,10 @@
 ############################################
 print("Analyse EVENTS table.")
 if(length(actual_tables$EVENTS)>0){
-  ###################################################
-  #List for saving info
-  ###################################################
+  ####List for saving info####
   print("Creating lists to save the information.")
+  ####Flowchart parameters######
   orig_no_rows_events<-list() #original number of records in the EVENTS table
-  #######################
   #pers_stdpop_not_events
   events_study_pop<-list() #number of records for the study population, no selection criteria for time applied
   events_date_miss<-list() #number of record with missing event_date
@@ -26,29 +24,23 @@ if(length(actual_tables$EVENTS)>0){
   events_code_vocabulary_miss<-list() #number of records with both event code and event record vocabulary missing
   events_code_pres_voc_miss<-list() #number of records with missing vocabularies
   events_sex_not_specified<-list()
-  ######################
   events_out_st_per<-list() #number of EVENTS records outside the observation period(check is done on individual level)
   events_study_pop_obsper<-list() #number of records in the study population inside study period
-  ######################
   events_stdpop_no_meaning<-list() #number of records in the study population with no meaning
   events_excluded_meanings<-list() #number of recorded with excluded meanings
   meanings_events<-list() #all meanings present
-  #############################################################################
-  #Table 20: Missingness of event codes
-  #############################################################################
+  ####Table 20: Missingness of event codes####
   events_study_population<-list() #number of records in the study population
   events_study_population_meaning<-list() #number of records in the study population by meaning
   events_study_population_my<-list() #number of records in the study population by meaning and year
   empty_event_code.my<-list()#number of records with empty event code in the study population by meaning and year
-  ##############################################################################
+  ####description parameters####
   male_population_events<-list() #save whether males are included
   female_population_events<-list() #save whether females are included
-  ##############################
   events_study_population_meaning_f<-list() #number of records in females [12-55] years old by meaning
   events_study_population_f<-list() #number of records in females [12-55] years old
-  ##############################
   females_childbearing_events<-list() #check if females of childbearing age are available
-  ###############################
+  ####Loop to filter data####
   w<-1
   for (y in 1:length(actual_tables$EVENTS)){
     #Load the table
@@ -117,19 +109,20 @@ if(length(actual_tables$EVENTS)>0){
     events_sex_not_specified[[w]]<-df[is.na(obs_out)][sex_at_instance_creation =="U" | sex_at_instance_creation == "O",.N] #number of records with unspecified sex
     df<-df[sex_at_instance_creation == "M" | sex_at_instance_creation == "F"]#remove unspecified sex
     #########
-      meanings_events[[w]]<-unique(na.omit(df[is.na(obs_out)][, meaning])) #will be used for description
-      years_events[[w]]<-unique(na.omit(df[is.na(obs_out)][, year])) #will be used for description
-      years_events_filter[[w]]<-unique(na.omit(df[, year])) #will be used for description
-      male_population_events[[w]]<-ifelse(df[is.na(obs_out)][sex_at_instance_creation=="M",.N]>0,1,0)
-      female_population_events[[w]]<-ifelse(df[is.na(obs_out)][sex_at_instance_creation=="F",.N]>0,1,0)
-      females_childbearing_events[[w]]<-ifelse(df[is.na(obs_out)][sex_at_instance_creation=="F" & age_start_follow_up>=min_age_preg & age_start_follow_up<=max_age_preg,.N]>0,1,0)
-      ############################
-      #Table 20
-      ###########################
-      events_study_population[[w]]<-df[is.na(obs_out),.N] #number of records in the study population
-      events_study_population_meaning[[w]]<-df[is.na(obs_out),.N, by="meaning"] #number of records in the study population by meaning
-      events_study_population_my[[w]]<-df[is.na(obs_out),.N, by=.(meaning,year)] #number of records in the study population by meaning and year
-      empty_event_code.my[[w]]<-df[is.na(event_code) & is.na(obs_out), .N, by=.(meaning,year)] #number of records with missing event code when date disp/presc is present
+    meanings_events[[w]]<-unique(na.omit(df[is.na(obs_out)][, meaning])) #will be used for description
+    #years_events[[w]]<-unique(na.omit(df[is.na(obs_out)][, year])) #will be used for description
+    years_events[[w]]<-df[!duplicated(year),"year"] #will be used for description
+    
+    #years_events_filter[[w]]<-unique(na.omit(df[, year])) #will be used for description
+    years_events_filter[[w]]<-df[!duplicated(year), "year"]
+    male_population_events[[w]]<-ifelse(df[is.na(obs_out)][sex_at_instance_creation=="M",.N]>0,1,0)
+    female_population_events[[w]]<-ifelse(df[is.na(obs_out)][sex_at_instance_creation=="F",.N]>0,1,0)
+    females_childbearing_events[[w]]<-ifelse(df[is.na(obs_out)][sex_at_instance_creation=="F" & age_start_follow_up>=min_age_preg & age_start_follow_up<=max_age_preg,.N]>0,1,0)
+    ####Table 20####
+    events_study_population[[w]]<-df[is.na(obs_out),.N] #number of records in the study population
+    events_study_population_meaning[[w]]<-df[is.na(obs_out),.N, by="meaning"] #number of records in the study population by meaning
+    events_study_population_my[[w]]<-df[is.na(obs_out),.N, by=.(meaning,year)] #number of records in the study population by meaning and year
+    empty_event_code.my[[w]]<-df[is.na(event_code) & is.na(obs_out), .N, by=.(meaning,year)] #number of records with missing event code when date disp/presc is present
       #############################
       if("no_event_id" %in% names(df)){
         df[,no_event_id:=NULL]
@@ -138,6 +131,9 @@ if(length(actual_tables$EVENTS)>0){
       #match codes based on coding system and code: algorithm start with, rcd, snomed
       #################################################################
      if(df[is.na(obs_out),.N]>0){
+       if("no_event_id" %in% names(df)){
+         df[,no_event_id:=NULL]
+       }
        years_study_events<-sort(df[!duplicated(year), year])#years present in this table
       #will be used to add people having another diagnosis when calculating rates recurrent/first event
        pers_included_events<-df[!duplicated(person_id), c("person_id","birth_date","start_follow_up","end_follow_up","sex_at_instance_creation")]
@@ -149,6 +145,8 @@ if(length(actual_tables$EVENTS)>0){
       
       print(paste0("Extracting data for conditions_to_start_with:",actual_tables$EVENTS[y]))
       if(sum(df[!duplicated(event_vocabulary), event_vocabulary] %in% conditions_to_start_with)>0){
+        if("filter" %in% names(df)){df[,filter:=NULL]}#new 01.06.2022
+        if("code_no_dot" %in% names(df)){df[,code_no_dot:=NULL]}#new 01.06.2022
         df[,code_no_dot:=as.character(gsub("\\.","", event_code))]
         for (i in 1:length(conditions_start)){
           for(j in 1:length(conditions_start[[i]])){
@@ -166,25 +164,36 @@ if(length(actual_tables$EVENTS)>0){
             codes_no_dot<-gsub("\\.","", conditions_start[[i]][[j]])
             
             pattern_to_search<-paste(paste0("^",codes_no_dot), collapse = "|")
+            df[,filter:=NA]
             df[grepl(pattern_to_search, df[["code_no_dot"]]) & event_vocabulary==names(conditions_start[[i]])[j],filter:=1]
             rm(pattern_to_search,codes_no_dot)
             
             
-            if("filter" %!in% names(df)){df[,filter:=0]}
-            m<-1
-            repeat{
-              if(df[filter==1 & year==years_study_events[m],.N]>0){
-                if("code_no_dot" %in% names(df)){
-                  df[,code_no_dot:=NULL]
-                }
-                saveRDS(data.table(df[filter==1 & year==years_study_events[m]], condition=names(conditions_start[i])), paste0(events_tmp,years_study_events[m],"_", names(conditions_start[i]), "_",actual_tables$EVENTS[y], "_start.rds"))
+            #if("filter" %!in% names(df)){df[,filter:=0]} new 01.06.2022
+            #Add new loop based on years of event present
+            if(df[filter==1,.N]>0){
+              years_this_event<-sort(df[filter==1][!duplicated(year),year])
+              for(year_ind in 1:length(years_this_event)){
+                col_rm<-c("code_no_dot","obs_out")
+                saveRDS(data.table(df[,-col_rm,with=F][filter==1 & year==years_this_event[year_ind]], condition=names(conditions_start[i])), paste0(events_tmp,years_this_event[year_ind],"_", names(conditions_start[i]), "_",actual_tables$EVENTS[y], "_start.rds"))
               }
-              m<-m+1
-              if(m >length(years_study_events)){
-                break
-              }
-            }
-            df[,filter:=NULL]
+            }# new 01.06.2022
+            
+            
+            # m<-1
+            # repeat{
+            #   if(df[filter==1 & year==years_study_events[m],.N]>0){
+            #     if("code_no_dot" %in% names(df)){
+            #       df[,code_no_dot:=NULL]
+            #     }
+            #     saveRDS(data.table(df[filter==1 & year==years_study_events[m]], condition=names(conditions_start[i])), paste0(events_tmp,years_study_events[m],"_", names(conditions_start[i]), "_",actual_tables$EVENTS[y], "_start.rds"))
+            #   }
+            #   m<-m+1
+            #   if(m >length(years_study_events)){
+            #     break
+            #   }
+            # }
+            if("filter" %in% names(df)){df[,filter:=NULL]}
           }
         }
       }
@@ -192,6 +201,9 @@ if(length(actual_tables$EVENTS)>0){
       
       print(paste0("Extracting data for conditions_rcd:",actual_tables$EVENTS[y]))
       if(sum(df[!duplicated(event_vocabulary), event_vocabulary] %in% conditions_rcd)>0){
+        if("filter" %in% names(df)){df[,filter:=NULL]}#new 01.06.2022
+        if("code_no_dot" %in% names(df)){df[,code_no_dot:=NULL]}#new 01.06.2022
+        df[,code_no_dot:=as.character(gsub("\\.","", event_code))]#new 01.06.2022
         for (i in 1:length(conditions_read)){
           for(j in 1:length(conditions_read[[i]])){
             # z<-1
@@ -206,21 +218,34 @@ if(length(actual_tables$EVENTS)>0){
             # }
             
             pattern_to_search<-paste(paste0("^",conditions_read[[i]][[j]]), collapse = "|")
-            df[grepl(pattern_to_search, df[["event_code"]]) & event_vocabulary==names(conditions_read[[i]])[j],filter:=1]
+            df[,filter:=NA]#new 01.06.2022
+            df[grepl(pattern_to_search, df[["code_no_dot"]]) & event_vocabulary==names(conditions_read[[i]])[j],filter:=1]
             rm(pattern_to_search)
             
-            if("filter" %!in% names(df)){df[,filter:=0]}
-            m<-1
-            repeat{
-              if(df[filter==1 & year==years_study_events[m],.N]>0){
-                saveRDS(data.table(df[filter==1 & year==years_study_events[m]], condition=names(conditions_read[i])), paste0(events_tmp,years_study_events[m],"_", names(conditions_read[i]), "_",actual_tables$EVENTS[y], "_RCD.rds"))
+            # if("filter" %!in% names(df)){df[,filter:=0]}
+            # m<-1
+            # repeat{
+            #   if(df[filter==1 & year==years_study_events[m],.N]>0){
+            #     saveRDS(data.table(df[filter==1 & year==years_study_events[m]], condition=names(conditions_read[i])), paste0(events_tmp,years_study_events[m],"_", names(conditions_read[i]), "_",actual_tables$EVENTS[y], "_RCD.rds"))
+            #   }
+            #   m<-m+1
+            #   if(m >length(years_study_events)){
+            #     break
+            #   }
+            # }
+            
+            if(df[filter==1,.N]>0){
+              years_this_event<-sort(df[filter==1][!duplicated(year),year])
+              for(year_ind in 1:length(years_this_event)){
+                col_rm<-c("code_no_dot","obs_out")
+                saveRDS(data.table(df[,-col_rm,with=F][filter==1 & year==years_this_event[year_ind]], condition=names(conditions_read[i])), paste0(events_tmp,years_this_event[year_ind],"_", names(conditions_read[i]), "_",actual_tables$EVENTS[y], "_RCD.rds"))
               }
-              m<-m+1
-              if(m >length(years_study_events)){
-                break
-              }
-            }
-            df[,filter:=NULL]
+            } else {
+              years_this_event<-NULL}# new 01.06.2022
+            
+            rm(years_this_event)
+            
+            if("filter" %in% names(df)){df[,filter:=NULL]}
           }
         }
       }
@@ -228,15 +253,14 @@ if(length(actual_tables$EVENTS)>0){
       
       print(paste0("Extracting data for conditions_snomed:",actual_tables$EVENTS[y]))
       if(sum(df[!duplicated(event_vocabulary), event_vocabulary] %in% conditions_snomed_codes)>0){
+        if("filter" %in% names(df)){df[,filter:=NULL]}#new 01.06.2022
+        if("code_no_dot" %in% names(df)){df[,code_no_dot:=NULL]}#new 01.06.2022
         for (i in 1:length(conditions_snomed)){
           for(j in 1:length(conditions_snomed[[i]])){
             
-            if("filter" %in% names(df)){
-              df[,filter:=NULL]
-            }
             codes<-data.table(event_vocabulary=names(conditions_snomed[[i]])[j], event_code=conditions_snomed[[i]][[j]], filter=1)
             df<-merge.data.table(df,codes,by=c("event_vocabulary","event_code"),all.x = T,allow.cartesian = T)
-        
+            
             
             # z<-1
             # repeat{
@@ -248,31 +272,41 @@ if(length(actual_tables$EVENTS)>0){
             #     break
             #   }
             # }
-            if("filter" %!in% names(df)){df[,filter:=0]}
-            m<-1
-            repeat{
-              if(df[filter==1 & year==years_study_events[m],.N]>0){
-                saveRDS(data.table(df[filter==1 & year==years_study_events[m]], condition=names(conditions_snomed[i])), paste0(events_tmp,years_study_events[m],"_", names(conditions_snomed[i]), "_",actual_tables$EVENTS[y], "_SNOMED.rds"))
+            # if("filter" %!in% names(df)){df[,filter:=0]}
+            # m<-1
+            # repeat{
+            #   if(df[filter==1 & year==years_study_events[m],.N]>0){
+            #     saveRDS(data.table(df[filter==1 & year==years_study_events[m]], condition=names(conditions_snomed[i])), paste0(events_tmp,years_study_events[m],"_", names(conditions_snomed[i]), "_",actual_tables$EVENTS[y], "_SNOMED.rds"))
+            #   }
+            #   m<-m+1
+            #   if(m >length(years_study_events)){
+            #     break
+            #   }
+            # }
+            
+            if(df[filter==1,.N]>0){
+              years_this_event<-sort(df[filter==1][!duplicated(year),year])
+              for(year_ind in 1:length(years_this_event)){
+                col_rm<-c("obs_out")
+                saveRDS(data.table(df[,-col_rm,with=F][filter==1 & year==years_this_event[year_ind]], condition=names(conditions_snomed[i])), paste0(events_tmp,years_this_event[year_ind],"_", names(conditions_snomed[i]), "_",actual_tables$EVENTS[y], "_SNOMED.rds"))
               }
-              m<-m+1
-              if(m >length(years_study_events)){
-                break
-              }
-            }
-            df[,filter:=NULL]
+            } else {
+              years_this_event<-NULL}# new 01.06.2022
+            
+            rm(years_this_event)
+            if("filter" %in% names(df)){df[,filter:=NULL]}
           }
         }
       }
       #output to g_intermediate/tmp/EVENTS datasets splitted by condition, year, type of codes(exact match: SNOMED)
-     
+      
       print(paste0("Extracting data for conditions_other:",actual_tables$EVENTS[y]))
       if(sum(df[!duplicated(event_vocabulary), event_vocabulary] %in% conditions_other_codes)>0){
+        if("filter" %in% names(df)){df[,filter:=NULL]}#new 01.06.2022
+        if("code_no_dot" %in% names(df)){df[,code_no_dot:=NULL]}#new 01.06.2022
         for (i in 1:length(conditions_other)){
           for(j in 1:length(conditions_other[[i]])){
             
-            if("filter" %in% names(df)){
-              df[,filter:=NULL]
-            }
             codes<-data.table(event_vocabulary=names(conditions_other[[i]])[j], event_code=conditions_other[[i]][[j]], filter=1)
             df<-merge.data.table(df,codes,by=c("event_vocabulary","event_code"),all.x = T,allow.cartesian = T)
             
@@ -286,18 +320,29 @@ if(length(actual_tables$EVENTS)>0){
             #     break
             #   }
             # }
-            if("filter" %!in% names(df)){df[,filter:=0]}
-            m<-1
-            repeat{
-              if(df[filter==1 & year==years_study_events[m],.N]>0){
-                saveRDS(data.table(df[filter==1 & year==years_study_events[m]], condition=names(conditions_other[i])), paste0(events_tmp,years_study_events[m],"_", names(conditions_other[i]), "_",actual_tables$EVENTS[y], "_other.rds"))
+            # if("filter" %!in% names(df)){df[,filter:=0]}
+            # m<-1
+            # repeat{
+            #   if(df[filter==1 & year==years_study_events[m],.N]>0){
+            #     saveRDS(data.table(df[filter==1 & year==years_study_events[m]], condition=names(conditions_other[i])), paste0(events_tmp,years_study_events[m],"_", names(conditions_other[i]), "_",actual_tables$EVENTS[y], "_other.rds"))
+            #   }
+            #   m<-m+1
+            #   if(m >length(years_study_events)){
+            #     break
+            #   }
+            # }
+            
+            if(df[filter==1,.N]>0){
+              years_this_event<-sort(df[filter==1][!duplicated(year),year])
+              for(year_ind in 1:length(years_this_event)){
+                col_rm<-c("obs_out")
+                saveRDS(data.table(df[,-col_rm,with=F][filter==1 & year==years_this_event[year_ind]], condition=names(conditions_other[i])), paste0(events_tmp,years_this_event[year_ind],"_", names(conditions_other[i]), "_",actual_tables$EVENTS[y], "_other.rds"))
               }
-              m<-m+1
-              if(m >length(years_study_events)){
-                break
-              }
-            }
-            df[,filter:=NULL]
+            } else {
+              years_this_event<-NULL}# new 01.06.2022
+            
+            rm(years_this_event)
+            if("filter" %in% names(df)){df[,filter:=NULL]}
           }
         }
       }
@@ -309,10 +354,15 @@ if(length(actual_tables$EVENTS)>0){
       #match codes based on coding system and code: persons with prior events
       #################################################################
       if(persons_event_prior[,.N]>0){
+        if("no_event_id" %in% names(persons_event_prior)){
+          persons_event_prior[,no_event_id:=NULL]
+        }
         years_study_prior_events<-sort(persons_event_prior[!duplicated(year), year])#years present in this table
         
         print(paste0("Extracting data for prior events, conditions_to_start_with:",actual_tables$EVENTS[y]))
         if(sum(persons_event_prior[!duplicated(event_vocabulary), event_vocabulary] %in% conditions_to_start_with)>0){
+          if("filter" %in% names(persons_event_prior)){persons_event_prior[,filter:=NULL]}#new 01.06.2022
+          if("code_no_dot" %in% names(persons_event_prior)){persons_event_prior[,code_no_dot:=NULL]}#new 01.06.2022
           persons_event_prior[,code_no_dot:=as.character(gsub("\\.","", event_code))]
           for (i in 1:length(conditions_start)){
             for(j in 1:length(conditions_start[[i]])){
@@ -331,24 +381,36 @@ if(length(actual_tables$EVENTS)>0){
               codes_no_dot<-gsub("\\.","", conditions_start[[i]][[j]])
               
               pattern_to_search<-paste(paste0("^",codes_no_dot), collapse = "|")
+              df[,filter:=NA]#new 01.06.2022
               persons_event_prior[grepl(pattern_to_search, persons_event_prior[["code_no_dot"]]) & event_vocabulary==names(conditions_start[[i]])[j],filter:=1]
               rm(pattern_to_search,codes_no_dot)
               
-              if("filter" %!in% names(persons_event_prior)){persons_event_prior[,filter:=0]}
-              m<-1
-              repeat{
-                if(persons_event_prior[filter==1 & year==years_study_prior_events[m],.N]>0){
-                  if("code_no_dot" %in% names(persons_event_prior)){
-                    persons_event_prior[,code_no_dot:=NULL]
-                  }
-                  saveRDS(data.table(persons_event_prior[filter==1 & year==years_study_prior_events[m], c("person_id","event_date","event_code","prior")], condition=names(conditions_start[i])), paste0(events_tmp,years_study_prior_events[m],"_", names(conditions_start[i]), "_",actual_tables$EVENTS[y], "_prior_start.rds"))
+              
+              # if("filter" %!in% names(persons_event_prior)){persons_event_prior[,filter:=0]}
+              # m<-1
+              # repeat{
+              #   if(persons_event_prior[filter==1 & year==years_study_prior_events[m],.N]>0){
+              #     if("code_no_dot" %in% names(persons_event_prior)){
+              #       persons_event_prior[,code_no_dot:=NULL]
+              #     }
+              #     saveRDS(data.table(persons_event_prior[filter==1 & year==years_study_prior_events[m], c("person_id","event_date","event_code","prior")], condition=names(conditions_start[i])), paste0(events_tmp,years_study_prior_events[m],"_", names(conditions_start[i]), "_",actual_tables$EVENTS[y], "_prior_start.rds"))
+              #   }
+              #   m<-m+1
+              #   if(m >length(years_study_prior_events)){
+              #     break
+              #   }
+              # }
+              
+              #Add new loop based on years of event present
+              if(persons_event_prior[filter==1,.N]>0){
+                years_this_event<-sort(persons_event_prior[filter==1][!duplicated(year),year])
+                for(year_ind in 1:length(years_this_event)){
+                  saveRDS(data.table(persons_event_prior[filter==1 & year==years_this_event[year_ind],c("person_id","event_date","event_code","prior")], condition=names(conditions_start[i])), paste0(events_tmp,years_this_event[year_ind],"_", names(conditions_start[i]), "_",actual_tables$EVENTS[y], "_prior_start.rds"))
                 }
-                m<-m+1
-                if(m >length(years_study_prior_events)){
-                  break
-                }
-              }
-              persons_event_prior[,filter:=NULL]
+              }# new 01.06.2022
+              
+              
+              if("filter" %in% names(persons_event_prior)){persons_event_prior[,filter:=NULL]}
             }
           }
         }
@@ -356,6 +418,9 @@ if(length(actual_tables$EVENTS)>0){
         
         print(paste0("Extracting data for prior events, conditions_rcd:",actual_tables$EVENTS[y]))
         if(sum(persons_event_prior[!duplicated(event_vocabulary), event_vocabulary] %in% conditions_rcd)>0){
+          if("filter" %in% names(persons_event_prior)){persons_event_prior[,filter:=NULL]}#new 01.06.2022
+          if("code_no_dot" %in% names(persons_event_prior)){persons_event_prior[,code_no_dot:=NULL]}#new 01.06.2022
+          persons_event_prior[,code_no_dot:=as.character(gsub("\\.","", event_code))] #new 01.06.2022
           for (i in 1:length(conditions_read)){
             for(j in 1:length(conditions_read[[i]])){
               # z<-1
@@ -370,21 +435,34 @@ if(length(actual_tables$EVENTS)>0){
               # }
               
               pattern_to_search<-paste(paste0("^",conditions_read[[i]][[j]]), collapse = "|")
-              persons_event_prior[grepl(pattern_to_search, persons_event_prior[["event_code"]]) & event_vocabulary==names(conditions_read[[i]])[j],filter:=1]
+              df[,filter:=NA]#new 01.06.2022
+              persons_event_prior[grepl(pattern_to_search, persons_event_prior[["code_no_dot"]]) & event_vocabulary==names(conditions_read[[i]])[j],filter:=1]
               rm(pattern_to_search)
               
-              if("filter" %!in% names(persons_event_prior)){persons_event_prior[,filter:=0]}
-              m<-1
-              repeat{
-                if(persons_event_prior[filter==1 & year==years_study_prior_events[m],.N]>0){
-                  saveRDS(data.table(persons_event_prior[filter==1 & year==years_study_prior_events[m],c("person_id","event_date","event_code","prior")], condition=names(conditions_read[i])), paste0(events_tmp,years_study_prior_events[m],"_", names(conditions_read[i]), "_",actual_tables$EVENTS[y], "_prior_RCD.rds"))
+              # if("filter" %!in% names(persons_event_prior)){persons_event_prior[,filter:=0]}
+              # m<-1
+              # repeat{
+              #   if(persons_event_prior[filter==1 & year==years_study_prior_events[m],.N]>0){
+              #     saveRDS(data.table(persons_event_prior[filter==1 & year==years_study_prior_events[m],c("person_id","event_date","event_code","prior")], condition=names(conditions_read[i])), paste0(events_tmp,years_study_prior_events[m],"_", names(conditions_read[i]), "_",actual_tables$EVENTS[y], "_prior_RCD.rds"))
+              #   }
+              #   m<-m+1
+              #   if(m >length(years_study_prior_events)){
+              #     break
+              #   }
+              # }
+              # 
+              
+              if(persons_event_prior[filter==1,.N]>0){
+                years_this_event<-sort(persons_event_prior[filter==1][!duplicated(year),year])
+                for(year_ind in 1:length(years_this_event)){
+                  saveRDS(data.table(persons_event_prior[filter==1 & year==years_this_event[year_ind],c("person_id","event_date","event_code","prior")], condition=names(conditions_read[i])), paste0(events_tmp,years_this_event[year_ind],"_", names(conditions_read[i]), "_",actual_tables$EVENTS[y], "_prior_RCD.rds"))
                 }
-                m<-m+1
-                if(m >length(years_study_prior_events)){
-                  break
-                }
-              }
-              persons_event_prior[,filter:=NULL]
+              } else {
+                years_this_event<-NULL}# new 01.06.2022
+              
+              rm(years_this_event)
+              
+              if("filter" %in% names(persons_event_prior)){persons_event_prior[,filter:=NULL]}
             }
           }
         }
@@ -392,6 +470,9 @@ if(length(actual_tables$EVENTS)>0){
         
         print(paste0("Extracting data for prior events, conditions_snomed:",actual_tables$EVENTS[y]))
         if(sum(persons_event_prior[!duplicated(event_vocabulary), event_vocabulary] %in% conditions_snomed_codes)>0){
+          if("filter" %in% names(persons_event_prior)){persons_event_prior[,filter:=NULL]}#new 01.06.2022
+          if("code_no_dot" %in% names(persons_event_prior)){persons_event_prior[,code_no_dot:=NULL]}#new 01.06.2022
+          
           for (i in 1:length(conditions_snomed)){
             for(j in 1:length(conditions_snomed[[i]])){
               # z<-1
@@ -405,31 +486,43 @@ if(length(actual_tables$EVENTS)>0){
               #   }
               # }
               
-              if("filter" %in% names(persons_event_prior)){
-                persons_event_prior[,filter:=NULL]
-              }
               codes<-data.table(event_vocabulary=names(conditions_snomed[[i]])[j], event_code=conditions_snomed[[i]][[j]], filter=1)
               persons_event_prior<-merge.data.table(persons_event_prior,codes,by=c("event_vocabulary","event_code"),all.x = T,allow.cartesian = T)
               
-              if("filter" %!in% names(persons_event_prior)){persons_event_prior[,filter:=0]}
-              m<-1
-              repeat{
-                if(persons_event_prior[filter==1 & year==years_study_prior_events[m],.N]>0){
-                  saveRDS(data.table(persons_event_prior[filter==1 & year==years_study_prior_events[m],c("person_id","event_date","event_code","prior")], condition=names(conditions_snomed[i])), paste0(events_tmp,years_study_prior_events[m],"_", names(conditions_snomed[i]), "_",actual_tables$EVENTS[y], "_prior_SNOMED.rds"))
+              # if("filter" %!in% names(persons_event_prior)){persons_event_prior[,filter:=0]}
+              # m<-1
+              # repeat{
+              #   if(persons_event_prior[filter==1 & year==years_study_prior_events[m],.N]>0){
+              #     saveRDS(data.table(persons_event_prior[filter==1 & year==years_study_prior_events[m],c("person_id","event_date","event_code","prior")], condition=names(conditions_snomed[i])), paste0(events_tmp,years_study_prior_events[m],"_", names(conditions_snomed[i]), "_",actual_tables$EVENTS[y], "_prior_SNOMED.rds"))
+              #   }
+              #   m<-m+1
+              #   if(m >length(years_study_prior_events)){
+              #     break
+              #   }
+              # }
+              
+              if(persons_event_prior[filter==1,.N]>0){
+                years_this_event<-sort(persons_event_prior[filter==1][!duplicated(year),year])
+                for(year_ind in 1:length(years_this_event)){
+                  saveRDS(data.table(persons_event_prior[filter==1 & year==years_this_event[year_ind],c("person_id","event_date","event_code","prior")], condition=names(conditions_snomed[i])), paste0(events_tmp,years_this_event[year_ind],"_", names(conditions_snomed[i]), "_",actual_tables$EVENTS[y], "_prior_SNOMED.rds"))
                 }
-                m<-m+1
-                if(m >length(years_study_prior_events)){
-                  break
-                }
-              }
-              persons_event_prior[,filter:=NULL]
+              } else {
+                years_this_event<-NULL}# new 01.06.2022
+              
+              rm(years_this_event)
+              
+              
+              if("filter" %in% names(persons_event_prior)){persons_event_prior[,filter:=NULL]}
             }
           }
         }
         #output to g_intermediate/tmp/EVENTS datasets splitted by condition, year, type of codes(exact match: SNOMED)
-      
+        
         print(paste0("Extracting data for prior events, conditions_other:",actual_tables$EVENTS[y]))
         if(sum(persons_event_prior[!duplicated(event_vocabulary), event_vocabulary] %in% conditions_other_codes)>0){
+          if("filter" %in% names(persons_event_prior)){persons_event_prior[,filter:=NULL]}#new 01.06.2022
+          if("code_no_dot" %in% names(persons_event_prior)){persons_event_prior[,code_no_dot:=NULL]}#new 01.06.2022
+          
           for (i in 1:length(conditions_other)){
             for(j in 1:length(conditions_other[[i]])){
               # z<-1
@@ -443,24 +536,31 @@ if(length(actual_tables$EVENTS)>0){
               #   }
               # }
               
-              if("filter" %in% names(persons_event_prior)){
-                persons_event_prior[,filter:=NULL]
-              }
               codes<-data.table(event_vocabulary=names(conditions_other[[i]])[j], event_code=conditions_other[[i]][[j]], filter=1)
               persons_event_prior<-merge.data.table(persons_event_prior,codes,by=c("event_vocabulary","event_code"),all.x = T,allow.cartesian = T)
               
-              if("filter" %!in% names(persons_event_prior)){persons_event_prior[,filter:=0]}
-              m<-1
-              repeat{
-                if(persons_event_prior[filter==1 & year==years_study_prior_events[m],.N]>0){
-                  saveRDS(data.table(persons_event_prior[filter==1 & year==years_study_prior_events[m],c("person_id","event_date","event_code","prior")], condition=names(conditions_other[i])), paste0(events_tmp,years_study_prior_events[m],"_", names(conditions_other[i]), "_",actual_tables$EVENTS[y], "_prior_other.rds"))
+              # if("filter" %!in% names(persons_event_prior)){persons_event_prior[,filter:=0]}
+              # m<-1
+              # repeat{
+              #   if(persons_event_prior[filter==1 & year==years_study_prior_events[m],.N]>0){
+              #     saveRDS(data.table(persons_event_prior[filter==1 & year==years_study_prior_events[m],c("person_id","event_date","event_code","prior")], condition=names(conditions_other[i])), paste0(events_tmp,years_study_prior_events[m],"_", names(conditions_other[i]), "_",actual_tables$EVENTS[y], "_prior_other.rds"))
+              #   }
+              #   m<-m+1
+              #   if(m >length(years_study_prior_events)){
+              #     break
+              #   }
+              # }
+              
+              if(persons_event_prior[filter==1,.N]>0){
+                years_this_event<-sort(persons_event_prior[filter==1][!duplicated(year),year])
+                for(year_ind in 1:length(years_this_event)){
+                  saveRDS(data.table(persons_event_prior[filter==1 & year==years_this_event[year_ind],c("person_id","event_date","event_code","prior")], condition=names(conditions_other[i])), paste0(events_tmp,years_this_event[year_ind],"_", names(conditions_other[i]), "_",actual_tables$EVENTS[y], "_prior_other.rds"))
                 }
-                m<-m+1
-                if(m >length(years_study_prior_events)){
-                  break
-                }
-              }
-              persons_event_prior[,filter:=NULL]
+              } else {
+                years_this_event<-NULL}# new 01.06.2022
+              
+              rm(years_this_event)
+              if("filter" %in% names(persons_event_prior)){persons_event_prior[,filter:=NULL]}
             }
           }
         }
@@ -474,10 +574,7 @@ if(length(actual_tables$EVENTS)>0){
     rm(persons_event_prior)
   }
   
-  ##############################################################################
-  #number of subjects in the study population that have not had an event
-  ##############################################################################
-
+  ####number of subjects in the study population that have not had an event ####
   stdpop_not_events_files<-list.files(events_tmp, pattern = "stdpop_not_events")
   if (length(stdpop_not_events_files)>0){
     events_not_id<-readRDS(paste0(events_tmp, stdpop_not_events_files[1]))
@@ -507,11 +604,7 @@ if(length(actual_tables$EVENTS)>0){
   }
   rm(stdpop_not_events_files)
   
-  
-  ##############################################################################
-  #subjects included in the events_study population
-  ##############################################################################
-  
+  ####subjects included in the events_study population ####
   stdpop_events_files<-list.files(events_tmp, pattern = "pers_included_events_")
   if (length(stdpop_events_files)>0){
     events_included_id<-readRDS(paste0(events_tmp, stdpop_events_files[1]))
@@ -536,9 +629,7 @@ if(length(actual_tables$EVENTS)>0){
   }
   rm(stdpop_events_files)
   
-  #################################################################################################
-  #Flowchart
-  ################################################################################################
+  ####Flowchart ####
   print("Creating flowchart.")
   print("Get number of records in the original table.")
   #original number of records in the EVENTS table(flowchart 1)
@@ -620,9 +711,7 @@ if(length(actual_tables$EVENTS)>0){
      events_study_pop_obsper,events_stdpop_no_meaning,events_code_vocabulary_miss,events_code_pres_voc_miss,
      events_not_vocabularies,events_sex_not_specified,events_study_population)
   
-  ##################################################################################################
-  #Description
-  ##################################################################################################
+  ####Description ####
   print("Creating description of study population.")
   #meanings
   print("Get list of meanings.")
@@ -631,9 +720,8 @@ if(length(actual_tables$EVENTS)>0){
   meanings_events<-unique(c(meanings_events))
   meanings_events_des<-paste(meanings_events, collapse = ", ")
   #study years
-  years_events<-Filter(length,years_events)
   years_events<-suppressWarnings(do.call(rbind, years_events))
-  years_events<-unique(c(years_events))
+  years_events<-sort(years_events[!duplicated(year),year])
   years_events_des<-paste(sort(years_events), collapse=", ")
   #
   male_population_events<-do.call(rbind, male_population_events)
@@ -663,9 +751,7 @@ if(length(actual_tables$EVENTS)>0){
                                           females_childbearing_events))
   rm(meanings_events_des,years_events_des,sex_included_events,stdpop_not_events)
   
-  ##############################################################################
-  #tab20
-  ##############################################################################
+  ####tab20 ####
   events_study_population_my<-do.call(rbind,events_study_population_my)
   setnames(events_study_population_my,"N","no_records")
   if(events_study_population_my[,.N]>0){
@@ -688,13 +774,9 @@ if(length(actual_tables$EVENTS)>0){
   
   rm(empty_event_code.my)
   
-  ######################
-  #Combine populations
-  #####################
+  ####Combine populations ####
   conditions_codelist<-names(conditions)
-  ################################################################################
-  #combine all person_id that had a prior condition by condition
-  ###############################################################################
+  ####combine all person_id that had a prior condition by condition ####
   conditions_prior<-c(list.files(events_tmp, "\\_prior_start.rds$"),list.files(events_tmp, "\\_prior_RCD.rds$"),list.files(events_tmp, "\\_prior_SNOMED.rds$"),list.files(events_tmp, "\\_prior_other.rds$"))
   if(length(conditions_prior)>0){
   files_prior<-vector(mode="list", length=length(conditions_codelist))
@@ -727,14 +809,12 @@ if(length(actual_tables$EVENTS)>0){
   }
   rm(conditions_prior)
   
-  ############################################################
-  #Combine dataset by year and condition
+  ####Combine dataset by year and condition ####
   conditions_files<-c(list.files(events_tmp, "\\_start.rds$"),list.files(events_tmp, "\\_RCD.rds$"),list.files(events_tmp, "\\_SNOMED.rds$"),list.files(events_tmp, "\\_other.rds$"))
   if (length(conditions_files)>0){
-    years_events_filter<-Filter(length,years_events_filter)
     years_events_filter<-suppressWarnings(do.call(rbind, years_events_filter))
-    years_events_filter<-sort(unique(c(years_events_filter)))
-
+    years_events_filter<-sort(years_events_filter[!duplicated(year),year])
+    
     #create combination year_condition from years(years present in the study) and all names of conditions in the codelist
     filter_var<-as.data.table(expand.grid(years_events_filter,conditions_codelist))
    names(filter_var)<-c("year","diagnosis")
@@ -757,6 +837,10 @@ if(length(actual_tables$EVENTS)>0){
     for (i in 1:length(files)){
       combined_diagnosis_events<-lapply(paste0(events_tmp,files[[i]]), readRDS)
       combined_diagnosis_events<-do.call(rbind,combined_diagnosis_events)
+      if("filter" %in% names(combined_diagnosis_events)){combined_diagnosis_events[,filter:=NULL]}
+      if("no_event_id" %in% names(combined_diagnosis_events)){combined_diagnosis_events[,no_event_id:=NULL]}
+      if("no_mo_id" %in% names(combined_diagnosis_events)){combined_diagnosis_events[,no_mo_id:=NULL]}
+      if("no_so_id" %in% names(combined_diagnosis_events)){combined_diagnosis_events[,no_so_id:=NULL]}
       combined_diagnosis_events[,code_nodot:=gsub("\\.","",event_code)]
       combined_diagnosis_events[!(event_vocabulary %in% c(conditions_snomed_codes, conditions_other_codes)),truncated_code:=substr(code_nodot,1,4)]
       combined_diagnosis_events[event_vocabulary %in% c(conditions_snomed_codes, conditions_other_codes),truncated_code:=event_code]
@@ -767,11 +851,11 @@ if(length(actual_tables$EVENTS)>0){
       
       if (subpopulations_present=="Yes"){
         if(combined_diagnosis_events[,.N]>0){
-          saveRDS(combined_diagnosis_events, paste0(diag_pop,subpopulations_names[s], "/", names(files)[i],"_events_diagnoses.rds"))
+          saveRDS(combined_diagnosis_events, paste0(diag_pop,subpopulations_names[s], "/", names(files)[i],"events_diagnoses.rds"))
         }
       } else {
         if(combined_diagnosis_events[,.N]>0){
-          saveRDS(combined_diagnosis_events, paste0(diag_pop,names(files)[i],"_events_diagnoses.rds"))
+          saveRDS(combined_diagnosis_events, paste0(diag_pop,names(files)[i],"events_diagnoses.rds"))
         }
       }
     }
