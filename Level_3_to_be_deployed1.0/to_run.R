@@ -191,9 +191,7 @@ if(length(actual_tables$VACCINES)>0){
   }
 }
 source(paste0(pre_dir,"save_environment.R"))
-#################################################
-#Diagnoses
-#################################################
+#####Diagnoses#####
 rm(list=ls())
 if(!require(rstudioapi)){install.packages("rstudioapi")}
 library(rstudioapi)
@@ -206,7 +204,6 @@ study_name_codelist<-NULL
 recurrent_event_analysis<-"Yes"
 load(paste0(g_intermediate,"environment.RData"))
 system.time(source(paste0(pre_dir,"Step_10_00_DIAGNOSES_L3.R")))
-
 
 if(sum(length(actual_tables$EVENTS),length(actual_tables$MEDICAL_OBSERVATIONS),length(actual_tables$SURVEY_OBSERVATIONS))>0){
   if(subpopulations_present=="No"){
