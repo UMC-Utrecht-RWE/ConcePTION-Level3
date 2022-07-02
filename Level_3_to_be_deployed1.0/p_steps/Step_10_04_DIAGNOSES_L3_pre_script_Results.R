@@ -1,10 +1,9 @@
-###########################################################################################
-#Combine results 
-##########################################################################################
+#Author: Vjola Hoxhaj Drs.
+#email: v.hoxhaj@umcutrecht.nl
+#Organisation: UMC Utrecht, Utrecht, The Netherlands
+#Date: 06/07/2021
 
-#########################
-#Identify all subjects that never had a diagnosis
-#########################
+####To be removed####
 # ids_no_diagnosis_events_fl<-list.files(events_tmp,"events_not_ids_stdpop")
 # if(length(ids_no_diagnosis_events_fl)>0){
 #   ids_no_diagnosis_events<-lapply(paste0(events_tmp,ids_no_diagnosis_events_fl),readRDS)  
@@ -61,6 +60,7 @@
 #   rm(ids_no_diagnosis_so)
 # }
 
+####Identify all subjects that never had a diagnosis####
 print("Calculating person time for subject that do not have a diagnoses.")
 study_population[no_event_id==1 & no_mo_id==1 & no_so_id==1, no_diagosis:=1]
 study_population[,no_event_id:=NULL][,no_mo_id:=NULL][,no_so_id:=NULL]
@@ -72,6 +72,7 @@ study_population<-study_population[is.na(no_diagosis)]
 if(study_population_no_diag[,.N]>0){
   size<-100000
   groups<-round(study_population_no_diag[,.N]/size)
+  if(groups==0){groups<-1}
   index<-1
   min<-1
   max<-study_population_no_diag[,.N]
@@ -129,9 +130,7 @@ if(length(ps_no_diag_fl)>0){
   saveRDS(ps_no_diag, paste0(diag_tmp,"no_id_py.rds"))
 }
 rm(ps_no_diag_fl)
-##########################
-#Identify all people present in the study population
-##########################
+####Identify all people present in the study population####
 #events
 pers_events_files<-list.files(events_tmp, "pers_events")
 if(length(pers_events_files)>0){
@@ -144,7 +143,7 @@ if(length(pers_events_files)>0){
 } else {
   study_population[,pers_events:=NA] 
 }
-
+#mo
 pers_mo_files<-list.files(mo_tmp, "pers_mo")
 if(length(pers_mo_files)>0){
   pers_mo<-lapply(paste0(mo_tmp, pers_mo_files), readRDS)
@@ -156,7 +155,7 @@ if(length(pers_mo_files)>0){
 } else {
   study_population[,pers_mo:=NA] 
 }
-
+#so
 pers_so_files<-list.files(so_tmp, "pers_so")
 if(length(pers_so_files)>0){
   pers_so<-lapply(paste0(so_tmp, pers_so_files), readRDS)
@@ -181,6 +180,7 @@ study_population<-study_population[pers_diagnosis==1]
 if(study_population[,.N]>0){
   size<-100000
   groups<-round(study_population[,.N]/size)
+  if(groups==0){groups<-1}
   index<-1
   min<-1
   max<-study_population[,.N]
@@ -234,21 +234,18 @@ if(length(py_fl)>0){
   py_diag<-as.data.table(py_diag)
 }
 
-###################
-#flowchart
-###################
+####flowchart####
 flowchart<-data.table(flowchart_events,flowchart_mo[,2], flowchart_so[,2])
 rm(flowchart_events,flowchart_mo,flowchart_so)
 
 if(subpopulations_present=="Yes"){
-  write.csv(flowchart, paste0(diag_dir, subpopulations_names[s], "/", subpopulations_names[s], "_diagnoses_flowchart.csv"), row.names = F)
+  fwrite(flowchart, paste0(diag_dir, subpopulations_names[s], "/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", subpopulations_names[s], "_diagnoses_flowchart.csv"), row.names = F)
 } else {
-  write.csv(flowchart, paste0(diag_dir, "diagnoses_flowchart.csv"), row.names = F)
+  fwrite(flowchart, paste0(diag_dir,format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", "diagnoses_flowchart.csv"), row.names = F)
 }
 
-########
 #Apply masking
-########
+
 if(length(actual_tables$EVENTS)>0){
   flowchart[, EVENTS:= as.character(EVENTS)][as.numeric(EVENTS) > 0 & as.numeric(EVENTS) < 5, EVENTS := "<5"]
 }
@@ -260,27 +257,24 @@ if(length(actual_tables$SURVEY_OBSERVATIONS)>0){
 }
 
 if(subpopulations_present=="Yes"){
-  write.csv(flowchart, paste0(diag_dir,subpopulations_names[s], "/","Masked/", subpopulations_names[s],"_diagnoses_flowchart_masked.csv"), row.names = F)
+  fwrite(flowchart, paste0(diag_dir,subpopulations_names[s], "/","Masked/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", subpopulations_names[s],"_diagnoses_flowchart_masked.csv"), row.names = F)
 } else {
-  write.csv(flowchart, paste0(diag_dir, "Masked/", "diagnoses_flowchart_masked.csv"), row.names = F)
+  fwrite(flowchart, paste0(diag_dir, "Masked/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", "diagnoses_flowchart_masked.csv"), row.names = F)
 }
 
 rm(flowchart)
-###################
-#description
-###################
+
+####description####
 description<-data.table(description_events,description_mo[,2], description_so[,2])
 rm(description_events,description_mo,description_so)
 
 if(subpopulations_present=="Yes"){
-  write.csv(description, paste0(diag_dir, subpopulations_names[s], "/", subpopulations_names[s], "_diagnoses_description.csv"), row.names = F)
+  fwrite(description, paste0(diag_dir, subpopulations_names[s], "/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", subpopulations_names[s], "_diagnoses_description.csv"), row.names = F)
 } else {
-  write.csv(description, paste0(diag_dir, "diagnoses_description.csv"), row.names = F)
+  fwrite(description, paste0(diag_dir,format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", "diagnoses_description.csv"), row.names = F)
 }
 
-##################
 #Apply masking
-##################
 if(length(actual_tables$EVENTS)>0){
   if(description[5, 2]<5 & description[5, 2]>0) {description[5, 2]<-"<5"}
 }
@@ -292,15 +286,13 @@ if(length(actual_tables$SURVEY_OBSERVATIONS)>0){
 }
 
 if(subpopulations_present=="Yes"){
-  write.csv(description, paste0(diag_dir,subpopulations_names[s], "/","Masked/", subpopulations_names[s],"_diagnoses_description_masked.csv"), row.names = F)
+  fwrite(description, paste0(diag_dir,subpopulations_names[s], "/","Masked/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", subpopulations_names[s],"_diagnoses_description_masked.csv"), row.names = F)
 } else {
-  write.csv(description, paste0(diag_dir, "Masked/", "diagnoses_description_masked.csv"), row.names = F)
+  fwrite(description, paste0(diag_dir, "Masked/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", "diagnoses_description_masked.csv"), row.names = F)
 }
 rm(description)
 
-###################
-#tab20
-##################
+####tab20####
 tab20<-rbind(tab20_events, tab20_mo, tab20_so)
 tab20<-as.data.table(tab20)
 rm(tab20_events,tab20_mo,tab20_so)
@@ -311,9 +303,9 @@ tab20<-data.table(tab20, data_access_provider= data_access_provider_name, data_s
 
 
 if(subpopulations_present=="Yes"){
-  write.csv(tab20, paste0(diag_dir, subpopulations_names[s], "/", subpopulations_names[s], "_diagnoses_completeness.csv"), row.names = F)
+  fwrite(tab20, paste0(diag_dir, subpopulations_names[s], "/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", subpopulations_names[s], "_diagnoses_completeness.csv"), row.names = F)
 } else {
-  write.csv(tab20, paste0(diag_dir, "diagnoses_completeness.csv"), row.names = F)
+  fwrite(tab20, paste0(diag_dir,format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", "diagnoses_completeness.csv"), row.names = F)
 }
 
 tab20[, no_records:= as.character(no_records)][as.numeric(no_records) > 0 & as.numeric(no_records) < 5, no_records := "<5"]
@@ -321,16 +313,14 @@ tab20[, no_empty_code:= as.character(no_empty_code)][as.numeric(no_empty_code) >
 tab20[, percentage_empty_code:= as.character(percentage_empty_code)][no_empty_code == "<5", percentage_empty_code := "N/A"]
 
 if(subpopulations_present=="Yes"){
-  write.csv(tab20, paste0(diag_dir,subpopulations_names[s], "/","Masked/", subpopulations_names[s],"_diagnoses_completeness_masked.csv"), row.names = F)
+  fwrite(tab20, paste0(diag_dir,subpopulations_names[s], "/","Masked/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", subpopulations_names[s],"_diagnoses_completeness_masked.csv"), row.names = F)
 } else {
-  write.csv(tab20, paste0(diag_dir, "Masked/", "diagnoses_completeness_masked.csv"), row.names = F)
+  fwrite(tab20, paste0(diag_dir, "Masked/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", "diagnoses_completeness_masked.csv"), row.names = F)
 }
 
 rm(tab20)
 
-###########################
-#Rates of recurrent events and data cleanup
-###########################
+####Rates of recurrent events and data cleanup####
 diagnoses_files<-list.files(paste0(populations_dir, "DIAGNOSES/"))
 files<-list()
 for (i in 1: length(diagnoses_files)){
@@ -357,9 +347,9 @@ rm(diagnoses_list)
 time_lag<-data.table(condition=c("Depression", "Elective abortion",
                                  "Gestational diabetes","Multiple gestation"," Preeclampsia", "Spontaneous abortion",
                                  "TOPFA", "Breast cancer"),
-                     time_lag=c(3*30, 8*7, 23*7, 23*7, 8*7, 8*7, 8*7,0))
+                     time_lag=c(3*30, 8*7, 23*7, 23*7, 8*7, 8*7, 8*7,5*365), time_remove=c(3*30, 8*7, 23*7, 23*7, 8*7, 8*7, 8*7,0))
 
-#create a loop that woud run count person time for each diagnoses separately
+#create a loop that would run count person time for each diagnoses separately
 duplicated_event_dates<-data.table(event_definition=names(diagnoses_files),original_rows=0,duplicates=0,duplicates_time_lag=as.character(0))
 #duplicates: diagnosis at the same date are counted and removed
 #duplicates_time_lag: diagnosis within the time lag are counted and removed
@@ -383,11 +373,13 @@ for (condition_ind in 1:length(diagnoses_files)){
   
   #remove all records that are over the time lag
   if(diag_file[!duplicated(condition), condition] %in% time_lag[,condition]){
-  diag_file[,lag:=time_lag[condition == names(diagnoses_files)[condition_ind],time_lag]]
-    } else {
-  diag_file[,lag:=NA]
+    diag_file[,lag:=time_lag[condition == names(diagnoses_files)[condition_ind],time_lag]]
+    diag_file[,time_remove:=time_lag[condition == names(diagnoses_files)[condition_ind],time_remove]]
+  } else {
+    diag_file[,lag:=NA]
+    diag_file[,time_remove:=NA]
   }
-      #create lag variable based on condition
+  #create lag variable based on condition
   if(diag_file[!is.na(lag),.N]>0){
     #Step 1: Order the dataset by person_id, condition and date of event
     diag_file<-diag_file[order(person_id,condition,event_date)]
@@ -410,7 +402,7 @@ for (condition_ind in 1:length(diagnoses_files)){
     }
     #count number of duplicates
     duplicated_event_dates[event_definition==names(diagnoses_files)[condition_ind],duplicates_time_lag:=no_duplicates_rows -diag_file[,.N]]
-    diag_file[,date_1:=NULL][,date_2:=NULL][,rowid:=NULL][,lag:=NULL][,date_dif:=NULL]
+    diag_file[,date_1:=NULL][,date_2:=NULL][,rowid:=NULL][,lag:=NULL][,date_dif:=NULL][,time_remove:=NULL]
     
   } else {
     #Step 1: Order the dataset by person_id, condition and date of event
@@ -431,7 +423,7 @@ for (condition_ind in 1:length(diagnoses_files)){
     file.remove(paste0(diag_pop, diagnoses_files[[condition_ind]][[i]]))
   }
   #save the new files by year
-  for (i in 1:length(unique(diag_file[["year"]]))){
+  for (i in 1:length(sort(unique(diag_file[["year"]])))){
     saveRDS(diag_file[year==unique(diag_file[["year"]])[i]], paste0(diag_pop, unique(diag_file[["year"]])[i],"_", unique(diag_file[["condition"]]),"_","diagnoses.rds"))
   }
   
@@ -450,15 +442,19 @@ for (condition_ind in 1:length(diagnoses_files)){
   rm(tab21_counts)
   
   #remove event_code and vocabulary, condition will be used as event count and remove all other uneccessary columns
-  diag_file[,event_code:=NULL][,event_vocabulary:=NULL][,meaning:=NULL][,age_start_follow_up:=NULL][,obs_out:=NULL][,filter:=NULL][,code_nodot:=NULL][,truncated_code:=NULL]
+  diag_file[,event_code:=NULL][,event_vocabulary:=NULL][,meaning:=NULL][,age_start_follow_up:=NULL]
+  if("obs_out" %in% names(diag_file)){diag_file[,obs_out:=NULL]}
+  if("filter" %in% names(diag_file)){diag_file[,filter:=NULL]}
+  if("code_nodot" %in% names(diag_file)){diag_file[,code_nodot:=NULL]}
+  if("truncated_code" %in% names(diag_file)){diag_file[,truncated_code:=NULL]}
   
-  if(recurrent_event_analysis %in% c("Yes","yes")){
-    print("Calculating rates of recurrent events")
-  #grab and combine person time for all people that had a diagnoses that are not part of the diagoses of interest
+  if(recurrent_event_analysis %in% c("Yes","yes","YES")){
+    print(paste("Calculating rates of recurrent events:", names(diagnoses_files)[condition_ind]))
+    #grab and combine person time for all people that had a diagnoses that are not part of the diagnoses of interest
   py_other<-py_diag[!(person_id %in% diag_file[!duplicated(person_id),person_id])][,lapply(.SD, sum), by=c("sex", "year", "age_band"), .SDcols="person_years"]
   py_other[,no_records:=0]  
   #calculate counts
-  if(diag_file[,.N]!=0){
+
     if (names(diagnoses_files)[condition_ind] %in% time_lag[,condition]){
       outcomes_list<-unique(diag_file[,condition])
       #apply count person time
@@ -478,7 +474,7 @@ for (condition_ind in 1:length(diagnoses_files)){
                                Outcomes_rec = outcomes_list,
                                Name_event = "condition",
                                Date_event = "event_date",
-                               Rec_period = rep(time_lag[condition==names(diagnoses_files)[[condition_ind]],time_lag], length(outcomes_list)),
+                               Rec_period = rep(time_lag[condition==names(diagnoses_files)[[condition_ind]],time_remove], length(outcomes_list)),
                                Age_bands = agebands_rates,
                                print = F, 
                                check_overlap = F)
@@ -549,13 +545,7 @@ for (condition_ind in 1:length(diagnoses_files)){
     output<-output[,lapply(.SD, sum), by=c("sex","year","age_band"), .SDcols=c("no_records","person_years")]
     output[,event_definition:=names(diagnoses_files)[condition_ind]]
     
-  } else {
-    output<-NULL
-  }
-  
-  #Load person time for all people with no diagnosis
-  no_diag_py_fl<-list.files(diag_tmp, "no_id_py.rds")
-  if(length(no_diag_py_fl)>0){
+    #Load person time for all people with no diagnosis
     no_diag_py<-readRDS(paste0(diag_tmp, "no_id_py.rds"))
     no_diag_py<-as.data.table(no_diag_py)
     no_diag_py[,no_records:=0]
@@ -564,9 +554,7 @@ for (condition_ind in 1:length(diagnoses_files)){
     output<-rbind(output,no_diag_py)
     output<-as.data.table(output)
     rm(no_diag_py)
-  }
-  rm(no_diag_py_fl)
-  
+    
   output<-output[,lapply(.SD, sum), by=c("event_definition", "sex","year","age_band"), .SDcols=c("no_records","person_years")]
   output<-output[,person_years:=round(person_years/365.25,3)]
   
@@ -588,9 +576,9 @@ rm(diagnoses_files)
   tab21<-data.table(tab21, data_access_provider= data_access_provider_name, data_source=data_source_name)
   
   if(subpopulations_present=="Yes"){
-    write.csv(tab21, paste0(diag_dir, subpopulations_names[s], "/", subpopulations_names[s], "_diagnoses_counts_m.csv"), row.names = F)
+    fwrite(tab21, paste0(diag_dir, subpopulations_names[s], "/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", subpopulations_names[s], "_diagnoses_counts_m.csv"), row.names = F)
   } else {
-    write.csv(tab21, paste0(diag_dir, "diagnoses_counts_m.csv"), row.names = F)
+    fwrite(tab21, paste0(diag_dir,format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", "diagnoses_counts_m.csv"), row.names = F)
   }
   
   for (i in 1:length(tab21_files)){
@@ -602,9 +590,9 @@ rm(diagnoses_files)
   tab21[, total_records:= as.character(total_records)][as.numeric(total_records) > 0 & as.numeric(total_records) < 5, total_records := "<5"]
   
   if(subpopulations_present=="Yes"){
-    write.csv(tab21, paste0(diag_dir,subpopulations_names[s], "/","Masked/", subpopulations_names[s],"_diagnoses_counts_m_masked.csv"), row.names = F)
+    fwrite(tab21, paste0(diag_dir,subpopulations_names[s], "/","Masked/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", subpopulations_names[s],"_diagnoses_counts_m_masked.csv"), row.names = F)
   } else {
-    write.csv(tab21, paste0(diag_dir, "Masked/", "diagnoses_counts_m_masked.csv"), row.names = F)
+    fwrite(tab21, paste0(diag_dir, "Masked/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", "diagnoses_counts_m_masked.csv"), row.names = F)
   }
   
   rm(tab21)
@@ -628,18 +616,18 @@ rm(diagnoses_files)
   #############################
 
   if(subpopulations_present=="Yes"){
-    write.csv(duplicated_event_dates, paste0(diag_dir, subpopulations_names[s], "/", subpopulations_names[s], "_diagnoses_remove_duplicated_diagoses.csv"), row.names = F)
+    fwrite(duplicated_event_dates, paste0(diag_dir, subpopulations_names[s], "/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", subpopulations_names[s], "_diagnoses_remove_duplicated_diagoses.csv"), row.names = F)
   } else {
-    write.csv(duplicated_event_dates, paste0(diag_dir, "diagnoses_remove_duplicated_diagoses.csv"), row.names = F)
+    fwrite(duplicated_event_dates, paste0(diag_dir,format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", "diagnoses_remove_duplicated_diagoses.csv"), row.names = F)
   }
   
   rm(duplicated_event_dates)
   
   excluded_people<-data.table(Indicator="People removed due to exclusion criteria", Number=excluded_people)
   if(subpopulations_present=="Yes"){
-    write.csv(excluded_people, paste0(diag_dir, subpopulations_names[s], "/", subpopulations_names[s], "_excluded_people_diagoses.csv"), row.names = F)
+    fwrite(excluded_people, paste0(diag_dir, subpopulations_names[s], "/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", subpopulations_names[s], "_excluded_people_diagoses.csv"), row.names = F)
   } else {
-    write.csv(excluded_people, paste0(diag_dir, "excluded_people_diagoses.csv"), row.names = F)
+    fwrite(excluded_people, paste0(diag_dir,format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", "excluded_people_diagoses.csv"), row.names = F)
   }
   
   rm(excluded_people)
@@ -647,7 +635,7 @@ rm(diagnoses_files)
   ############################
   #tab22
   ############################
-  if(recurrent_event_analysis %in% c("Yes","yes")){
+  if(recurrent_event_analysis %in% c("Yes","yes","YES")){
   diagnoses_files<-list.files(diag_tmp, "rates_rec")
   tab22<-lapply(paste0(diag_tmp, diagnoses_files), readRDS)
   tab22<-do.call(rbind, tab22)
@@ -696,13 +684,13 @@ for (i in 1:length(diagnoses_files)){
   tab22_counts_year[,rate_per_100_py:=round((no_records/person_years)*100,2)]
   
   if(subpopulations_present=="Yes"){
-    write.csv(tab22, paste0(diag_dir, subpopulations_names[s], "/", subpopulations_names[s], "_diagnoses_rates_yas_recurrent.csv"), row.names = F)
-    write.csv(tab22_counts_year_sex, paste0(diag_dir, subpopulations_names[s], "/", subpopulations_names[s], "_diagnoses_rates_ys_recurrent.csv"), row.names = F)
-    write.csv(tab22_counts_year, paste0(diag_dir, subpopulations_names[s], "/", subpopulations_names[s], "_diagnoses_rates_y_recurrent.csv"), row.names = F)
+    fwrite(tab22, paste0(diag_dir, subpopulations_names[s], "/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", subpopulations_names[s], "_diagnoses_rates_yas_recurrent.csv"), row.names = F)
+    fwrite(tab22_counts_year_sex, paste0(diag_dir, subpopulations_names[s], "/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", subpopulations_names[s], "_diagnoses_rates_ys_recurrent.csv"), row.names = F)
+    fwrite(tab22_counts_year, paste0(diag_dir, subpopulations_names[s], "/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", subpopulations_names[s], "_diagnoses_rates_y_recurrent.csv"), row.names = F)
   } else {
-    write.csv(tab22, paste0(diag_dir, "diagnoses_rates_yas_recurrent.csv"), row.names = F)
-    write.csv(tab22_counts_year_sex, paste0(diag_dir, "diagnoses_rates_ys_recurrent.csv"), row.names = F)
-    write.csv(tab22_counts_year, paste0(diag_dir, "diagnoses_rates_y_recurrent.csv"), row.names = F)
+    fwrite(tab22, paste0(diag_dir,format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", "diagnoses_rates_yas_recurrent.csv"), row.names = F)
+    fwrite(tab22_counts_year_sex, paste0(diag_dir,format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", "diagnoses_rates_ys_recurrent.csv"), row.names = F)
+    fwrite(tab22_counts_year, paste0(diag_dir,format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", "diagnoses_rates_y_recurrent.csv"), row.names = F)
   }
   
   # if(subpopulations_present=="Yes"){
@@ -728,13 +716,13 @@ for (i in 1:length(diagnoses_files)){
   # tab22a[, rate_per_100_py:= as.character(rate_per_100_py)][no_records=="<5" | person_years=="<5", rate_per_100_py := "N/A"]
   # 
   if(subpopulations_present=="Yes"){
-    write.csv(tab22, paste0(diag_dir,subpopulations_names[s], "/","Masked/", subpopulations_names[s],"_diagnoses_rates_yas_recurrent_masked.csv"), row.names = F)
-    write.csv(tab22_counts_year_sex, paste0(diag_dir,subpopulations_names[s], "/","Masked/", subpopulations_names[s],"_diagnoses_rates_ys_recurrent_masked.csv"), row.names = F)
-    write.csv(tab22_counts_year, paste0(diag_dir,subpopulations_names[s], "/","Masked/", subpopulations_names[s],"_diagnoses_rates_y_recurrent_masked.csv"), row.names = F)
+    fwrite(tab22, paste0(diag_dir,subpopulations_names[s], "/","Masked/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", subpopulations_names[s],"_diagnoses_rates_yas_recurrent_masked.csv"), row.names = F)
+    fwrite(tab22_counts_year_sex, paste0(diag_dir,subpopulations_names[s], "/","Masked/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", subpopulations_names[s],"_diagnoses_rates_ys_recurrent_masked.csv"), row.names = F)
+    fwrite(tab22_counts_year, paste0(diag_dir,subpopulations_names[s], "/","Masked/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", subpopulations_names[s],"_diagnoses_rates_y_recurrent_masked.csv"), row.names = F)
   } else {
-    write.csv(tab22, paste0(diag_dir, "Masked/", "diagnoses_rates_yas_recurrent_masked.csv"), row.names = F)
-    write.csv(tab22_counts_year_sex, paste0(diag_dir, "Masked/", "diagnoses_rates_ys_recurrent_masked.csv"), row.names = F)
-    write.csv(tab22_counts_year, paste0(diag_dir, "Masked/", "diagnoses_rates_y_recurrent_masked.csv"), row.names = F)
+    fwrite(tab22, paste0(diag_dir, "Masked/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", "diagnoses_rates_yas_recurrent_masked.csv"), row.names = F)
+    fwrite(tab22_counts_year_sex, paste0(diag_dir, "Masked/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", "diagnoses_rates_ys_recurrent_masked.csv"), row.names = F)
+    fwrite(tab22_counts_year, paste0(diag_dir, "Masked/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", "diagnoses_rates_y_recurrent_masked.csv"), row.names = F)
   }
   # 
   # if(subpopulations_present=="Yes"){
@@ -750,7 +738,7 @@ for (i in 1:length(diagnoses_files)){
 ######################################################
 #first event
 ######################################################
-  print("Calculating rates of first events")
+print("Calculating rates of first events")
 diagnoses_files<-list.files(paste0(populations_dir, "DIAGNOSES/"))
 files<-list()
 for (i in 1: length(diagnoses_files)){
@@ -832,6 +820,7 @@ if(!is.null(prior)){
 remove_subj<-list()
 
 for (condition_ind in 1:length(diagnoses_files)){
+  print(paste("Calculating rates of first events:", names(diagnoses_files)[condition_ind]))
   diag_file<-lapply(paste0(populations_dir,"DIAGNOSES/", diagnoses_files[[condition_ind]]), readRDS)
   diag_file<-do.call(rbind,diag_file)
   diag_file<-as.data.table(diag_file)
@@ -847,7 +836,11 @@ for (condition_ind in 1:length(diagnoses_files)){
   }
   
   #remove event_code and vocabulary, condition will be used as event count and remove all other uneccessary columns
-  diag_file[,event_code:=NULL][,event_vocabulary:=NULL][,meaning:=NULL][,age_start_follow_up:=NULL][,obs_out:=NULL][,filter:=NULL][,code_nodot:=NULL][,truncated_code:=NULL]
+  diag_file[,event_code:=NULL][,event_vocabulary:=NULL][,meaning:=NULL][,age_start_follow_up:=NULL]
+  if("obs_out" %in% names(diag_file)){diag_file[,obs_out:=NULL]}
+  if("filter" %in% names(diag_file)){diag_file[,filter:=NULL]}
+  if("code_nodot" %in% names(diag_file)){diag_file[,code_nodot:=NULL]}
+  if("truncated_code" %in% names(diag_file)){diag_file[,truncated_code:=NULL]}
   
   #grab and combine person time for all people that had a diagnoses that are not part of the diagoses of interest
   py_other<-py_diag[!(person_id %in% diag_file[!duplicated(person_id),person_id])][,lapply(.SD, sum), by=c("sex", "year", "age_band"), .SDcols="person_years"]
@@ -919,11 +912,11 @@ remove_subj<-do.call(rbind,remove_subj)
 if(remove_subj[,.N]>0){
   names(remove_subj)<-c("event_definition","persons_with_prior_events_removed")
   
-if(subpopulations_present=="Yes"){
-  write.csv(remove_subj, paste0(diag_dir, subpopulations_names[s], "/", subpopulations_names[s], "_diagnoses_remove_subj_prior_events.csv"), row.names = F)
-} else {
-  write.csv(remove_subj, paste0(diag_dir, "diagnoses_remove_subj_prior_events.csv"), row.names = F)
-}
+  if(subpopulations_present=="Yes"){
+    fwrite(remove_subj, paste0(diag_dir, subpopulations_names[s], "/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", subpopulations_names[s], "_diagnoses_remove_subj_prior_events.csv"), row.names = F)
+  } else {
+    fwrite(remove_subj, paste0(diag_dir,format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", "diagnoses_remove_subj_prior_events.csv"), row.names = F)
+  }
 }
 
 
@@ -976,13 +969,13 @@ tab23_counts_year[,rate_per_100_py:=round((no_records/person_years)*100,2)]
 # tab23a[,rate_per_100_py:=round((no_records/person_years)*100,2)]
 
 if(subpopulations_present=="Yes"){
-  write.csv(tab23, paste0(diag_dir, subpopulations_names[s], "/", subpopulations_names[s], "_diagnoses_rates_yas_first.csv"), row.names = F)
-  write.csv(tab23_counts_year_sex, paste0(diag_dir, subpopulations_names[s], "/", subpopulations_names[s], "_diagnoses_rates_ys_first.csv"), row.names = F)
-  write.csv(tab23_counts_year, paste0(diag_dir, subpopulations_names[s], "/", subpopulations_names[s], "_diagnoses_rates_y_first.csv"), row.names = F)
+  fwrite(tab23, paste0(diag_dir, subpopulations_names[s], "/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", subpopulations_names[s], "_diagnoses_rates_yas_first.csv"), row.names = F)
+  fwrite(tab23_counts_year_sex, paste0(diag_dir, subpopulations_names[s], "/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", subpopulations_names[s], "_diagnoses_rates_ys_first.csv"), row.names = F)
+  fwrite(tab23_counts_year, paste0(diag_dir, subpopulations_names[s], "/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", subpopulations_names[s], "_diagnoses_rates_y_first.csv"), row.names = F)
 } else {
-  write.csv(tab23, paste0(diag_dir, "diagnoses_rates_yas_first.csv"), row.names = F)
-  write.csv(tab23_counts_year_sex, paste0(diag_dir, "diagnoses_rates_ys_first.csv"), row.names = F)
-  write.csv(tab23_counts_year, paste0(diag_dir, "diagnoses_rates_y_first.csv"), row.names = F)
+  fwrite(tab23, paste0(diag_dir,format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", "diagnoses_rates_yas_first.csv"), row.names = F)
+  fwrite(tab23_counts_year_sex, paste0(diag_dir,format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", "diagnoses_rates_ys_first.csv"), row.names = F)
+  fwrite(tab23_counts_year, paste0(diag_dir,format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", "diagnoses_rates_y_first.csv"), row.names = F)
 }
 
 # if(subpopulations_present=="Yes"){
@@ -1008,13 +1001,13 @@ tab23_counts_year[, rate_per_100_py:= as.character(rate_per_100_py)][no_records=
 # tab23a[, rate_per_100_py:= as.character(rate_per_100_py)][no_records=="<5" | person_years=="<5", rate_per_100_py := "N/A"]
 
 if(subpopulations_present=="Yes"){
-  write.csv(tab23, paste0(diag_dir,subpopulations_names[s], "/","Masked/", subpopulations_names[s],"_diagnoses_rates_yas_first_masked.csv"), row.names = F)
-  write.csv(tab23_counts_year_sex, paste0(diag_dir,subpopulations_names[s], "/","Masked/", subpopulations_names[s],"_diagnoses_rates_ys_first_masked.csv"), row.names = F)
-  write.csv(tab23_counts_year, paste0(diag_dir,subpopulations_names[s], "/","Masked/", subpopulations_names[s],"_diagnoses_rates_y_first_masked.csv"), row.names = F)
+  fwrite(tab23, paste0(diag_dir,subpopulations_names[s], "/","Masked/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", subpopulations_names[s],"_diagnoses_rates_yas_first_masked.csv"), row.names = F)
+  fwrite(tab23_counts_year_sex, paste0(diag_dir,subpopulations_names[s], "/","Masked/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", subpopulations_names[s],"_diagnoses_rates_ys_first_masked.csv"), row.names = F)
+  fwrite(tab23_counts_year, paste0(diag_dir,subpopulations_names[s], "/","Masked/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", subpopulations_names[s],"_diagnoses_rates_y_first_masked.csv"), row.names = F)
 } else {
-  write.csv(tab23, paste0(diag_dir, "Masked/", "diagnoses_rates_yas_first_masked.csv"), row.names = F)
-  write.csv(tab23_counts_year_sex, paste0(diag_dir, "Masked/", "diagnoses_rates_ys_first_masked.csv"), row.names = F)
-  write.csv(tab23_counts_year, paste0(diag_dir, "Masked/", "diagnoses_rates_y_first_masked.csv"), row.names = F)
+  fwrite(tab23, paste0(diag_dir, "Masked/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", "diagnoses_rates_yas_first_masked.csv"), row.names = F)
+  fwrite(tab23_counts_year_sex, paste0(diag_dir, "Masked/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", "diagnoses_rates_ys_first_masked.csv"), row.names = F)
+  fwrite(tab23_counts_year, paste0(diag_dir, "Masked/",format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", "diagnoses_rates_y_first_masked.csv"), row.names = F)
 }
 
 
