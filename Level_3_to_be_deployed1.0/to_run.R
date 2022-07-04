@@ -236,16 +236,36 @@ projectFolder<-dirname(rstudioapi::getSourceEditorContext()$path)
 setwd(projectFolder)
 source("packages.R")
 source("99_path.R")
-load(paste0(g_intermediate,"environment.RData"))
-Rmd_PREGNANCY<-paste0(pre_dir,"/PREGNANCY_L3.Rmd")
-source(paste0(pre_dir,"PREGNANCY_L3.R"))
+study_name_codelist<-NULL
+
+#Add all meanings from the SURVEY_ID table that refer to each of the categories below
+#If you don't have a category or all of them, do not add anything inside the parenthesis
+#meanings_start_pregnancy: all meanings that refer to start of pregnancy example LMP_date
+meanings_start_pregnancy<-c()
+#meanings_interruption_pregnancy: all meanings that refer to interruption example, spontaneous_abortion_registry, legal_abortion, miscarriage, induced_termination_registry etc
+meanings_interruption_pregnancy<-c("induced_termination_registry","spontaneous_abortion_registry")
+#meanings_ongoing_pregnancy: all meanings that refer to ongoing pregnancy example 20_weeks_anatomy_ultrasound
+meanings_ongoing_pregnancy<-c()
+#meanings_end_pregnancy: all meanings that refer to a pregnancy that ended example, live_birth, still_birth, birth_registry, birth_registry_mother etc
+meanings_end_pregnancy<-c("birth_registry_mother")
+
+system.time(source(paste0(pre_dir,"Step_11_00_PREGNANCY_L3.R")))
 
 if(sum(length(actual_tables$EVENTS),length(actual_tables$MEDICAL_OBSERVATIONS),length(actual_tables$SURVEY_OBSERVATIONS), length(actual_tables$SURVEY_ID))>0){
   if(subpopulations_present=="No"){
-    system.time(render(Rmd_PREGNANCY, output_dir = paste0(output_dir,"PREGNANCY/"), output_file = "PREGNANCY_L3.html")) 
+    system.time(render(paste0(pre_dir,"/Report_11_PREGNANCY_Overview_Completeness_L3.Rmd"), output_dir = paste0(output_dir,"PREGNANCY/"), output_file = paste0(format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_","PREGNANCY_Overview_Completeness_L3.html"))) 
+    system.time(render(paste0(pre_dir,"/Report_11_PREGNANCY_Counts_L3.Rmd"), output_dir = paste0(output_dir,"PREGNANCY/"), output_file = paste0(format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_","PREGNANCY_Counts_L3.html"))) 
+    system.time(render(paste0(pre_dir,"/Report_11_PREGNANCY_Rates_L3.Rmd"), output_dir = paste0(output_dir,"PREGNANCY/"), output_file = paste0(format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_","PREGNANCY_Rates_L3.html"))) 
+    
   } else {
     for (a in 1: length(subpopulations_names)){
-      system.time(render(Rmd_PREGNANCY, output_dir = paste0(output_dir,"PREGNANCY/"), output_file = paste0(subpopulations_names[a],"_PREGNANCY_L3.html")))  
+      system.time(render(paste0(pre_dir,"/Report_11_PREGNANCY_Overview_Completeness_L3.Rmd"), output_dir = paste0(output_dir,"PREGNANCY/"), output_file = paste0(format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", subpopulations_names[a],"_PREGNANCY_Overview_Completeness_L3.html")))  
+    }
+    for (a in 1: length(subpopulations_names)){
+      system.time(render(paste0(pre_dir,"/Report_11_PREGNANCY_Counts_L3.Rmd"), output_dir = paste0(output_dir,"PREGNANCY/"), output_file = paste0(format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", subpopulations_names[a],"_PREGNANCY_Counts_L3.html")))  
+    }
+    for (a in 1: length(subpopulations_names)){
+      system.time(render(paste0(pre_dir,"/Report_11_PREGNANCY_Rates_L3.Rmd"), output_dir = paste0(output_dir,"PREGNANCY/"), output_file = paste0(format(Sys.Date(), "%Y"),format(Sys.Date(), "%m"),format(Sys.Date(), "%d"),"_",data_access_provider_name,"_", subpopulations_names[a],"_PREGNANCY_Rates_L3.html")))  
     }
   }
 }
