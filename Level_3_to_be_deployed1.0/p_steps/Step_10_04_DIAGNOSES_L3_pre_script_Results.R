@@ -694,9 +694,9 @@ for (i in 1:length(diagnoses_files)){
   }
   
   # if(subpopulations_present=="Yes"){
-  #   write.csv(tab22a, paste0(diag_dir, subpopulations_names[s], "/", subpopulations_names[s], "_diagnoses_rates_agg_recurrent.csv"), row.names = F)
+  #   fwrite(tab22a, paste0(diag_dir, subpopulations_names[s], "/", subpopulations_names[s], "_diagnoses_rates_agg_recurrent.csv"), row.names = F)
   # } else {
-  #   write.csv(tab22a, paste0(diag_dir, "diagnoses_rates_agg_recurrent.csv"), row.names = F)
+  #   fwrite(tab22a, paste0(diag_dir, "diagnoses_rates_agg_recurrent.csv"), row.names = F)
   # }
   
   tab22[, no_records:= as.character(no_records)][as.numeric(no_records) > 0 & as.numeric(no_records) < 5, no_records := "<5"]
@@ -726,9 +726,9 @@ for (i in 1:length(diagnoses_files)){
   }
   # 
   # if(subpopulations_present=="Yes"){
-  #   write.csv(tab22a, paste0(diag_dir,subpopulations_names[s], "/","Masked/", subpopulations_names[s],"_diagnoses_rates_agg_recurrent_masked.csv"), row.names = F)
+  #   fwrite(tab22a, paste0(diag_dir,subpopulations_names[s], "/","Masked/", subpopulations_names[s],"_diagnoses_rates_agg_recurrent_masked.csv"), row.names = F)
   # } else {
-  #   write.csv(tab22a, paste0(diag_dir, "Masked/", "diagnoses_rates_agg_recurrent_masked.csv"), row.names = F)
+  #   fwrite(tab22a, paste0(diag_dir, "Masked/", "diagnoses_rates_agg_recurrent_masked.csv"), row.names = F)
   # }
   
   
@@ -979,9 +979,9 @@ if(subpopulations_present=="Yes"){
 }
 
 # if(subpopulations_present=="Yes"){
-#   write.csv(tab23a, paste0(diag_dir, subpopulations_names[s], "/", subpopulations_names[s], "_diagnoses_rates_agg_first.csv"), row.names = F)
+#   fwrite(tab23a, paste0(diag_dir, subpopulations_names[s], "/", subpopulations_names[s], "_diagnoses_rates_agg_first.csv"), row.names = F)
 # } else {
-#   write.csv(tab23a, paste0(diag_dir, "diagnoses_rates_agg_first.csv"), row.names = F)
+#   fwrite(tab23a, paste0(diag_dir, "diagnoses_rates_agg_first.csv"), row.names = F)
 # }
 
 tab23[, no_records:= as.character(no_records)][as.numeric(no_records) > 0 & as.numeric(no_records) < 5, no_records := "<5"]
@@ -1012,9 +1012,9 @@ if(subpopulations_present=="Yes"){
 
 
 # if(subpopulations_present=="Yes"){
-#   write.csv(tab23a, paste0(diag_dir,subpopulations_names[s], "/","Masked/", subpopulations_names[s],"_diagnoses_rates_agg_first_masked.csv"), row.names = F)
+#   fwrite(tab23a, paste0(diag_dir,subpopulations_names[s], "/","Masked/", subpopulations_names[s],"_diagnoses_rates_agg_first_masked.csv"), row.names = F)
 # } else {
-#   write.csv(tab23a, paste0(diag_dir, "Masked/", "diagnoses_rates_agg_first_masked.csv"), row.names = F)
+#   fwrite(tab23a, paste0(diag_dir, "Masked/", "diagnoses_rates_agg_first_masked.csv"), row.names = F)
 # }
 
 
