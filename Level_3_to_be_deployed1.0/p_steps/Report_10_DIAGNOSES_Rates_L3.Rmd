@@ -90,14 +90,14 @@ All diagnoses records with the same date of event are removed. All duplicated re
 ```{r removed_subjects, echo=F}
 
 if (subpopulations_present=="No"){
-  if(sum(grepl(list.files(diag_dir), pattern="diagnoses_remove_duplicated_diagoses.csv"))>0){
-    removed_duplicates<-fread(paste0(diag_dir,"diagnoses_remove_duplicated_diagoses.csv"))
+  if(length(list.files(diag_dir, pattern="diagnoses_remove_duplicated_diagoses.csv"))>0){
+    removed_duplicates<-fread(paste0(diag_dir,list.files(diag_dir, pattern="diagnoses_remove_duplicated_diagoses.csv")))
     
     datatable(removed_duplicates, options = list(scrollX=T))
   }
 } else {
- if(sum(grepl(list.files(paste0(diag_dir,subpopulations_names[a], "/")), pattern="diagnoses_remove_duplicated_diagoses.csv"))>0){
- removed_duplicates<-fread(paste0(diag_dir,subpopulations_names[a],"/diagnoses_remove_duplicated_diagoses.csv"))
+ if(length(list.files(paste0(diag_dir,subpopulations_names[a], "/"), pattern="diagnoses_remove_duplicated_diagoses.csv"))>0){
+ removed_duplicates<-fread(paste0(diag_dir,subpopulations_names[a],"/", list.files(paste0(diag_dir,subpopulations_names[a], "/"), pattern="diagnoses_remove_duplicated_diagoses.csv")))
  
   datatable(removed_duplicates, options = list(scrollX=T))
    }}
@@ -109,14 +109,14 @@ All records that are removed due to exclusion criteria mentioned in the flowchar
 ```{r excluded_subjects, echo=F}
 
 if (subpopulations_present=="No"){
-  if(sum(grepl(list.files(diag_dir), pattern="excluded_people_diagoses.csv"))>0){
-    removed_exclusion<-fread(paste0(diag_dir,"excluded_people_diagoses.csv"))
+  if(length(list.files(diag_dir, pattern="excluded_people_diagoses.csv"))>0){
+    removed_exclusion<-fread(paste0(diag_dir,list.files(diag_dir, pattern="excluded_people_diagoses.csv")))
     
     datatable(removed_exclusion, options = list(scrollX=T))
   }
 } else {
- if(sum(grepl(list.files(paste0(diag_dir,subpopulations_names[a], "/")), pattern="excluded_people_diagoses.csv"))>0){
- removed_exclusion<-fread(paste0(diag_dir,subpopulations_names[a],"/excluded_people_diagoses.csv"))
+ if(length(list.files(paste0(diag_dir,subpopulations_names[a], "/"), pattern="excluded_people_diagoses.csv"))>0){
+ removed_exclusion<-fread(paste0(diag_dir,subpopulations_names[a],"/", list.files(paste0(diag_dir,subpopulations_names[a], "/"), pattern="excluded_people_diagoses.csv")))
  
   datatable(removed_exclusion, options = list(scrollX=T))
    }}
@@ -140,8 +140,8 @@ Incidence rates of zero will not be shown in the table but will be shown in the 
 
 ```{r rates_yas_recurrent, echo=F, warning=FALSE}
 if (subpopulations_present=="No"){
-  if(sum(grepl(list.files(paste0(diag_dir,"Masked/")), pattern="diagnoses_rates_yas_recurrent_masked.csv"))>0){
-rates_yas_rec<-fread(paste0(diag_dir,"Masked/", "diagnoses_rates_yas_recurrent_masked.csv"))
+  if(length(list.files(paste0(diag_dir,"Masked/"), pattern="diagnoses_rates_yas_recurrent_masked.csv"))>0){
+rates_yas_rec<-fread(paste0(diag_dir,"Masked/", list.files(paste0(diag_dir,"Masked/"), pattern="diagnoses_rates_yas_recurrent_masked.csv")))
 setcolorder(rates_yas_rec, c("event_definition","sex","age_band","year","no_records","person_years","rate_per_100_py"))
 if (rates_yas_rec[,.N]>0){
   if (rates_yas_rec[,.N]>12000){
@@ -159,8 +159,8 @@ datatable(rates_yas_rec[no_records!=0], options = list(scrollX=T))
     print("This table cannot be produced based on the available data or this analysis was not performed.")
 }
 } else {
-    if(sum(grepl(list.files(paste0(diag_dir,subpopulations_names[a], "/Masked/")), pattern="diagnoses_rates_yas_recurrent_masked.csv"))>0){
-  rates_yas_rec<-fread(paste0(diag_dir,subpopulations_names[a], "/Masked/", subpopulations_names[a],"_diagnoses_rates_yas_recurrent_masked.csv"))
+    if(length(list.files(paste0(diag_dir,subpopulations_names[a], "/Masked/"), pattern="diagnoses_rates_yas_recurrent_masked.csv"))>0){
+  rates_yas_rec<-fread(paste0(diag_dir,subpopulations_names[a], "/Masked/", list.files(paste0(diag_dir,subpopulations_names[a], "/Masked/"), pattern="diagnoses_rates_yas_recurrent_masked.csv")))
   setcolorder(rates_yas_rec, c("event_definition","sex","age_band","year","no_records","person_years","rate_per_100_py"))
   if (rates_yas_rec[,.N]>0){
    if (rates_yas_rec[,.N]>12000){   
@@ -238,8 +238,8 @@ Incidence rates of zero will not be shown in the table but will be shown in the 
 
 ```{r rates_ys_recurrent, echo=F, warning=FALSE}
 if (subpopulations_present=="No"){
-  if(sum(grepl(list.files(paste0(diag_dir,"Masked/")), pattern="diagnoses_rates_ys_recurrent_masked.csv"))>0){
-rates_ys_rec<-fread(paste0(diag_dir,"Masked/", "diagnoses_rates_ys_recurrent_masked.csv"))
+  if(length(list.files(paste0(diag_dir,"Masked/"), pattern="diagnoses_rates_ys_recurrent_masked.csv"))>0){
+rates_ys_rec<-fread(paste0(diag_dir,"Masked/", list.files(paste0(diag_dir,"Masked/"), pattern="diagnoses_rates_ys_recurrent_masked.csv")))
 setcolorder(rates_ys_rec, c("event_definition","sex","year","no_records","person_years","rate_per_100_py"))
 if (rates_ys_rec[,.N]>0){
   if (rates_ys_rec[,.N]>12000){
@@ -257,8 +257,8 @@ datatable(rates_ys_rec[no_records!=0], options = list(scrollX=T))
     print("This table cannot be produced based on the available data or this analysis was not performed.")
 }
 } else {
-    if(sum(grepl(list.files(paste0(diag_dir,subpopulations_names[a], "/Masked/")), pattern="diagnoses_rates_ys_recurrent_masked.csv"))>0){
-  rates_ys_rec<-fread(paste0(diag_dir,subpopulations_names[a], "/Masked/", subpopulations_names[a],"_diagnoses_rates_ys_recurrent_masked.csv"))
+    if(length(list.files(paste0(diag_dir,subpopulations_names[a], "/Masked/"), pattern="diagnoses_rates_ys_recurrent_masked.csv"))>0){
+  rates_ys_rec<-fread(paste0(diag_dir,subpopulations_names[a], "/Masked/", list.files(paste0(diag_dir,subpopulations_names[a], "/Masked/"), pattern="diagnoses_rates_ys_recurrent_masked.csv")))
   setcolorder(rates_ys_rec, c("event_definition","sex","year","no_records","person_years","rate_per_100_py"))
   if (rates_ys_rec[,.N]>0){
    if (rates_ys_rec[,.N]>12000){   
@@ -325,8 +325,8 @@ Incidence rates of zero will not be shown in the table but will be shown in the 
 
 ```{r rates_y_recurrent, echo=F, warning=FALSE}
 if (subpopulations_present=="No"){
-  if(sum(grepl(list.files(paste0(diag_dir,"Masked/")), pattern="diagnoses_rates_y_recurrent_masked.csv"))>0){
-rates_y_rec<-fread(paste0(diag_dir,"Masked/", "diagnoses_rates_y_recurrent_masked.csv"))
+  if(length(list.files(paste0(diag_dir,"Masked/"), pattern="diagnoses_rates_y_recurrent_masked.csv"))>0){
+rates_y_rec<-fread(paste0(diag_dir,"Masked/", list.files(paste0(diag_dir,"Masked/"), pattern="diagnoses_rates_y_recurrent_masked.csv")))
 setcolorder(rates_y_rec, c("event_definition","year","no_records","person_years","rate_per_100_py"))
 if (rates_y_rec[,.N]>0){
   if (rates_y_rec[,.N]>12000){
@@ -344,8 +344,8 @@ datatable(rates_y_rec[no_records!=0], options = list(scrollX=T))
     print("This table cannot be produced based on the available data or this analysis was not performed.")
 }
 } else {
-    if(sum(grepl(list.files(paste0(diag_dir,subpopulations_names[a], "/Masked/")), pattern="diagnoses_rates_y_recurrent_masked.csv"))>0){
-  rates_y_rec<-fread(paste0(diag_dir,subpopulations_names[a], "/Masked/", subpopulations_names[a],"_diagnoses_rates_y_recurrent_masked.csv"))
+    if(length(list.files(paste0(diag_dir,subpopulations_names[a], "/Masked/"), pattern="diagnoses_rates_y_recurrent_masked.csv"))>0){
+  rates_y_rec<-fread(paste0(diag_dir,subpopulations_names[a], "/Masked/", list.files(paste0(diag_dir,subpopulations_names[a], "/Masked/"), pattern="diagnoses_rates_y_recurrent_masked.csv")))
   setcolorder(rates_y_rec, c("event_definition","year","no_records","person_years","rate_per_100_py"))
   if (rates_y_rec[,.N]>0){
    if (rates_y_rec[,.N]>12000){   
@@ -417,14 +417,14 @@ All subjects that had an event before start follow up are removed(separately for
 ```{r removed_prior, echo=F}
 
 if (subpopulations_present=="No"){
-  if(sum(grepl(list.files(diag_dir), pattern="diagnoses_remove_subj_prior_events.csv"))>0){
-    removed_prior<-fread(paste0(diag_dir,"diagnoses_remove_subj_prior_events.csv"))
+  if(length(list.files(diag_dir, pattern="diagnoses_remove_subj_prior_events.csv"))>0){
+    removed_prior<-fread(paste0(diag_dir,list.files(diag_dir, pattern="diagnoses_remove_subj_prior_events.csv")))
     
     datatable(removed_prior, options = list(scrollX=T))
   }
 } else {
- if(sum(grepl(list.files(paste0(diag_dir,subpopulations_names[a], "/")), pattern="diagnoses_remove_subj_prior_events.csv"))>0){
- removed_prior<-fread(paste0(diag_dir,subpopulations_names[a],"/diagnoses_remove_subj_prior_events.csv"))
+ if(length(list.files(paste0(diag_dir,subpopulations_names[a], "/"), pattern="diagnoses_remove_subj_prior_events.csv"))>0){
+ removed_prior<-fread(paste0(diag_dir,subpopulations_names[a],"/", list.files(paste0(diag_dir,subpopulations_names[a], "/"), pattern="diagnoses_remove_subj_prior_events.csv")))
  
   datatable(removed_prior, options = list(scrollX=T))
    }}
@@ -443,8 +443,8 @@ Incidence rates of zero will not be shown in the table but will be shown in the 
 
 ```{r rates_yas_first, echo=F, warning=FALSE}
 if (subpopulations_present=="No"){
-  if(sum(grepl(list.files(paste0(diag_dir,"Masked/")), pattern="diagnoses_rates_yas_first_masked.csv"))>0){
-rates_yas_first<-fread(paste0(diag_dir,"Masked/", "diagnoses_rates_yas_first_masked.csv"))
+  if(length(list.files(paste0(diag_dir,"Masked/"), pattern="diagnoses_rates_yas_first_masked.csv"))>0){
+rates_yas_first<-fread(paste0(diag_dir,"Masked/", list.files(paste0(diag_dir,"Masked/"), pattern="diagnoses_rates_yas_first_masked.csv")))
 setcolorder(rates_yas_first, c("event_definition","sex","age_band","year","no_records","person_years","rate_per_100_py"))
 if (rates_yas_first[,.N]>0){
   if (rates_yas_first[,.N]>12000){
@@ -462,8 +462,8 @@ datatable(rates_yas_first[no_records!=0], options = list(scrollX=T))
     print("This table cannot be produced based on the available data or this analysis was not performed.")
 }
 } else {
-    if(sum(grepl(list.files(paste0(diag_dir,subpopulations_names[a], "/Masked/")), pattern="diagnoses_rates_yas_first_masked.csv"))>0){
-  rates_yas_first<-fread(paste0(diag_dir,subpopulations_names[a], "/Masked/", subpopulations_names[a],"_diagnoses_rates_yas_first_masked.csv"))
+    if(length(list.files(paste0(diag_dir,subpopulations_names[a], "/Masked/"), pattern="diagnoses_rates_yas_first_masked.csv"))>0){
+  rates_yas_first<-fread(paste0(diag_dir,subpopulations_names[a], "/Masked/", list.files(paste0(diag_dir,subpopulations_names[a], "/Masked/"), pattern="diagnoses_rates_yas_first_masked.csv")))
   setcolorder(rates_yas_first, c("event_definition","sex","age_band","year","no_records","person_years","rate_per_100_py"))
   if (rates_yas_first[,.N]>0){
    if (rates_yas_first[,.N]>12000){   
@@ -543,8 +543,8 @@ Incidence rates of zero will not be shown in the table but will be shown in the 
 
 ```{r rates_ys_first, echo=F, warning=FALSE}
 if (subpopulations_present=="No"){
-  if(sum(grepl(list.files(paste0(diag_dir,"Masked/")), pattern="diagnoses_rates_ys_first_masked.csv"))>0){
-rates_ys_first<-fread(paste0(diag_dir,"Masked/", "diagnoses_rates_ys_first_masked.csv"))
+  if(length(list.files(paste0(diag_dir,"Masked/"), pattern="diagnoses_rates_ys_first_masked.csv"))>0){
+rates_ys_first<-fread(paste0(diag_dir,"Masked/", list.files(paste0(diag_dir,"Masked/"), pattern="diagnoses_rates_ys_first_masked.csv")))
 setcolorder(rates_ys_first, c("event_definition","sex","year","no_records","person_years","rate_per_100_py"))
 if (rates_ys_first[,.N]>0){
   if (rates_ys_first[,.N]>12000){
@@ -562,8 +562,8 @@ datatable(rates_ys_first[no_records!=0], options = list(scrollX=T))
     print("This table cannot be produced based on the available data or this analysis was not performed.")
 }
 } else {
-    if(sum(grepl(list.files(paste0(diag_dir,subpopulations_names[a], "/Masked/")), pattern="diagnoses_rates_ys_first_masked.csv"))>0){
-  rates_ys_first<-fread(paste0(diag_dir,subpopulations_names[a], "/Masked/", subpopulations_names[a],"_diagnoses_rates_ys_first_masked.csv"))
+    if(length(list.files(paste0(diag_dir,subpopulations_names[a], "/Masked/"), pattern="diagnoses_rates_ys_first_masked.csv"))>0){
+  rates_ys_first<-fread(paste0(diag_dir,subpopulations_names[a], "/Masked/", list.files(paste0(diag_dir,subpopulations_names[a], "/Masked/"), pattern="diagnoses_rates_ys_first_masked.csv")))
   setcolorder(rates_ys_first, c("event_definition","sex","year","no_records","person_years","rate_per_100_py"))
   if (rates_ys_first[,.N]>0){
    if (rates_ys_first[,.N]>12000){   
@@ -630,8 +630,8 @@ Incidence rates of zero will not be shown in the table but will be shown in the 
 
 ```{r rates_y_first, echo=F, warning=FALSE}
 if (subpopulations_present=="No"){
-  if(sum(grepl(list.files(paste0(diag_dir,"Masked/")), pattern="diagnoses_rates_y_first_masked.csv"))>0){
-rates_y_first<-fread(paste0(diag_dir,"Masked/", "diagnoses_rates_y_first_masked.csv"))
+  if(length(list.files(paste0(diag_dir,"Masked/"), pattern="diagnoses_rates_y_first_masked.csv"))>0){
+rates_y_first<-fread(paste0(diag_dir,"Masked/", list.files(paste0(diag_dir,"Masked/"), pattern="diagnoses_rates_y_first_masked.csv")))
 setcolorder(rates_y_first, c("event_definition","year","no_records","person_years","rate_per_100_py"))
 if (rates_y_first[,.N]>0){
   if (rates_y_first[,.N]>12000){
@@ -649,8 +649,8 @@ datatable(rates_y_first[no_records!=0], options = list(scrollX=T))
     print("This table cannot be produced based on the available data or this analysis was not performed.")
 }
 } else {
-    if(sum(grepl(list.files(paste0(diag_dir,subpopulations_names[a], "/Masked/")), pattern="diagnoses_rates_y_first_masked.csv"))>0){
-  rates_y_first<-fread(paste0(diag_dir,subpopulations_names[a], "/Masked/", subpopulations_names[a],"_diagnoses_rates_y_first_masked.csv"))
+    if(length(list.files(paste0(diag_dir,subpopulations_names[a], "/Masked/"), pattern="diagnoses_rates_y_first_masked.csv"))>0){
+  rates_y_first<-fread(paste0(diag_dir,subpopulations_names[a], "/Masked/", list.files(paste0(diag_dir,subpopulations_names[a], "/Masked/"), pattern="diagnoses_rates_y_first_masked.csv")))
   setcolorder(rates_y_first, c("event_definition","year","no_records","person_years","rate_per_100_py"))
   if (rates_y_first[,.N]>0){
    if (rates_y_first[,.N]>12000){   
