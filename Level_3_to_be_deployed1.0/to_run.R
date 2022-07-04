@@ -234,6 +234,7 @@ projectFolder<-dirname(rstudioapi::getSourceEditorContext()$path)
 setwd(projectFolder)
 source("packages.R")
 source("99_path.R")
+load(paste0(g_intermediate,"environment.RData"))
 study_name_codelist<-NULL
 
 #Add all meanings from the SURVEY_ID table that refer to each of the categories below
