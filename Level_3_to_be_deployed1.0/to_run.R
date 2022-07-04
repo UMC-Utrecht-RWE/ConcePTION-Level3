@@ -225,9 +225,7 @@ if(sum(length(actual_tables$EVENTS),length(actual_tables$MEDICAL_OBSERVATIONS),l
 }
 
 source(paste0(pre_dir,"save_environment.R"))
-#################################################
-#Pregnancy
-#################################################
+#####Pregnancy#####
 rm(list=ls())
 if(!require(rstudioapi)){install.packages("rstudioapi")}
 library(rstudioapi)
