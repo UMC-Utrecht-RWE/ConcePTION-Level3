@@ -123,7 +123,7 @@ if(length(actual_tables$EVENTS)>0){
     events_study_population_meaning[[w]]<-df[is.na(obs_out),.N, by="meaning"] #number of records in the study population by meaning
     events_study_population_my[[w]]<-df[is.na(obs_out),.N, by=.(meaning,year)] #number of records in the study population by meaning and year
     empty_event_code.my[[w]]<-df[is.na(event_code) & is.na(obs_out), .N, by=.(meaning,year)] #number of records with missing event code when date disp/presc is present
-      #############################
+    #############################
       if("no_event_id" %in% names(df)){
         df[,no_event_id:=NULL]
       }

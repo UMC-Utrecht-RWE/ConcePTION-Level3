@@ -171,7 +171,7 @@ if(length(actual_tables$VACCINES)>0){
   description<-data.table(INDICATOR=c("List of meanings present",
                                       "Years included in the study period",
                                       "Sex included in the study population",
-                                      "Number of subjects without administration/prescriptions in the study population",
+                                      "Number of subjects without administration/record in the study population",
                                       "Number of records with empty ATC codes when date_admin/record is present",
                                       "Number of records with complete ATC codes",
                                       "Number of records with complete ATC code up to level 1",
