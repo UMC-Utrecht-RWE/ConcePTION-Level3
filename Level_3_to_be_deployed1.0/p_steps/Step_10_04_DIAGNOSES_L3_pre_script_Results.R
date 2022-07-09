@@ -344,11 +344,12 @@ rm(diagnoses_list)
 #Each file is separated by type of event and year
 #count person time to be applied to each file
 #time lags more than 1 year will not be considered
-time_lag<-data.table(condition=c("Depression", "Elective abortion",
-                                 "Gestational diabetes","Multiple gestation"," Preeclampsia", "Spontaneous abortion",
-                                 "TOPFA", "Breast cancer"),
-                     time_lag=c(3*30, 8*7, 23*7, 23*7, 8*7, 8*7, 8*7,5*365), time_remove=c(3*30, 8*7, 23*7, 23*7, 8*7, 8*7, 8*7,0))
+#time_lag<-data.table(condition=c("Depression", "Elective abortion",
+#                                 "Gestational diabetes","Multiple gestation"," Preeclampsia", "Spontaneous abortion",
+#                                 "TOPFA", "Breast cancer"),
+#                     time_lag=c(3*30, 8*7, 23*7, 23*7, 8*7, 8*7, 8*7,5*365), time_remove=c(3*30, 8*7, 23*7, 23*7, 8*7, 8*7, 8*7,0))
 
+source(paste0(pre_dir,"time_lag_recurrent_events_parameters.R"))
 #create a loop that would run count person time for each diagnoses separately
 duplicated_event_dates<-data.table(event_definition=names(diagnoses_files),original_rows=0,duplicates=0,duplicates_time_lag=as.character(0))
 #duplicates: diagnosis at the same date are counted and removed
