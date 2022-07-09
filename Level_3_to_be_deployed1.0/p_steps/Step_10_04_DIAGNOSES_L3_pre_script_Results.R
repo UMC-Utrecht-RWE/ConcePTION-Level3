@@ -835,6 +835,7 @@ for (condition_ind in 1:length(diagnoses_files)){
     remove_subj[[condition_ind]]<-data.table(event_definition=names(diagnoses_files)[condition_ind], 0)
   }
   
+  if(diag_file[,.N]>0){
   #remove event_code and vocabulary, condition will be used as event count and remove all other uneccessary columns
   diag_file[,event_code:=NULL][,event_vocabulary:=NULL][,meaning:=NULL][,age_start_follow_up:=NULL]
   if("obs_out" %in% names(diag_file)){diag_file[,obs_out:=NULL]}
@@ -901,7 +902,7 @@ for (condition_ind in 1:length(diagnoses_files)){
   #will be used to count users
   saveRDS(output, paste0(diag_tmp, names(diagnoses_files)[condition_ind], "_rates_first.rds"))
   rm(output)
-
+}
 }
 rm(diagnoses_files)
 
