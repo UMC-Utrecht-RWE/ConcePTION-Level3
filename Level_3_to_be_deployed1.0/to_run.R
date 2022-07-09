@@ -200,9 +200,9 @@ projectFolder<-dirname(rstudioapi::getSourceEditorContext()$path)
 setwd(projectFolder)
 source("packages.R")
 source("99_path.R")
+load(paste0(g_intermediate,"environment.RData"))
 study_name_codelist<-NULL
 recurrent_event_analysis<-"Yes"
-load(paste0(g_intermediate,"environment.RData"))
 system.time(source(paste0(pre_dir,"Step_10_00_DIAGNOSES_L3.R")))
 
 if(sum(length(actual_tables$EVENTS),length(actual_tables$MEDICAL_OBSERVATIONS),length(actual_tables$SURVEY_OBSERVATIONS))>0){
