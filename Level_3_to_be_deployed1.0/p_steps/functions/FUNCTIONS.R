@@ -238,9 +238,11 @@ Line_plot2 <- function(MATRIX, title, x.l, y.l, x.axis = F, color = NULL, leg = 
   #X-axis
   if(!x.axis) {axis(1,at=1:length(colnames(MATRIX)),labels = colnames(MATRIX), las = x.las,cex.axis = tck.size)}else{
   axis(1,at=x.thicks,labels = x.labels, las = x.las,cex.axis = tck.size)}
-      
-  if(ceiling(max(MATRIX)) < 10) t <- format(seq(from = 0,to = ceiling(max(MATRIX)),length.out = 11),digits = 1)
-  if(ceiling(max(MATRIX)) >= 10)t <- format(seq(from = 0,to = ceiling(max(MATRIX)),length.out = 11),digits = 0)
+    
+  #if(ceiling(max(MATRIX)) < 10) t <- format(seq(from = 0,to = ceiling(max(MATRIX)),length.out = 11),digits = 1)
+  #if(ceiling(max(MATRIX)) >= 10)t <- format(seq(from = 0,to = ceiling(max(MATRIX)),length.out = 11),digits = 0)
+  t <- format(seq(from = 0,to = ceiling(max(MATRIX)),length.out = 11),digits = 1)
+  
   #axis(2, at = t , labels = as.character(t),cex.axis =0.6 )
   
   #axis(2, at = t , labels = as.character(t),cex.axis =0.6 )
